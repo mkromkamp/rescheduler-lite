@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Rescheduler.Domain\Rescheduler.Domain.csproj" />
+    <ProjectReference Include="..\Rescheduler.Core\Rescheduler.Core.csproj" />
   </ItemGroup>
 
 </Project>

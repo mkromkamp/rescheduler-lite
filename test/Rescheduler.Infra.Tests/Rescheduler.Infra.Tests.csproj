@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Rescheduler.Domain\Rescheduler.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Rescheduler.Core\Rescheduler.Core.csproj" />
     <ProjectReference Include="..\..\src\Rescheduler.Infra\Rescheduler.Infra.csproj" />
   </ItemGroup>
 

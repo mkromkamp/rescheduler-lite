@@ -7,7 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3C7E05AB-F06
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rescheduler.Api", "src\Rescheduler.Api\Rescheduler.Api.csproj", "{A7820325-E775-4408-875E-456BCD7BFBCC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rescheduler.Domain", "src\Rescheduler.Domain\Rescheduler.Domain.csproj", "{3BF0EB88-5153-4475-89DE-40FCEC6D0803}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rescheduler.Core", "src\Rescheduler.Core\Rescheduler.Core.csproj", "{3BF0EB88-5153-4475-89DE-40FCEC6D0803}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rescheduler.Infra", "src\Rescheduler.Infra\Rescheduler.Infra.csproj", "{007F0FA7-CE02-4F43-886F-37D21F3FF6D0}"
 EndProject
@@ -17,7 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{6062252B-E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rescheduler.Api.Tests", "test\Rescheduler.Api.Tests\Rescheduler.Api.Tests.csproj", "{AEB00A67-2228-43ED-8B3E-524FA0F3DC4E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rescheduler.Domain.Tests", "test\Rescheduler.Domain.Tests\Rescheduler.Domain.Tests.csproj", "{B0964878-765F-4FA0-A198-1E24C98B7F6C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rescheduler.Core.Tests", "test\Rescheduler.Core.Tests\Rescheduler.Core.Tests.csproj", "{B0964878-765F-4FA0-A198-1E24C98B7F6C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rescheduler.Infra.Tests", "test\Rescheduler.Infra.Tests\Rescheduler.Infra.Tests.csproj", "{76FF5B10-43C2-416E-B01D-B5408D14D2CA}"
 EndProject

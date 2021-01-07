@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Rescheduler.Infra\Rescheduler.Infra.csproj" />
-    <ProjectReference Include="..\Rescheduler.Domain\Rescheduler.Domain.csproj" />
+    <ProjectReference Include="..\Rescheduler.Core\Rescheduler.Core.csproj" />
     <ProjectReference Include="..\Rescheduler.Worker\Rescheduler.Worker.csproj" />
   </ItemGroup>
 
