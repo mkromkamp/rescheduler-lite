@@ -1,3 +1,4 @@
+![.NET](https://github.com/mkromkamp/rescheduler-lite/workflows/.NET/badge.svg)
 # Rescheduler-lite
 
 Rescheduler-lite is a job/work scheduler that is easy to deploy, operate, and worker/environment agnostic
