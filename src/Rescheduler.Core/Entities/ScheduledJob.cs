@@ -4,7 +4,7 @@ namespace Rescheduler.Core.Entities
 {
     public class ScheduledJob : EntityBase
     {
-        public ScheduledJob(Guid id, DateTime runAt, DateTime? scheduledAt, ScheduleStatus status, Job job)
+        internal ScheduledJob(Guid id, DateTime runAt, DateTime? scheduledAt, ScheduleStatus status, Job job)
             : base(id)
         {
             ScheduledAt = runAt;
@@ -29,6 +29,16 @@ namespace Rescheduler.Core.Entities
         {
             QueuedAt = queuedAt;
             Status = ScheduleStatus.Queued;
+        }
+
+        public static ScheduledJob New(Job job, DateTime runAt)
+        {
+            return new ScheduledJob(
+                Guid.NewGuid(), 
+                runAt, 
+                null, 
+                ScheduleStatus.Scheduled,
+                job);
         }
     }
 }

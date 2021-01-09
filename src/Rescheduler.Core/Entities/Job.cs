@@ -5,7 +5,7 @@ namespace Rescheduler.Core.Entities
 {
     public class Job : EntityBase
     {
-        public Job(Guid id, string subject, string payload, bool enabled, DateTime runAt, DateTime stopAfter, string? cron)
+        internal Job(Guid id, string subject, string payload, bool enabled, DateTime runAt, DateTime stopAfter, string? cron)
             : base(id)
         {
             Subject = subject;
@@ -48,6 +48,19 @@ namespace Rescheduler.Core.Entities
                 next = null;
 
             return next != null;
+        }
+
+        public static Job New(string subject, string payload, bool enabled, DateTime runAt, DateTime stopAfter, string? cron)
+        {
+            return new Job(
+                Guid.NewGuid(),
+                subject,
+                payload,
+                enabled,
+                runAt,
+                stopAfter,
+                cron
+            );
         }
     }
 }
