@@ -4,13 +4,15 @@ namespace Rescheduler.Core.Entities
 {
     public class ScheduledJob : EntityBase
     {
-        internal ScheduledJob(Guid id, DateTime runAt, DateTime? scheduledAt, ScheduleStatus status, Job job)
+        private ScheduledJob() : base() {}
+
+        internal ScheduledJob(Guid id, DateTime scheduledAt, DateTime? queuedAt, ScheduleStatus status, Guid jobId)
             : base(id)
         {
-            ScheduledAt = runAt;
-            QueuedAt = scheduledAt;
+            ScheduledAt = scheduledAt;
+            QueuedAt = queuedAt;
             Status = status;
-            Job = job;
+            JobId = jobId;
         }
 
         public DateTime ScheduledAt { get; private set; }
@@ -19,7 +21,7 @@ namespace Rescheduler.Core.Entities
 
         public ScheduleStatus Status { get; private set; }
 
-        public Job Job { get; private set; }
+        public Guid JobId { get; private set; }
 
         internal void Scheduled() => Status = ScheduleStatus.Scheduled;
 
@@ -31,14 +33,14 @@ namespace Rescheduler.Core.Entities
             Status = ScheduleStatus.Queued;
         }
 
-        public static ScheduledJob New(Job job, DateTime runAt)
+        public static ScheduledJob New(Guid jobId, DateTime scheduledAt)
         {
             return new ScheduledJob(
                 Guid.NewGuid(), 
-                runAt, 
+                scheduledAt, 
                 null, 
                 ScheduleStatus.Scheduled,
-                job);
+                jobId);
         }
     }
 }

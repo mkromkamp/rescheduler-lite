@@ -17,15 +17,7 @@ namespace Rescheduler.Core.Tests.Entities
                 DateTime.UtcNow, 
                 null, 
                 ScheduleStatus.Scheduled, 
-                new Job(
-                    Guid.NewGuid(), 
-                    "test", 
-                    "test payload", 
-                    true, 
-                    DateTime.UtcNow, 
-                    DateTime.MaxValue, 
-                    "*/10 * * * *"
-            ));
+                Guid.NewGuid());
 
             // When
             scheduledJob.Queued(queuedAt);

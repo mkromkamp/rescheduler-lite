@@ -27,7 +27,7 @@ namespace Rescheduler.Core.Handlers
                 && request.job.TryGetNextRun(DateTime.UtcNow, out var runAt)
                 && runAt.HasValue)
             {
-                jobSchedule = ScheduledJob.New(request.job, runAt.Value);
+                jobSchedule = ScheduledJob.New(request.job.Id, runAt.Value);
                 await _jobScheduleRepository.AddAsync(jobSchedule, cancellationToken);
             }
 
