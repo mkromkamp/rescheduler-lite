@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Rescheduler.Core;
 using Rescheduler.Infra;
+using Rescheduler.Infra.Data;
 
 namespace Rescheduler.Api
 {
@@ -26,14 +27,14 @@ namespace Rescheduler.Api
             });
 
             services.AddCore(_configuration)
-                    .AddInfra(_configuration)
-                    .ApplyMigrations();
+                    .AddInfra(_configuration);
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, JobContext jobContext)
         {
             if (env.IsDevelopment())
             {
+                jobContext.Database.EnsureCreated();
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Rescheduler.Api v1"));

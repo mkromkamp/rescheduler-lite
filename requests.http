@@ -9,3 +9,7 @@ content-type: application/json
     "stopAfter": "2022-01-02T23:20:50.52Z",
     "cron": "*/10 * * * *"
 }
+
+### Get job
+GET http://localhost:5000/api/jobs/431e2f2a-9354-47b6-8ba1-b3204d528760
+Accept: application/json

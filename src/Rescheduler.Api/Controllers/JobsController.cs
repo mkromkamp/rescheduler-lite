@@ -1,9 +1,11 @@
+using System;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Rescheduler.Api.Models;
+using Rescheduler.Core.Handlers;
 
 namespace Rescheduler.Api.Controllers
 {
@@ -18,7 +20,7 @@ namespace Rescheduler.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAsync([FromBody]CreateJobRequest request, CancellationToken ctx)
+        public async Task<IActionResult> CreateAsync([FromBody]Models.CreateJobRequest request, CancellationToken ctx)
         {
             if (!ModelState.IsValid)
             {
@@ -28,6 +30,19 @@ namespace Rescheduler.Api.Controllers
             var newJob = await _mediator.Send(new Core.Handlers.CreateJobRequest(request.ToJob()), ctx);
 
             return StatusCode((int)HttpStatusCode.Created, newJob);
+        }
+
+        [HttpGet("{jobId}")]
+        public async Task<IActionResult> GetByIdAsync([FromRoute]Guid jobId, CancellationToken ctx)
+        {
+            var job = await _mediator.Send(new GetJobRequest(jobId), ctx);
+
+            if (job is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(job);
         }
     }
 }

@@ -1,3 +1,5 @@
+# default database file
+rescheduler.db*
 
 .vscode/*
 !.vscode/settings.json

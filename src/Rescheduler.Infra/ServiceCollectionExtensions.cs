@@ -18,17 +18,5 @@ namespace Rescheduler.Infra
 
             return services;
         }
-
-        public static IServiceCollection ApplyMigrations(this IServiceCollection services)
-        {
-            using (var scope = services.BuildServiceProvider().CreateScope())
-            {
-                var db = scope.ServiceProvider.GetRequiredService<JobContext>();
-                db.Database.EnsureCreated();
-                // db.Database.Migrate();
-            }
-
-            return services;
-        }
     }
 }
