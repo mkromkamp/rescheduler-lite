@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Rescheduler.Core.Entities;
 using Rescheduler.Core.Interfaces;
 using Rescheduler.Infra.Data;
 
@@ -10,8 +11,22 @@ namespace Rescheduler.Infra
     {
         public static IServiceCollection AddInfra(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddEntityFrameworkSqlite();
             services.AddDbContext<JobContext>();
-            services.AddSingleton(typeof(Repository<>), typeof(IRepository<>));
+            services.AddScoped<IRepository<Job>, Repository<Job>>();
+            services.AddScoped<IRepository<ScheduledJob>, Repository<ScheduledJob>>();
+
+            return services;
+        }
+
+        public static IServiceCollection ApplyMigrations(this IServiceCollection services)
+        {
+            using (var scope = services.BuildServiceProvider().CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<JobContext>();
+                db.Database.EnsureCreated();
+                // db.Database.Migrate();
+            }
 
             return services;
         }

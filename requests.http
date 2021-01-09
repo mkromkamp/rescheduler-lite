@@ -1,0 +1,9 @@
+### Create job
+POST http://localhost:5000/api/jobs HTTP/1.1
+content-type: application/json
+
+{
+    "subject": "webhook",
+    "payload": "test payload",
+    "runAt": "2021-01-02T23:20:50.52Z"
+}

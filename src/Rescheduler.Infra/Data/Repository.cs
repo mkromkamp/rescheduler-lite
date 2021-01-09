@@ -7,11 +7,11 @@ using Rescheduler.Core.Interfaces;
 
 namespace Rescheduler.Infra.Data
 {
-    public class Repository<T> : IRepository<T> where T : EntityBase
+    internal class Repository<T> : IRepository<T> where T : EntityBase
     {
-        private readonly DbContext _dbContext;
+        private readonly JobContext _dbContext;
 
-        public Repository(DbContext dbContext)
+        public Repository(JobContext dbContext)
         {
             _dbContext = dbContext;
         }
