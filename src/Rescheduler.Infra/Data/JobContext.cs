@@ -19,7 +19,7 @@ namespace Rescheduler.Infra.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
             => options.UseSqlite("DataSource=rescheduler.db")
-            .LogTo(Console.WriteLine, Microsoft.Extensions.Logging.LogLevel.Information);
+            .LogTo(Console.WriteLine, Microsoft.Extensions.Logging.LogLevel.Debug);
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
