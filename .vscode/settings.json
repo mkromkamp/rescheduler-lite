@@ -1,0 +1,12 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 100,
+            "driver": "SQLite",
+            "name": "rescheduler",
+            "database": "${workspaceFolder:rescheduler-lite}/src/Rescheduler.Api/rescheduler.db",
+            "group": "none"
+        }
+    ],
+    "sqltools.useNodeRuntime": true
+}
