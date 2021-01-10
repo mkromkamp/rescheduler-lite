@@ -8,6 +8,7 @@ using Microsoft.OpenApi.Models;
 using Rescheduler.Core;
 using Rescheduler.Infra;
 using Rescheduler.Infra.Data;
+using Rescheduler.Worker;
 
 namespace Rescheduler.Api
 {
@@ -28,7 +29,8 @@ namespace Rescheduler.Api
             });
 
             services.AddCore(_configuration)
-                    .AddInfra(_configuration);
+                    .AddInfra(_configuration)
+                    .AddWorker();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, JobContext jobContext)

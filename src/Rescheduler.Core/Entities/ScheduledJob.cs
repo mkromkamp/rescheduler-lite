@@ -23,11 +23,11 @@ namespace Rescheduler.Core.Entities
 
         public Guid JobId { get; private set; }
 
-        internal void Scheduled() => Status = ScheduleStatus.Scheduled;
+        public void Scheduled() => Status = ScheduleStatus.Scheduled;
 
-        internal void InFlight() => Status = ScheduleStatus.InFlight;
+        public void InFlight() => Status = ScheduleStatus.InFlight;
 
-        internal void Queued(DateTime queuedAt) 
+        public void Queued(DateTime queuedAt) 
         {
             QueuedAt = queuedAt;
             Status = ScheduleStatus.Queued;

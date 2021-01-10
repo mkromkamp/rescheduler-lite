@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Rescheduler.Api.Models;
 using Rescheduler.Core.Handlers;
 
 namespace Rescheduler.Api.Controllers
@@ -27,7 +26,7 @@ namespace Rescheduler.Api.Controllers
                 return UnprocessableEntity(ModelState);
             }
 
-            var newJob = await _mediator.Send(new Core.Handlers.CreateJobRequest(request.ToJob()), ctx);
+            var newJob = await _mediator.Send(new CreateJobRequest(request.ToJob()), ctx);
 
             return StatusCode((int)HttpStatusCode.Created, newJob);
         }

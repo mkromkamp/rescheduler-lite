@@ -13,8 +13,10 @@ namespace Rescheduler.Infra
         {
             services.AddEntityFrameworkSqlite();
             services.AddDbContext<JobContext>();
+
             services.AddScoped<IRepository<Job>, Repository<Job>>();
             services.AddScoped<IRepository<ScheduledJob>, Repository<ScheduledJob>>();
+            services.AddScoped<IScheduledJobsRepository, Repository<ScheduledJob>>();
 
             return services;
         }
