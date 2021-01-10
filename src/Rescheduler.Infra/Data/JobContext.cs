@@ -18,8 +18,13 @@ namespace Rescheduler.Infra.Data
         public DbSet<ScheduledJob> ScheduledJobs { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
-            => options.UseSqlite("DataSource=rescheduler.db")
-            .LogTo(Console.WriteLine, Microsoft.Extensions.Logging.LogLevel.Information);
+        {
+            options.UseSqlite("DataSource=rescheduler.db");
+            
+            options.EnableDetailedErrors();
+            options.EnableSensitiveDataLogging();
+            options.LogTo(Console.WriteLine, Microsoft.Extensions.Logging.LogLevel.Information);
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
