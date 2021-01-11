@@ -11,7 +11,7 @@ Rescheduler-lite is a job/work scheduler that is easy to deploy, operate, and wo
 - Build-in backup and restore
 - Option for retry mechanisms
 - Build on top of standard components
-- Leverage [NSQ](https://nsq.io/) for message passing
+- Leverage [RabbitMQ](https://www.rabbitmq.com) for message passing
 
 ## Goals
 
@@ -31,7 +31,7 @@ rescheduler-lite aims to take away this generic scheduling of jobs while not hav
 
 rescheduler-lite consists of a single binary that can be deployed virtually everywhere. The only constraint is the availability of some form of persistent storage.
 
-Alongside rescheduler-lite it is needed to deploy a single nsq daemon. Nsq is used to pass messages from rescheduler-lite to consumers
+Alongside rescheduler-lite it is needed to deploy a RabbitMQ node. RabbitMQ is used to pass messages from rescheduler-lite to consumers
 
 ### Binary
 
