@@ -13,9 +13,9 @@ namespace Rescheduler.Infra.Data
             : base(options)
         { }
 
-        public DbSet<Job> Jobs { get; set; }
+        public DbSet<Job> Jobs { get; set; } = default!;
 
-        public DbSet<ScheduledJob> ScheduledJobs { get; set; }
+        public DbSet<ScheduledJob> ScheduledJobs { get; set; } = default!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
