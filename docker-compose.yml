@@ -1,29 +1,14 @@
 version: '3'
 
 services:
-  nsqlookup:
-    image: nsqio/nsq
-    hostname: nsqlookup
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    hostname: "rabbit1"
+    environment:
+      RABBITMQ_ERLANG_COOKIE: "SWQOKODSQALRPCLNMEQG"
+      RABBITMQ_DEFAULT_USER: "rabbitmq"
+      RABBITMQ_DEFAULT_PASS: "rabbitmq"
+      RABBITMQ_DEFAULT_VHOST: "/"
     ports:
-      - "4160:4160"
-      - "4161:4161"
-    command: /nsqlookupd
-
-  nsq:
-    image: nsqio/nsq
-    hostname: nsq
-    ports:
-      - "4150:4150"
-      - "4151:4151"
-    links:
-      - nsqlookup:nsqlookup
-    command: /nsqd --broadcast-address nsq --lookupd-tcp-address=nsqlookup:4160
-
-  nsqadmin:
-    image: nsqio/nsq
-    hostname: nsqadmin
-    links:
-      - nsqlookup:nsqlookup
-    ports:
-      - "4171:4171"
-    command: /nsqadmin --lookupd-http-address=nsqlookup:4161
+      - "15672:15672"
+      - "5672:5672"
