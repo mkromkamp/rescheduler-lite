@@ -23,6 +23,8 @@ namespace Rescheduler.Core.Entities
 
         public Guid JobId { get; private set; }
 
+        public Job Job { get; private set; } = default!;
+
         public void Scheduled() => Status = ScheduleStatus.Scheduled;
 
         public void InFlight() => Status = ScheduleStatus.InFlight;
@@ -32,13 +34,13 @@ namespace Rescheduler.Core.Entities
             QueuedAt = queuedAt;
             Status = ScheduleStatus.Queued;
         }
-
+        
         public static ScheduledJob New(Guid jobId, DateTime scheduledAt)
         {
             return new ScheduledJob(
                 Guid.NewGuid(), 
                 scheduledAt, 
-                null, 
+                null,
                 ScheduleStatus.Scheduled,
                 jobId);
         }

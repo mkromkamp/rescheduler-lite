@@ -1,6 +1,8 @@
+using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using RabbitMQ.Client;
 using Rescheduler.Core.Entities;
 using Rescheduler.Core.Interfaces;
 using Rescheduler.Infra.Data;
@@ -17,6 +19,13 @@ namespace Rescheduler.Infra
             services.AddScoped<IRepository<Job>, Repository<Job>>();
             services.AddScoped<IRepository<ScheduledJob>, Repository<ScheduledJob>>();
             services.AddScoped<IScheduledJobsRepository, Repository<ScheduledJob>>();
+
+            services.AddSingleton<IConnectionFactory>(svc => new ConnectionFactory()
+            {
+                Uri = new Uri("amqp://rabbitmq:rabbitmq@localhost:5672/vhost"),
+                AutomaticRecoveryEnabled = true,
+                TopologyRecoveryEnabled = true,
+            });
 
             return services;
         }
