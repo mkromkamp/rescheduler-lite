@@ -6,6 +6,7 @@ using RabbitMQ.Client;
 using Rescheduler.Core.Entities;
 using Rescheduler.Core.Interfaces;
 using Rescheduler.Infra.Data;
+using Rescheduler.Infra.Messaging;
 
 namespace Rescheduler.Infra
 {
@@ -19,10 +20,11 @@ namespace Rescheduler.Infra
             services.AddScoped<IRepository<Job>, Repository<Job>>();
             services.AddScoped<IRepository<ScheduledJob>, Repository<ScheduledJob>>();
             services.AddScoped<IScheduledJobsRepository, Repository<ScheduledJob>>();
+            services.AddSingleton<IJobPublisher, RabbitJobPublisher>();
 
             services.AddSingleton<IConnectionFactory>(svc => new ConnectionFactory()
             {
-                Uri = new Uri("amqp://rabbitmq:rabbitmq@localhost:5672/vhost"),
+                Uri = new Uri("amqp://rabbitmq:rabbitmq@127.0.0.1:5672/"),
                 AutomaticRecoveryEnabled = true,
                 TopologyRecoveryEnabled = true,
             });

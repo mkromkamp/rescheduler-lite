@@ -17,7 +17,14 @@ namespace Rescheduler.Core.Tests.Entities
                 DateTime.UtcNow, 
                 null, 
                 ScheduleStatus.Scheduled, 
-                Guid.NewGuid());
+                Job.New(
+                    "test",
+                    "test payload",
+                    true,
+                    DateTime.UtcNow,
+                    DateTime.UtcNow.AddDays(1),
+                    null
+                ));
 
             // When
             scheduledJob.Queued(queuedAt);

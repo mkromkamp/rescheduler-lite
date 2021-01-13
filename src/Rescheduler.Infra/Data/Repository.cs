@@ -48,6 +48,7 @@ namespace Rescheduler.Infra.Data
                 .Where(s => s.ScheduledAt <= until && s.Status == ScheduleStatus.Scheduled)
                 .OrderBy(s => s.ScheduledAt)
                 .Take(max)
+                .Include(s => s.Job)
                 .ToListAsync(ctx);
             
             jobs.ForEach(j => j.InFlight());

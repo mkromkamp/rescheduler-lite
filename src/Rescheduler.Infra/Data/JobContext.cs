@@ -32,9 +32,7 @@ namespace Rescheduler.Infra.Data
 
             modelBuilder.Entity<Job>()
                 .HasMany<ScheduledJob>()
-                .WithOne()
-                .HasForeignKey(x => x.JobId)
-                .HasPrincipalKey(x => x.Id)
+                .WithOne(j => j.Job)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }
