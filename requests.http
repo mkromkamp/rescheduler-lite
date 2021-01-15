@@ -7,7 +7,7 @@ content-type: application/json
     "payload": "test payload",
     "runAt": "2021-01-02T23:20:50.52Z",
     "stopAfter": "2022-01-02T23:20:50.52Z",
-    "cron": "*/10 * * * *"
+    "cron": "*/5 * * * *"
 }
 
 ### Get job
