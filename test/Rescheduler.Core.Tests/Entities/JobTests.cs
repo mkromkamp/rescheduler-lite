@@ -13,7 +13,7 @@ namespace Rescheduler.Core.Tests.Entities
         {
             // Given
             var now = DateTime.UtcNow;
-            var job = new Job(Guid.NewGuid(), "test", "test payload", true, now.AddDays(1), now.AddDays(2), "*/10 * * * *");
+            var job = new Job(Guid.NewGuid(), "test", "test payload", true, now.AddDays(1), now.AddDays(2), null);
 
             // When
             var hasNext = job.TryGetNextRun(now, out var nextRun);

@@ -37,11 +37,12 @@ namespace Rescheduler.Core.Entities
             {
                 next = RunAt;
             }
+            
             // Cron scheduled
-            else if (!string.IsNullOrEmpty(Cron))
+            if (!string.IsNullOrEmpty(Cron))
             {
                 var expression = CronExpression.Parse(Cron);
-                next = expression.GetNextOccurrence(from, true);
+                next = expression.GetNextOccurrence(next.Value, true);
             }
 
             if (next > StopAfter)
