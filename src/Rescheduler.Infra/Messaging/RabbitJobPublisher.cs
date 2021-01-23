@@ -20,18 +20,20 @@ namespace Rescheduler.Infra.Messaging
         {
             _connectionFactory = connectionFactory;
             _logger = logger;
+
+            _model = GetOrCreateModel();
         }
 
         public Task<bool> PublishAsync(Job job, CancellationToken ctx)
         {
             try
             {
-                EnsureModel();
+                var model = GetOrCreateModel();
 
-                _model.EnsureTopic(job.Subject);
-                _model.BasicPublish(job.Subject, "job", true, null, Encoding.UTF8.GetBytes(job.Payload));
+                model.EnsureTopic(job.Subject);
+                model.BasicPublish(job.Subject, "job", true, null, Encoding.UTF8.GetBytes(job.Payload));
                 
-                return Task.FromResult(_model.WaitForConfirms());
+                return Task.FromResult(model.WaitForConfirms());
             }
             catch (Exception e)
             {
@@ -45,13 +47,15 @@ namespace Rescheduler.Infra.Messaging
             throw new System.NotImplementedException();
         }
 
-        private void EnsureModel()
+        private IModel GetOrCreateModel()
         {
             if (_model is null || _model.IsClosed)
             {
                 _model = _connectionFactory.CreateConnection().CreateModel();
                 _model.ConfirmSelect();
             }
+
+            return _model;
         }
     }
 
