@@ -4,6 +4,7 @@ namespace Rescheduler.Core.Entities
 {
     public class ScheduledJob : EntityBase
     {
+        // EF Core
         private ScheduledJob() : base() {}
 
         internal ScheduledJob(Guid id, DateTime scheduledAt, DateTime? queuedAt, ScheduleStatus status, Job job)
