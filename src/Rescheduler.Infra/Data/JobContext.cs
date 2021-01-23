@@ -19,8 +19,6 @@ namespace Rescheduler.Infra.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
-            options.UseSqlite("DataSource=rescheduler.db");
-            
             options.EnableDetailedErrors();
             options.EnableSensitiveDataLogging();
             options.LogTo(Console.WriteLine, Microsoft.Extensions.Logging.LogLevel.Information);
