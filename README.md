@@ -23,6 +23,9 @@ Rescheduler-lite is in development and thus all warnings apply; feel free to pla
   - [Documentation](#documentation)
   - [Development](#development)
     - [Docker](#docker-1)
+- [Monitoring](#monitoring)
+  - [Logs](#logs)
+  - [Metrics](#metrics)
 
 # Features
 
@@ -99,3 +102,20 @@ From the root of the project run;
 ``` bash
 docker-compose up -d --build
 ```
+
+# Monitoring
+
+Rescheduler-lite is shipped with build in logs in JSON format and metrics in OpenMetrics format
+
+## Logs
+
+By default logs will be directed to stdout and stderr from there you can forward/ingest they into your log collector.
+
+## Metrics
+
+Metrics are provided and OpenMetrics format and exposed on the `/metrics` path. There are three different types of metrics exposed
+
+- Node/host metrics, prefixed with `node_`
+- Dotnet CLR metrics, prefixed with `dotnet_`
+- Application metrics, prefixed with `sched_`
+ 
