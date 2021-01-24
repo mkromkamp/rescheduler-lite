@@ -45,7 +45,7 @@ namespace Rescheduler.Infra.Data
         public async Task<IEnumerable<ScheduledJob>> MarkAndGetPending(int max, DateTime until, CancellationToken ctx)
         {
             var jobs = await _dbContext.Set<ScheduledJob>()
-                .Where(s => s.ScheduledAt <= until && s.Status == ScheduleStatus.Scheduled)
+                .Where(s => s.ScheduledAt <= until && s.Status == ScheduleStatus.Scheduled && s.Job.Enabled)
                 .OrderBy(s => s.ScheduledAt)
                 .Take(max)
                 .Include(s => s.Job)

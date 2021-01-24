@@ -31,6 +31,24 @@ namespace Rescheduler.Infra.Tests.Data
         }
 
         [Fact]
+        public async Task GivenDisabledToBeScheduledJob_WhenMarkingPending_ShouldMarkAndReturn()
+        {
+            // Given 
+            var enabled = false;
+            var job = new Job(Guid.NewGuid(), "webhooks", "test passed", enabled, DateTime.UtcNow, DateTime.MaxValue, null);
+            var scheduledJob = new ScheduledJob(Guid.NewGuid(), job.RunAt, null, ScheduleStatus.Scheduled, job);
+
+            using var context = GetSeededJobContext(job, scheduledJob);
+            var repo = new Repository<ScheduledJob>(context);
+
+            // When
+            var result = await repo.MarkAndGetPending(1, DateTime.UtcNow.AddSeconds(5), CancellationToken.None);            
+
+            // Then
+            result.ShouldBeEmpty();
+        }
+
+        [Fact]
         public async Task GivenNoToBeScheduledJob_WhenMarkingPending_ShouldMarkAndReturn()
         {
             // Given 
