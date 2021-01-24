@@ -15,7 +15,9 @@ namespace Rescheduler.Infra
         public static IServiceCollection AddInfra(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddEntityFrameworkSqlite();
-            services.AddDbContext<JobContext>(ctx => ctx.UseSqlite("DataSource=rescheduler.db"));
+            services.AddDbContext<JobContext>(
+                ctx => ctx.UseSqlite("DataSource=rescheduler.db", 
+                opts => opts.MigrationsAssembly("Rescheduler.Api")));
 
             services.AddScoped<IRepository<Job>, Repository<Job>>();
             services.AddScoped<IRepository<ScheduledJob>, Repository<ScheduledJob>>();
