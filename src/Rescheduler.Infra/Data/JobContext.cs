@@ -1,4 +1,3 @@
-using System;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Rescheduler.Core.Entities;
@@ -21,7 +20,6 @@ namespace Rescheduler.Infra.Data
         {
             options.EnableDetailedErrors();
             options.EnableSensitiveDataLogging();
-            options.LogTo(Console.WriteLine, Microsoft.Extensions.Logging.LogLevel.Information);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
