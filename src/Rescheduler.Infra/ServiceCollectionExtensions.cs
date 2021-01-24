@@ -16,7 +16,7 @@ namespace Rescheduler.Infra
         {
             services.AddEntityFrameworkSqlite();
             services.AddDbContext<JobContext>(
-                ctx => ctx.UseSqlite("DataSource=rescheduler.db", 
+                ctx => ctx.UseSqlite(configuration.GetConnectionString("Database"), 
                 opts => opts.MigrationsAssembly("Rescheduler.Api")));
 
             services.AddScoped<IRepository<Job>, Repository<Job>>();
@@ -26,7 +26,7 @@ namespace Rescheduler.Infra
 
             services.AddSingleton<IConnectionFactory>(svc => new ConnectionFactory()
             {
-                Uri = new Uri("amqp://rabbitmq:rabbitmq@127.0.0.1:5672/"),
+                Uri = new Uri(configuration.GetConnectionString("RabbitMQ")),
                 AutomaticRecoveryEnabled = true,
                 TopologyRecoveryEnabled = true,
             });
