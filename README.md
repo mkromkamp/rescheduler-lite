@@ -51,7 +51,19 @@ Describe binary deployment
 
 Describe docker based deployment
 
-## Development
+## Contributing
+
+Contributions are welcome :)
+
+### Issues
+
+When you are testing rescheduler-lite and run into something you think is an issue it would be appreciated if you take the time to describe the issue you run into with as much context as possible. You can drop this information in the [issues section](https://github.com/mkromkamp/rescheduler-lite/issues) and apply the *bug* tag.
+
+### Documentation
+
+If you feel like there is missing or incorrect documentation feel free to create an [issue](https://github.com/mkromkamp/rescheduler-lite/issues) with the corresponding *documentation* tag. Please take your time to describe what and why you are missing, of coarse you are free to come up with an initial write-up or proposal of how to document this part of the application.
+
+### Development
 
 In order to start ~hacking~ developing on rescheduler-lite the following is needed
 
@@ -62,7 +74,7 @@ In order to start ~hacking~ developing on rescheduler-lite the following is need
 
 After that you should be able to start developing on the project and run any development dependencies (RabbitMQ) in Docker
 
-### Docker
+#### Docker
 
 In order to start RabbitMQ you can use the docker-compose file in the repo.
 
