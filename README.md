@@ -113,9 +113,10 @@ By default logs will be directed to stdout and stderr from there you can forward
 
 ## Metrics
 
-Metrics are provided and OpenMetrics format and exposed on the `/metrics` path. There are three different types of metrics exposed
+Metrics are provided and OpenMetrics format and exposed on the `/metrics` path. The following types of metrics exposed
 
 - Node/host metrics, prefixed with `node_`
 - Dotnet CLR metrics, prefixed with `dotnet_`
+- Http metrics, prefixed with `http_`
 - Application metrics, prefixed with `sched_`
  

@@ -1,4 +1,5 @@
 using System;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,6 +8,7 @@ using Rescheduler.Core.Entities;
 using Rescheduler.Core.Interfaces;
 using Rescheduler.Infra.Data;
 using Rescheduler.Infra.Messaging;
+using Rescheduler.Infra.Metrics;
 
 namespace Rescheduler.Infra
 {
@@ -23,6 +25,8 @@ namespace Rescheduler.Infra
             services.AddScoped<IRepository<ScheduledJob>, Repository<ScheduledJob>>();
             services.AddScoped<IScheduledJobsRepository, Repository<ScheduledJob>>();
             services.AddSingleton<IJobPublisher, RabbitJobPublisher>();
+
+            services.AddSingleton(typeof(IPipelineBehavior<,>), typeof(MetricsBehavior<,>)); 
 
             services.AddSingleton<IConnectionFactory>(svc => new ConnectionFactory()
             {
