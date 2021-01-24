@@ -19,6 +19,7 @@ Rescheduler-lite is in development and thus all warnings apply; feel free to pla
   - [Binary](#binary)
   - [Docker](#docker)
 - [Contributing](#contributing)
+  - [Discussions and Questions](#discussions-and-questions)
   - [Issues](#issues)
   - [Documentation](#documentation)
   - [Development](#development)
@@ -73,7 +74,11 @@ Describe docker based deployment
 
 # Contributing
 
-Contributions are welcome :)
+Contributions are welcome 👍
+
+## Discussions and Questions
+
+For all discussions and questions there is a separate [discussions board](https://github.com/mkromkamp/rescheduler-lite/discussions). For everything that is not a bug report please use this board.
 
 ## Issues
 
