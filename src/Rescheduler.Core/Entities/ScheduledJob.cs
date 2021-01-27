@@ -5,7 +5,9 @@ namespace Rescheduler.Core.Entities
     public class ScheduledJob : EntityBase
     {
         // EF Core
+        #pragma warning disable CS8618
         private ScheduledJob() : base() {}
+        #pragma warning restore CS8618
 
         internal ScheduledJob(Guid id, DateTime scheduledAt, DateTime? queuedAt, ScheduleStatus status, Job job)
             : base(id)
