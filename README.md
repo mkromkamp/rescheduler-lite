@@ -13,7 +13,7 @@ Rescheduler-lite is in development and thus all warnings apply; feel free to pla
 - [Table of Contents](#table-of-contents)
 - [Features](#features)
 - [Goals](#goals)
-- [High level architecture](#high-level-architecture)
+- [High level architec](#high-level-architec)
 - [API](#api)
 - [Deployment](#deployment)
   - [Binary](#binary)
@@ -46,9 +46,9 @@ More often than not a basic feature needs to be implemented that requires *thing
 
 Where these *things* are usually really project specific the scheduling of these jobs is not. Still it can be a hassle to get job scheduling setup in a convenient and low maintenance fashion.
 
-rescheduler-lite aims to take away this generic scheduling of jobs while not having any opinions around the way these jobs are implemented or executed. All of this while being easy to deploy and maintain for smaller teams or companies.
+rescheduler-lite aims to take away this generic scheduling of jobs while not having any opinions around the way these jobs are implemented or executed. All of this while being easy to deploy and maintain for smaller teams.
 
-# High level architecture
+# High level architec
 
 Describe architecture overview
 
