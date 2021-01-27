@@ -51,7 +51,7 @@ namespace Rescheduler.Infra.Data
             return _dbContext.SaveChangesAsync(ctx);
         }
 
-        public async Task<IEnumerable<ScheduledJob>> MarkAndGetPending(int max, DateTime until, CancellationToken ctx)
+        public async Task<IEnumerable<ScheduledJob>> GetAndMarkPending(int max, DateTime until, CancellationToken ctx)
         {
             using var _ = QueryMetrics.TimeQuery(nameof(ScheduledJob).ToLowerInvariant(), "mark_and_get_pending");
 

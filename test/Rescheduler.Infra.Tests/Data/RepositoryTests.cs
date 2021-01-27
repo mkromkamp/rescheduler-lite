@@ -23,7 +23,7 @@ namespace Rescheduler.Infra.Tests.Data
             var repo = new Repository<ScheduledJob>(context);
 
             // When
-            var result = await repo.MarkAndGetPending(1, DateTime.UtcNow.AddSeconds(5), CancellationToken.None);            
+            var result = await repo.GetAndMarkPending(1, DateTime.UtcNow.AddSeconds(5), CancellationToken.None);            
 
             // Then
             result.ShouldNotBeEmpty();
@@ -42,7 +42,7 @@ namespace Rescheduler.Infra.Tests.Data
             var repo = new Repository<ScheduledJob>(context);
 
             // When
-            var result = await repo.MarkAndGetPending(1, DateTime.UtcNow.AddSeconds(5), CancellationToken.None);            
+            var result = await repo.GetAndMarkPending(1, DateTime.UtcNow.AddSeconds(5), CancellationToken.None);            
 
             // Then
             result.ShouldBeEmpty();
@@ -59,7 +59,7 @@ namespace Rescheduler.Infra.Tests.Data
             var repo = new Repository<ScheduledJob>(context);
 
             // When
-            var result = await repo.MarkAndGetPending(1, DateTime.UtcNow.AddSeconds(5), CancellationToken.None);            
+            var result = await repo.GetAndMarkPending(1, DateTime.UtcNow.AddSeconds(5), CancellationToken.None);            
 
             // Then
             result.ShouldBeEmpty();
