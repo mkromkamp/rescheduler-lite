@@ -13,7 +13,7 @@ namespace Rescheduler.Core.Tests.Handlers
     public class CreateJobRequestHandlerTests
     {
         private readonly IRepository<Job> _jobRepository;
-        private readonly IRepository<ScheduledJob> _jobScheduleRepository;
+        private readonly IRepository<JobExecution> _jobScheduleRepository;
 
         private readonly CreateJobHandler _handler;
 
@@ -21,7 +21,7 @@ namespace Rescheduler.Core.Tests.Handlers
         {
             _jobRepository = Mock.Of<IRepository<Job>>();
 
-            _jobScheduleRepository = Mock.Of<IRepository<ScheduledJob>>();
+            _jobScheduleRepository = Mock.Of<IRepository<JobExecution>>();
 
             _handler = new CreateJobHandler(_jobRepository, _jobScheduleRepository);
         }
@@ -74,7 +74,7 @@ namespace Rescheduler.Core.Tests.Handlers
             createJobResponse.job.ShouldNotBeNull();
             createJobResponse.firstScheduledRun.ShouldNotBeNull();
             Mock.Get(_jobScheduleRepository)
-                .Verify(x => x.AddAsync(It.IsAny<ScheduledJob>(), CancellationToken.None),
+                .Verify(x => x.AddAsync(It.IsAny<JobExecution>(), CancellationToken.None),
                 Times.Once);
         }
 
@@ -92,7 +92,7 @@ namespace Rescheduler.Core.Tests.Handlers
             createJobResponse.job.ShouldNotBeNull();
             createJobResponse.firstScheduledRun.ShouldBeNull();
             Mock.Get(_jobScheduleRepository)
-                .Verify(x => x.AddAsync(It.IsAny<ScheduledJob>(), CancellationToken.None),
+                .Verify(x => x.AddAsync(It.IsAny<JobExecution>(), CancellationToken.None),
                 Times.Never);
         }
 
@@ -111,7 +111,7 @@ namespace Rescheduler.Core.Tests.Handlers
             createJobResponse.job.ShouldNotBeNull();
             createJobResponse.firstScheduledRun.ShouldBeNull();
             Mock.Get(_jobScheduleRepository)
-                .Verify(x => x.AddAsync(It.IsAny<ScheduledJob>(), CancellationToken.None),
+                .Verify(x => x.AddAsync(It.IsAny<JobExecution>(), CancellationToken.None),
                 Times.Never);
         }
     }

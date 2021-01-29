@@ -22,8 +22,8 @@ namespace Rescheduler.Infra
                 opts => opts.MigrationsAssembly("Rescheduler.Api")));
 
             services.AddScoped<IRepository<Job>, Repository<Job>>();
-            services.AddScoped<IRepository<ScheduledJob>, Repository<ScheduledJob>>();
-            services.AddScoped<IScheduledJobsRepository, Repository<ScheduledJob>>();
+            services.AddScoped<IRepository<JobExecution>, Repository<JobExecution>>();
+            services.AddScoped<IScheduledJobsRepository, Repository<JobExecution>>();
             services.AddSingleton<IJobPublisher, RabbitJobPublisher>();
 
             services.AddSingleton(typeof(IPipelineBehavior<,>), typeof(MetricsBehavior<,>)); 

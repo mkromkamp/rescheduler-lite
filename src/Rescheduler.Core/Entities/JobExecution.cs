@@ -2,14 +2,14 @@ using System;
 
 namespace Rescheduler.Core.Entities
 {
-    public class ScheduledJob : EntityBase
+    public class JobExecution : EntityBase
     {
         // EF Core
         #pragma warning disable CS8618
-        private ScheduledJob() : base() {}
+        private JobExecution() : base() {}
         #pragma warning restore CS8618
 
-        internal ScheduledJob(Guid id, DateTime scheduledAt, DateTime? queuedAt, ScheduleStatus status, Job job)
+        internal JobExecution(Guid id, DateTime scheduledAt, DateTime? queuedAt, ScheduleStatus status, Job job)
             : base(id)
         {
             ScheduledAt = scheduledAt;
@@ -36,9 +36,9 @@ namespace Rescheduler.Core.Entities
             Status = ScheduleStatus.Queued;
         }
         
-        public static ScheduledJob New(Job job, DateTime scheduledAt)
+        public static JobExecution New(Job job, DateTime scheduledAt)
         {
-            return new ScheduledJob(
+            return new JobExecution(
                 Guid.NewGuid(), 
                 scheduledAt, 
                 null,

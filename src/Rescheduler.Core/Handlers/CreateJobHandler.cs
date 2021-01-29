@@ -10,9 +10,9 @@ namespace Rescheduler.Core.Handlers
     internal class CreateJobHandler : IRequestHandler<CreateJobRequest, CreateJobResponse>
     {
         private readonly IRepository<Job> _jobRepository;
-        private readonly IRepository<ScheduledJob> _jobScheduleRepository;
+        private readonly IRepository<JobExecution> _jobScheduleRepository;
 
-        public CreateJobHandler(IRepository<Job> jobRepository, IRepository<ScheduledJob> jobScheduleRepository)
+        public CreateJobHandler(IRepository<Job> jobRepository, IRepository<JobExecution> jobScheduleRepository)
         {
             _jobRepository = jobRepository;
             _jobScheduleRepository = jobScheduleRepository;
@@ -22,12 +22,12 @@ namespace Rescheduler.Core.Handlers
         {
             await _jobRepository.AddAsync(request.job, cancellationToken);
 
-            ScheduledJob? jobSchedule = null;
+            JobExecution? jobSchedule = null;
             if (request.job.Enabled
                 && request.job.TryGetNextRun(DateTime.UtcNow, out var runAt)
                 && runAt.HasValue)
             {
-                jobSchedule = ScheduledJob.New(request.job, runAt.Value);
+                jobSchedule = JobExecution.New(request.job, runAt.Value);
                 await _jobScheduleRepository.AddAsync(jobSchedule, cancellationToken);
             }
 
@@ -37,5 +37,5 @@ namespace Rescheduler.Core.Handlers
 
     public record CreateJobRequest (Job job) : IRequest<CreateJobResponse>;
 
-    public record CreateJobResponse(Job job, ScheduledJob? firstScheduledRun);
+    public record CreateJobResponse(Job job, JobExecution? firstScheduledRun);
 }

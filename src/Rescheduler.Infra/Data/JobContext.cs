@@ -14,7 +14,7 @@ namespace Rescheduler.Infra.Data
 
         public DbSet<Job> Jobs { get; set; } = default!;
 
-        public DbSet<ScheduledJob> ScheduledJobs { get; set; } = default!;
+        public DbSet<JobExecution> ScheduledJobs { get; set; } = default!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
@@ -27,7 +27,7 @@ namespace Rescheduler.Infra.Data
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetAssembly(typeof(JobContext)));
 
             modelBuilder.Entity<Job>()
-                .HasMany<ScheduledJob>()
+                .HasMany<JobExecution>()
                 .WithOne(j => j.Job)
                 .OnDelete(DeleteBehavior.Cascade);
         }

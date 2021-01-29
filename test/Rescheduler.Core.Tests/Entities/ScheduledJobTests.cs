@@ -12,7 +12,7 @@ namespace Rescheduler.Core.Tests.Entities
         {
             // Given
             var queuedAt = DateTime.UtcNow;
-            var scheduledJob = new ScheduledJob(
+            var scheduledJob = new JobExecution(
                 Guid.NewGuid(), 
                 DateTime.UtcNow, 
                 null, 

@@ -13,9 +13,9 @@ namespace Rescheduler.Worker
         private readonly IMediator _mediator;
         private readonly IJobPublisher _jobPublisher;
         private readonly IScheduledJobsRepository _scheduledJobsRepository;
-        private readonly IRepository<ScheduledJob> _scheduledJobsRepo;
+        private readonly IRepository<JobExecution> _scheduledJobsRepo;
 
-        public SchedulePendingHandler(IScheduledJobsRepository scheduledJobsRepository, IRepository<ScheduledJob> scheduledJobsRepo, IJobPublisher jobPublisher, IMediator mediator)
+        public SchedulePendingHandler(IScheduledJobsRepository scheduledJobsRepository, IRepository<JobExecution> scheduledJobsRepo, IJobPublisher jobPublisher, IMediator mediator)
         {
             _scheduledJobsRepository = scheduledJobsRepository;
             _scheduledJobsRepo = scheduledJobsRepo;
@@ -48,7 +48,7 @@ namespace Rescheduler.Worker
                 {
                     if (pending.Job.TryGetNextRun(DateTime.UtcNow, out var nextRun) && nextRun.HasValue)
                     {
-                        var nextScheduledJob = ScheduledJob.New(pending.Job, nextRun.Value);
+                        var nextScheduledJob = JobExecution.New(pending.Job, nextRun.Value);
                         await _scheduledJobsRepo.AddAsync(nextScheduledJob, cancellationToken);
                     }
                 }

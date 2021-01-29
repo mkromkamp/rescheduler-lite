@@ -5,9 +5,9 @@ using Rescheduler.Core.Entities;
 
 namespace Rescheduler.Infra.Data.Config
 {
-    public class ScheduledJobConfiguration : IEntityTypeConfiguration<ScheduledJob>
+    public class ScheduledJobConfiguration : IEntityTypeConfiguration<JobExecution>
     {
-        public void Configure(EntityTypeBuilder<ScheduledJob> builder)
+        public void Configure(EntityTypeBuilder<JobExecution> builder)
         {
             builder.HasKey(x => x.Id);
 

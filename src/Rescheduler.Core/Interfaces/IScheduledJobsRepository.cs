@@ -8,6 +8,6 @@ namespace Rescheduler.Core.Interfaces
 {
     public interface IScheduledJobsRepository
     {
-         Task<IEnumerable<ScheduledJob>> GetAndMarkPending(int max, DateTime until, CancellationToken ctx);
+         Task<IEnumerable<JobExecution>> GetAndMarkPending(int max, DateTime until, CancellationToken ctx);
     }
 }

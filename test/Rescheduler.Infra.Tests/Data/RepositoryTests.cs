@@ -17,10 +17,10 @@ namespace Rescheduler.Infra.Tests.Data
         {
             // Given 
             var job = new Job(Guid.NewGuid(), "webhooks", "test passed", true, DateTime.UtcNow, DateTime.MaxValue, null);
-            var scheduledJob = new ScheduledJob(Guid.NewGuid(), job.RunAt, null, ScheduleStatus.Scheduled, job);
+            var scheduledJob = new JobExecution(Guid.NewGuid(), job.RunAt, null, ScheduleStatus.Scheduled, job);
 
             using var context = GetSeededJobContext(job, scheduledJob);
-            var repo = new Repository<ScheduledJob>(context);
+            var repo = new Repository<JobExecution>(context);
 
             // When
             var result = await repo.GetAndMarkPending(1, DateTime.UtcNow.AddSeconds(5), CancellationToken.None);            
@@ -36,10 +36,10 @@ namespace Rescheduler.Infra.Tests.Data
             // Given 
             var enabled = false;
             var job = new Job(Guid.NewGuid(), "webhooks", "test passed", enabled, DateTime.UtcNow, DateTime.MaxValue, null);
-            var scheduledJob = new ScheduledJob(Guid.NewGuid(), job.RunAt, null, ScheduleStatus.Scheduled, job);
+            var scheduledJob = new JobExecution(Guid.NewGuid(), job.RunAt, null, ScheduleStatus.Scheduled, job);
 
             using var context = GetSeededJobContext(job, scheduledJob);
-            var repo = new Repository<ScheduledJob>(context);
+            var repo = new Repository<JobExecution>(context);
 
             // When
             var result = await repo.GetAndMarkPending(1, DateTime.UtcNow.AddSeconds(5), CancellationToken.None);            
@@ -53,10 +53,10 @@ namespace Rescheduler.Infra.Tests.Data
         {
             // Given 
             var job = new Job(Guid.NewGuid(), "webhooks", "test passed", true, DateTime.UtcNow.AddDays(1), DateTime.MaxValue, null);
-            var scheduledJob = new ScheduledJob(Guid.NewGuid(), job.RunAt, null, ScheduleStatus.Scheduled, job);
+            var scheduledJob = new JobExecution(Guid.NewGuid(), job.RunAt, null, ScheduleStatus.Scheduled, job);
 
             using var context = GetSeededJobContext(job, scheduledJob);
-            var repo = new Repository<ScheduledJob>(context);
+            var repo = new Repository<JobExecution>(context);
 
             // When
             var result = await repo.GetAndMarkPending(1, DateTime.UtcNow.AddSeconds(5), CancellationToken.None);            
@@ -65,7 +65,7 @@ namespace Rescheduler.Infra.Tests.Data
             result.ShouldBeEmpty();
         }
 
-        private static JobContext GetSeededJobContext(Job job, ScheduledJob scheduledJob)
+        private static JobContext GetSeededJobContext(Job job, JobExecution scheduledJob)
         {
             var contextOptions = new DbContextOptionsBuilder<JobContext>()
                 .UseInMemoryDatabase("test")
