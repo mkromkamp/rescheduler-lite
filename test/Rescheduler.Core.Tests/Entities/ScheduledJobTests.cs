@@ -16,7 +16,7 @@ namespace Rescheduler.Core.Tests.Entities
                 Guid.NewGuid(), 
                 DateTime.UtcNow, 
                 null, 
-                ScheduleStatus.Scheduled, 
+                ExecutionStatus.Scheduled, 
                 Job.New(
                     "test",
                     "test payload",
@@ -30,7 +30,7 @@ namespace Rescheduler.Core.Tests.Entities
             scheduledJob.Queued(queuedAt);
 
             // Then
-            scheduledJob.Status.ShouldBe(ScheduleStatus.Queued);
+            scheduledJob.Status.ShouldBe(ExecutionStatus.Queued);
             scheduledJob.QueuedAt.ShouldBe(queuedAt);
         }
     }

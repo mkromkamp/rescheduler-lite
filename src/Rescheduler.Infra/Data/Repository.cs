@@ -56,7 +56,7 @@ namespace Rescheduler.Infra.Data
             using var _ = QueryMetrics.TimeQuery(nameof(JobExecution).ToLowerInvariant(), "mark_and_get_pending");
 
             var jobs = await _dbContext.Set<JobExecution>()
-                .Where(s => s.ScheduledAt <= until && s.Status == ScheduleStatus.Scheduled && s.Job.Enabled)
+                .Where(s => s.ScheduledAt <= until && s.Status == ExecutionStatus.Scheduled && s.Job.Enabled)
                 .OrderBy(s => s.ScheduledAt)
                 .Take(max)
                 .Include(s => s.Job)

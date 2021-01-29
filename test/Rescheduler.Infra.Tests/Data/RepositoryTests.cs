@@ -17,7 +17,7 @@ namespace Rescheduler.Infra.Tests.Data
         {
             // Given 
             var job = new Job(Guid.NewGuid(), "webhooks", "test passed", true, DateTime.UtcNow, DateTime.MaxValue, null);
-            var scheduledJob = new JobExecution(Guid.NewGuid(), job.RunAt, null, ScheduleStatus.Scheduled, job);
+            var scheduledJob = new JobExecution(Guid.NewGuid(), job.RunAt, null, ExecutionStatus.Scheduled, job);
 
             using var context = GetSeededJobContext(job, scheduledJob);
             var repo = new Repository<JobExecution>(context);
@@ -27,7 +27,7 @@ namespace Rescheduler.Infra.Tests.Data
 
             // Then
             result.ShouldNotBeEmpty();
-            result.First().Status.ShouldBe(ScheduleStatus.InFlight);
+            result.First().Status.ShouldBe(ExecutionStatus.InFlight);
         }
 
         [Fact]
@@ -36,7 +36,7 @@ namespace Rescheduler.Infra.Tests.Data
             // Given 
             var enabled = false;
             var job = new Job(Guid.NewGuid(), "webhooks", "test passed", enabled, DateTime.UtcNow, DateTime.MaxValue, null);
-            var scheduledJob = new JobExecution(Guid.NewGuid(), job.RunAt, null, ScheduleStatus.Scheduled, job);
+            var scheduledJob = new JobExecution(Guid.NewGuid(), job.RunAt, null, ExecutionStatus.Scheduled, job);
 
             using var context = GetSeededJobContext(job, scheduledJob);
             var repo = new Repository<JobExecution>(context);
@@ -53,7 +53,7 @@ namespace Rescheduler.Infra.Tests.Data
         {
             // Given 
             var job = new Job(Guid.NewGuid(), "webhooks", "test passed", true, DateTime.UtcNow.AddDays(1), DateTime.MaxValue, null);
-            var scheduledJob = new JobExecution(Guid.NewGuid(), job.RunAt, null, ScheduleStatus.Scheduled, job);
+            var scheduledJob = new JobExecution(Guid.NewGuid(), job.RunAt, null, ExecutionStatus.Scheduled, job);
 
             using var context = GetSeededJobContext(job, scheduledJob);
             var repo = new Repository<JobExecution>(context);

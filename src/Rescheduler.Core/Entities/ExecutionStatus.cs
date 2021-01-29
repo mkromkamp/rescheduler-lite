@@ -3,15 +3,15 @@ namespace Rescheduler.Core.Entities
     /// <summary>
     /// Defines the status of a scheduled job run
     /// </summary>
-    public enum ScheduleStatus
+    public enum ExecutionStatus
     {
         // Scheduled for future execution
         Scheduled,
 
-        // Schedule is in flight
+        // Execution is in flight
         InFlight,
         
-        // Schedule is queued and considered done
+        // Execution is queued and considered done
         Queued
     }
 }

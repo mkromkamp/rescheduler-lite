@@ -9,7 +9,7 @@ namespace Rescheduler.Core.Entities
         private JobExecution() : base() {}
         #pragma warning restore CS8618
 
-        internal JobExecution(Guid id, DateTime scheduledAt, DateTime? queuedAt, ScheduleStatus status, Job job)
+        internal JobExecution(Guid id, DateTime scheduledAt, DateTime? queuedAt, ExecutionStatus status, Job job)
             : base(id)
         {
             ScheduledAt = scheduledAt;
@@ -22,18 +22,18 @@ namespace Rescheduler.Core.Entities
 
         public DateTime? QueuedAt { get; private set; }
 
-        public ScheduleStatus Status { get; private set; }
+        public ExecutionStatus Status { get; private set; }
 
         public Job Job { get; private set; }
 
-        public void Scheduled() => Status = ScheduleStatus.Scheduled;
+        public void Scheduled() => Status = ExecutionStatus.Scheduled;
 
-        public void InFlight() => Status = ScheduleStatus.InFlight;
+        public void InFlight() => Status = ExecutionStatus.InFlight;
 
         public void Queued(DateTime queuedAt) 
         {
             QueuedAt = queuedAt;
-            Status = ScheduleStatus.Queued;
+            Status = ExecutionStatus.Queued;
         }
         
         public static JobExecution New(Job job, DateTime scheduledAt)
@@ -42,7 +42,7 @@ namespace Rescheduler.Core.Entities
                 Guid.NewGuid(), 
                 scheduledAt, 
                 null,
-                ScheduleStatus.Scheduled,
+                ExecutionStatus.Scheduled,
                 job);
         }
     }
