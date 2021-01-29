@@ -13,12 +13,12 @@ namespace Rescheduler.Worker
         private readonly IMediator _mediator;
         private readonly IJobPublisher _jobPublisher;
         private readonly IScheduledJobsRepository _scheduledJobsRepository;
-        private readonly IRepository<JobExecution> _scheduledJobsRepo;
+        private readonly IRepository<JobExecution> _JobExecutionRepo;
 
-        public SchedulePendingHandler(IScheduledJobsRepository scheduledJobsRepository, IRepository<JobExecution> scheduledJobsRepo, IJobPublisher jobPublisher, IMediator mediator)
+        public SchedulePendingHandler(IScheduledJobsRepository scheduledJobsRepository, IRepository<JobExecution> jobExecutionRepo, IJobPublisher jobPublisher, IMediator mediator)
         {
             _scheduledJobsRepository = scheduledJobsRepository;
-            _scheduledJobsRepo = scheduledJobsRepo;
+            _JobExecutionRepo = jobExecutionRepo;
             _jobPublisher = jobPublisher;
             _mediator = mediator;
         }
@@ -32,7 +32,7 @@ namespace Rescheduler.Worker
             {
                 var now = DateTime.UtcNow;
                 pendingJobs.ToList().ForEach(j => j.Queued(now));
-                await _scheduledJobsRepo.UpdateManyAsync(pendingJobs, cancellationToken);
+                await _JobExecutionRepo.UpdateManyAsync(pendingJobs, cancellationToken);
 
                 foreach (var pending in pendingJobs)
                 {
@@ -42,14 +42,14 @@ namespace Rescheduler.Worker
                     }
                 }
 
-                await _scheduledJobsRepo.UpdateManyAsync(pendingJobs, cancellationToken);
+                await _JobExecutionRepo.UpdateManyAsync(pendingJobs, cancellationToken);
 
                 foreach (var pending in pendingJobs)
                 {
                     if (pending.Job.TryGetNextRun(DateTime.UtcNow, out var nextRun) && nextRun.HasValue)
                     {
-                        var nextScheduledJob = JobExecution.New(pending.Job, nextRun.Value);
-                        await _scheduledJobsRepo.AddAsync(nextScheduledJob, cancellationToken);
+                        var nextJobExecution = JobExecution.New(pending.Job, nextRun.Value);
+                        await _JobExecutionRepo.AddAsync(nextJobExecution, cancellationToken);
                     }
                 }
             }
