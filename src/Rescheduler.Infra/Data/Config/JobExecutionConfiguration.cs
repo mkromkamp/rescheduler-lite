@@ -5,13 +5,13 @@ using Rescheduler.Core.Entities;
 
 namespace Rescheduler.Infra.Data.Config
 {
-    public class ScheduledJobConfiguration : IEntityTypeConfiguration<JobExecution>
+    public class JobExecutionConfiguration : IEntityTypeConfiguration<JobExecution>
     {
         public void Configure(EntityTypeBuilder<JobExecution> builder)
         {
             builder.HasKey(x => x.Id);
 
-            builder.HasIndex(x => new { x.QueuedAt, x.Status });
+            builder.HasIndex(x => new { x.ScheduledAt, x.Status });
         }
     }
 }
