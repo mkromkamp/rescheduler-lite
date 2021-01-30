@@ -23,7 +23,7 @@ namespace Rescheduler.Infra
 
             services.AddScoped<IRepository<Job>, Repository<Job>>();
             services.AddScoped<IRepository<JobExecution>, Repository<JobExecution>>();
-            services.AddScoped<IScheduledJobsRepository, Repository<JobExecution>>();
+            services.AddScoped<IJobExecutionRepository, Repository<JobExecution>>();
             services.AddSingleton<IJobPublisher, RabbitJobPublisher>();
 
             services.AddSingleton(typeof(IPipelineBehavior<,>), typeof(MetricsBehavior<,>)); 

@@ -65,7 +65,7 @@ namespace Rescheduler.Infra.Tests.Data
             result.ShouldBeEmpty();
         }
 
-        private static JobContext GetSeededJobContext(Job job, JobExecution scheduledJob)
+        private static JobContext GetSeededJobContext(Job job, JobExecution jobExecution)
         {
             var contextOptions = new DbContextOptionsBuilder<JobContext>()
                 .UseInMemoryDatabase("test")
@@ -77,7 +77,7 @@ namespace Rescheduler.Infra.Tests.Data
             context.Database.EnsureCreated();
 
             context.Add(job);
-            context.Add(scheduledJob);
+            context.Add(jobExecution);
 
             context.SaveChanges();
 

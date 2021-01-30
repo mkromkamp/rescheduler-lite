@@ -10,7 +10,7 @@ using Rescheduler.Infra.Metrics;
 
 namespace Rescheduler.Infra.Data
 {
-    internal class Repository<T> : IScheduledJobsRepository, IRepository<T> where T : EntityBase
+    internal class Repository<T> : IJobExecutionRepository, IRepository<T> where T : EntityBase
     {
         private readonly JobContext _dbContext;
 

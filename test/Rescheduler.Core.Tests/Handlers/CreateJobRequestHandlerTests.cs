@@ -61,7 +61,7 @@ namespace Rescheduler.Core.Tests.Handlers
         }
 
         [Fact]
-        public async Task GivenJobWithNextRun_WhenHandling_ShouldStoreScheduledJob()
+        public async Task GivenJobWithNextRun_WhenHandling_ShouldStoreJobExecution()
         {
             // Given
             var enabled = true;
@@ -79,7 +79,7 @@ namespace Rescheduler.Core.Tests.Handlers
         }
 
         [Fact]
-        public async Task GivenDisabledJobWithNextRun_WhenHandling_ShouldNotStoreScheduledJob()
+        public async Task GivenDisabledJobWithNextRun_WhenHandling_ShouldNotStoreJobExecution()
         {
             // Given
             var enabled = false;
@@ -98,7 +98,7 @@ namespace Rescheduler.Core.Tests.Handlers
 
 
         [Fact]
-        public async Task GivenJobWithoutNextRun_WhenHandling_ShouldNotStoreScheduledJob()
+        public async Task GivenJobWithoutNextRun_WhenHandling_ShouldNotStoreJobExecution()
         {
             // Given
             var enabled = true;

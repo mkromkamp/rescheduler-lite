@@ -5,14 +5,14 @@ using Xunit;
 
 namespace Rescheduler.Core.Tests.Entities
 {
-    public class ScheduledJobTests
+    public class JobExecutionTests
     {
         [Fact]
-        public void GivenValidScheduledJob_WhenQueued_ShouldSetScheduledAt()
+        public void GivenValidJobExecution_WhenQueued_ShouldSetScheduledAt()
         {
             // Given
             var queuedAt = DateTime.UtcNow;
-            var scheduledJob = new JobExecution(
+            var jobExecution = new JobExecution(
                 Guid.NewGuid(), 
                 DateTime.UtcNow, 
                 null, 
@@ -27,11 +27,11 @@ namespace Rescheduler.Core.Tests.Entities
                 ));
 
             // When
-            scheduledJob.Queued(queuedAt);
+            jobExecution.Queued(queuedAt);
 
             // Then
-            scheduledJob.Status.ShouldBe(ExecutionStatus.Queued);
-            scheduledJob.QueuedAt.ShouldBe(queuedAt);
+            jobExecution.Status.ShouldBe(ExecutionStatus.Queued);
+            jobExecution.QueuedAt.ShouldBe(queuedAt);
         }
     }
 }
