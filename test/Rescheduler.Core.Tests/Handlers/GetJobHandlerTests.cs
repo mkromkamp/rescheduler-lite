@@ -36,8 +36,8 @@ namespace Rescheduler.Core.Tests.Handlers
             var getJobResponse = await _handler.Handle(new GetJobRequest(job.Id), CancellationToken.None);
 
             // Then
-            getJobResponse.job.ShouldNotBeNull();
-            getJobResponse.job.ShouldBe(job);
+            getJobResponse.Job.ShouldNotBeNull();
+            getJobResponse.Job.ShouldBe(job);
         }
 
         [Fact]
@@ -53,7 +53,7 @@ namespace Rescheduler.Core.Tests.Handlers
             var getJobResponse = await _handler.Handle(new GetJobRequest(job.Id), CancellationToken.None);
 
             // Then
-            getJobResponse.job.ShouldBeNull();
+            getJobResponse.Job.ShouldBeNull();
         }
     }
 }

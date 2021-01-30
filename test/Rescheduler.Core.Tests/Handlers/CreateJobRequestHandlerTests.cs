@@ -37,7 +37,7 @@ namespace Rescheduler.Core.Tests.Handlers
             var createJobResponse = await _handler.Handle(new CreateJobRequest(job), CancellationToken.None);
 
             // Then
-            createJobResponse.job.ShouldNotBeNull();
+            createJobResponse.Job.ShouldNotBeNull();
             Mock.Get(_jobRepository)
                 .Verify(x => x.AddAsync(job, CancellationToken.None),
                 Times.Once);
@@ -54,7 +54,7 @@ namespace Rescheduler.Core.Tests.Handlers
             var createJobResponse = await _handler.Handle(new CreateJobRequest(job), CancellationToken.None);
 
             // Then
-            createJobResponse.job.ShouldNotBeNull();
+            createJobResponse.Job.ShouldNotBeNull();
             Mock.Get(_jobRepository)
                 .Verify(x => x.AddAsync(job, CancellationToken.None),
                 Times.Once);
@@ -71,8 +71,8 @@ namespace Rescheduler.Core.Tests.Handlers
             var createJobResponse = await _handler.Handle(new CreateJobRequest(job), CancellationToken.None);
 
             // Then
-            createJobResponse.job.ShouldNotBeNull();
-            createJobResponse.firstScheduledRun.ShouldNotBeNull();
+            createJobResponse.Job.ShouldNotBeNull();
+            createJobResponse.JobExecution.ShouldNotBeNull();
             Mock.Get(_jobExecutionRepository)
                 .Verify(x => x.AddAsync(It.IsAny<JobExecution>(), CancellationToken.None),
                 Times.Once);
@@ -89,8 +89,8 @@ namespace Rescheduler.Core.Tests.Handlers
             var createJobResponse = await _handler.Handle(new CreateJobRequest(job), CancellationToken.None);
 
             // Then
-            createJobResponse.job.ShouldNotBeNull();
-            createJobResponse.firstScheduledRun.ShouldBeNull();
+            createJobResponse.Job.ShouldNotBeNull();
+            createJobResponse.JobExecution.ShouldBeNull();
             Mock.Get(_jobExecutionRepository)
                 .Verify(x => x.AddAsync(It.IsAny<JobExecution>(), CancellationToken.None),
                 Times.Never);
@@ -108,8 +108,8 @@ namespace Rescheduler.Core.Tests.Handlers
             var createJobResponse = await _handler.Handle(new CreateJobRequest(job), CancellationToken.None);
 
             // Then
-            createJobResponse.job.ShouldNotBeNull();
-            createJobResponse.firstScheduledRun.ShouldBeNull();
+            createJobResponse.Job.ShouldNotBeNull();
+            createJobResponse.JobExecution.ShouldBeNull();
             Mock.Get(_jobExecutionRepository)
                 .Verify(x => x.AddAsync(It.IsAny<JobExecution>(), CancellationToken.None),
                 Times.Never);
