@@ -13,3 +13,7 @@ content-type: application/json
 ### Get job
 GET http://localhost:5000/api/jobs/d3ce8469-7118-4138-b7c8-b01c11eb4dd6
 Accept: application/json
+
+### Get job executions
+GET http://localhost:5000/api/jobs/e3242e26-02fa-4713-8e46-f41a876c94d1/executions
+Accept: application/json

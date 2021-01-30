@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -49,6 +51,15 @@ namespace Rescheduler.Infra.Data
 
             entities.ToList().ForEach(e => _dbContext.Entry(e).State = EntityState.Modified);
             return _dbContext.SaveChangesAsync(ctx);
+        }
+
+        public async Task<IReadOnlyList<T>> GetManyAsync(Func<IQueryable<T>, IQueryable<T>> query, CancellationToken ctx)
+        {
+            var result = await query(_dbContext.Set<T>().AsQueryable())
+                .AsNoTracking()
+                .ToListAsync(ctx);
+
+            return result?.AsReadOnly() ?? new List<T>().AsReadOnly();
         }
 
         public async Task<IEnumerable<JobExecution>> GetAndMarkPending(int max, DateTime until, CancellationToken ctx)

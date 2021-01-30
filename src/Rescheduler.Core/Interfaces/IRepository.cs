@@ -1,7 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Net;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Rescheduler.Core.Entities;
@@ -41,5 +40,13 @@ namespace Rescheduler.Core.Interfaces
         /// <param name="ctx">The cancellation token</param>
         /// <returns>A <see cref="Task"/> representing the async operation</returns>
         Task UpdateManyAsync(IEnumerable<T> entities, CancellationToken ctx);
+
+        /// <summary>
+        /// Query for entity <see cref="T" />
+        /// </summary>
+        /// <param name="query">The query to run</param>
+        /// <param name="ctx">The cancellation token</param>
+        /// <returns>A read only list containing the result of query</returns>
+        Task<IReadOnlyList<T>> GetManyAsync(Func<IQueryable<T>, IQueryable<T>> query, CancellationToken ctx);
     }
 }
