@@ -1,3 +1,4 @@
+using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Builder;
@@ -30,6 +31,7 @@ namespace Rescheduler.Api
             services.AddControllers()
                 .AddJsonOptions(options =>
                 {
+                    options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
                     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
                 });
             
@@ -41,6 +43,9 @@ namespace Rescheduler.Api
             services.AddCore(_configuration)
                     .AddInfra(_configuration)
                     .AddWorker();
+
+            services.Configure<HostOptions>(opts =>
+                opts.ShutdownTimeout = TimeSpan.FromMinutes(2));
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, JobContext jobContext)
