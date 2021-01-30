@@ -14,10 +14,12 @@ namespace Rescheduler.Api
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureLogging(logging =>
+                .ConfigureLogging((ctx, logging) =>
                 {
                     logging.ClearProviders();
-                    logging.AddConsole(opts => opts.FormatterName = ConsoleFormatterNames.Json);
+                    
+                    var loggingFormat = ctx.Configuration.GetSection("LoggingFormat").Value ?? "simple";
+                    logging.AddConsole(opts => opts.FormatterName = loggingFormat);
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
