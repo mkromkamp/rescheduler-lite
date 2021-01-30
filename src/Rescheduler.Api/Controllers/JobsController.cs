@@ -4,6 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Rescheduler.Api.Models;
+using Rescheduler.Core.Entities;
 using Rescheduler.Core.Handlers;
 
 namespace Rescheduler.Api.Controllers
@@ -26,22 +28,26 @@ namespace Rescheduler.Api.Controllers
                 return UnprocessableEntity(ModelState);
             }
 
-            var newJob = await _mediator.Send(new CreateJobRequest(request.ToJob()), ctx);
+            var result = await _mediator.Send(new Core.Handlers.CreateJobRequest(request.ToJob()), ctx);
+            var dto = new {
+                Job = JobResponse.From(result.Job),
+                JobExecution = result.JobExecution is null ? null : JobExecutionResponse.From(result.JobExecution)
+            };
 
-            return StatusCode((int)HttpStatusCode.Created, newJob);
+            return StatusCode((int)HttpStatusCode.Created, dto);
         }
 
         [HttpGet("{jobId}")]
         public async Task<IActionResult> GetByIdAsync([FromRoute]Guid jobId, CancellationToken ctx)
         {
-            var job = await _mediator.Send(new GetJobRequest(jobId), ctx);
+            var result = await _mediator.Send(new GetJobRequest(jobId), ctx);
 
-            if (job is null)
+            if (result.Job is null)
             {
                 return NotFound();
             }
 
-            return Ok(job);
+            return Ok(JobResponse.From(result.Job));
         }
     }
 }

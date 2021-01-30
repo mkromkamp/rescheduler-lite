@@ -18,13 +18,13 @@ namespace Rescheduler.Core.Handlers
 
         public async Task<GetJobResponse> Handle(GetJobRequest request, CancellationToken cancellationToken)
         {
-            var job = await _jobRepository.GetByIdAsync(request.id, cancellationToken);
+            var job = await _jobRepository.GetByIdAsync(request.Id, cancellationToken);
 
             return new GetJobResponse(job);
         }
     }
 
-    public record GetJobRequest(Guid id) : IRequest<GetJobResponse>;
+    public record GetJobRequest(Guid Id) : IRequest<GetJobResponse>;
 
-    public record GetJobResponse(Job? job);
+    public record GetJobResponse(Job? Job);
 }

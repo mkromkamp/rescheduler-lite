@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Rescheduler.Api.Models;
 using Rescheduler.Core.Handlers;
 
 namespace Rescheduler.Api.Controllers
@@ -24,7 +25,7 @@ namespace Rescheduler.Api.Controllers
             var result = await _mediator.Send(new GetJobExecutionsRequest(jobId), ctx);
 
             if(result.Executions.Any())
-                return Ok(result.Executions);
+                return Ok(result.Executions.Select(j => JobExecutionResponse.From(j)).ToList());
             
             return NotFound();
         }

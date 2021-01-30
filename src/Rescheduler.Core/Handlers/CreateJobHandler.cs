@@ -37,5 +37,5 @@ namespace Rescheduler.Core.Handlers
 
     public record CreateJobRequest (Job job) : IRequest<CreateJobResponse>;
 
-    public record CreateJobResponse(Job job, JobExecution? firstScheduledRun);
+    public record CreateJobResponse(Job Job, JobExecution? JobExecution);
 }
