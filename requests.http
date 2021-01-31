@@ -11,7 +11,7 @@ content-type: application/json
 }
 
 ### Get executions
-GET http://localhost:5000/api/jobs/executions
+GET http://localhost:5000/api/jobs/executions?statuses=Scheduled&top=80
 Accept: application/json
 
 ### Get job
