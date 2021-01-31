@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Rescheduler.Api.Models;
-using Rescheduler.Core.Entities;
 using Rescheduler.Core.Handlers;
 
 namespace Rescheduler.Api.Controllers
