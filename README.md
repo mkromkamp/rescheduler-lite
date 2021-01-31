@@ -13,7 +13,7 @@ Rescheduler-lite is in development and thus all warnings apply; feel free to pla
 - [Table of Contents](#table-of-contents)
 - [Features](#features)
 - [Goals](#goals)
-- [High level architec](#high-level-architec)
+- [High level architecture](#high-level-architecture)
 - [API](#api)
 - [Deployment](#deployment)
   - [Binary](#binary)
@@ -48,7 +48,7 @@ Where these *things* are usually really project specific the scheduling of these
 
 rescheduler-lite aims to take away this generic scheduling of jobs while not having any opinions around the way these jobs are implemented or executed. All of this while being easy to deploy and maintain for smaller teams.
 
-# High level architec
+# High level architecture
 
 Describe architecture overview
 
