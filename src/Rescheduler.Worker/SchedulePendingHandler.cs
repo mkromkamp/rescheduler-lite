@@ -25,7 +25,7 @@ namespace Rescheduler.Worker
 
         public async Task<SchedulePendingResponse> Handle(SchedulePendingRequest request, CancellationToken cancellationToken)
         {
-            var pendingJobs = await _jobExecutionRepository.GetAndMarkPending(20, DateTime.UtcNow.AddSeconds(10), cancellationToken);
+            var pendingJobs = await _jobExecutionRepository.GetAndMarkPending(1000, DateTime.UtcNow.AddSeconds(10), cancellationToken);
             var result = new SchedulePendingResponse(pendingJobs.Count());
 
             if (pendingJobs.Any())
