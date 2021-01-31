@@ -1,4 +1,3 @@
-using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Rescheduler.Worker
@@ -7,7 +6,6 @@ namespace Rescheduler.Worker
     {
         public static IServiceCollection AddWorker(this IServiceCollection services)
         {
-            services.AddTransient<IRequestHandler<SchedulePendingRequest, SchedulePendingResponse>, SchedulePendingHandler>();
             services.AddHostedService<JobScheduler>();
 
             return services;

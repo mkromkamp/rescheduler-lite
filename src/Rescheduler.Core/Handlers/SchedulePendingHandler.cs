@@ -6,21 +6,19 @@ using MediatR;
 using Rescheduler.Core.Entities;
 using Rescheduler.Core.Interfaces;
 
-namespace Rescheduler.Worker
+namespace Rescheduler.Core.Handlers
 {
     public class SchedulePendingHandler : IRequestHandler<SchedulePendingRequest, SchedulePendingResponse>
     {
-        private readonly IMediator _mediator;
         private readonly IJobPublisher _jobPublisher;
         private readonly IJobExecutionRepository _jobExecutionRepository;
         private readonly IRepository<JobExecution> _JobExecutionRepo;
 
-        public SchedulePendingHandler(IJobExecutionRepository jobExecutionRepository, IRepository<JobExecution> jobExecutionRepo, IJobPublisher jobPublisher, IMediator mediator)
+        public SchedulePendingHandler(IJobExecutionRepository jobExecutionRepository, IRepository<JobExecution> jobExecutionRepo, IJobPublisher jobPublisher)
         {
             _jobExecutionRepository = jobExecutionRepository;
             _JobExecutionRepo = jobExecutionRepo;
             _jobPublisher = jobPublisher;
-            _mediator = mediator;
         }
 
         public async Task<SchedulePendingResponse> Handle(SchedulePendingRequest request, CancellationToken cancellationToken)
