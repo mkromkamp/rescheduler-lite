@@ -48,5 +48,13 @@ namespace Rescheduler.Api.Controllers
 
             return Ok(JobResponse.From(result.Job));
         }
+
+        [HttpGet("")]
+        public async Task<IActionResult> GetAllAsync([FromQuery] string? subject, CancellationToken ctx, [FromQuery] int top = 20, [FromQuery] int skip = 0)
+        {
+            var result = await _mediator.Send(new GetJobsRequest(subject, top, skip), ctx);
+
+            return Ok(result.Jobs);
+        }
     }
 }
