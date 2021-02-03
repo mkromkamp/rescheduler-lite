@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,8 +21,6 @@ namespace Rescheduler.Infra.Messaging
         {
             _connectionFactory = connectionFactory;
             _logger = logger;
-
-            _model = GetOrCreateModel();
         }
 
         public Task<bool> PublishAsync(Job job, CancellationToken ctx)
@@ -42,9 +41,32 @@ namespace Rescheduler.Infra.Messaging
             }
         }
 
-        public Task<(Guid jobId, bool success)> PublishManyAsync(IEnumerable<Job> jobs, CancellationToken ctx)
+        public Task<bool> PublishManyAsync(IEnumerable<Job> jobs, CancellationToken ctx)
         {
-            throw new System.NotImplementedException();
+            jobs = jobs.ToList();
+
+            try
+            {
+                var model = GetOrCreateModel();
+                var batchPublish = model.CreateBasicPublishBatch();
+                
+                jobs.GroupBy(j => j.Subject).ToList().ForEach(g => 
+                {
+                    model.EnsureTopic(g.Key);
+                    foreach (var job in g.ToList())
+                    {
+                        batchPublish.Add(job.Subject, "job", true, null, new ReadOnlyMemory<byte>(Encoding.UTF8.GetBytes(job.Payload)));
+                    }
+                });
+
+                batchPublish.Publish();
+                return Task.FromResult(model.WaitForConfirms());
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Failed to batch publish {JobIds} to RabbitMQ", jobs.Select(j => j.Id));
+                throw;
+            }
         }
 
         private IModel GetOrCreateModel()

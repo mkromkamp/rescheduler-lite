@@ -10,6 +10,6 @@ namespace Rescheduler.Core.Interfaces
     {
          Task<bool> PublishAsync(Job job, CancellationToken ctx);
 
-         Task<(Guid jobId, bool success)> PublishManyAsync(IEnumerable<Job> jobs, CancellationToken ctx);
+         Task<bool> PublishManyAsync(IEnumerable<Job> jobs, CancellationToken ctx);
     }
 }
