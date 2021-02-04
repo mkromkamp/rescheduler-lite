@@ -20,22 +20,22 @@ namespace Rescheduler.Core.Handlers
 
         public async Task<CreateJobResponse> Handle(CreateJobRequest request, CancellationToken cancellationToken)
         {
-            await _jobRepository.AddAsync(request.job, cancellationToken);
+            await _jobRepository.AddAsync(request.Job, cancellationToken);
 
             JobExecution? jobExecution = null;
-            if (request.job.Enabled
-                && request.job.TryGetNextRun(DateTime.UtcNow, out var runAt)
+            if (request.Job.Enabled
+                && request.Job.TryGetNextRun(DateTime.UtcNow, out var runAt)
                 && runAt.HasValue)
             {
-                jobExecution = JobExecution.New(request.job, runAt.Value);
+                jobExecution = JobExecution.New(request.Job, runAt.Value);
                 await _jobExecutionRepository.AddAsync(jobExecution, cancellationToken);
             }
 
-            return new CreateJobResponse(request.job, jobExecution);
+            return new CreateJobResponse(request.Job, jobExecution);
         }
     }
 
-    public record CreateJobRequest (Job job) : IRequest<CreateJobResponse>;
+    public record CreateJobRequest (Job Job) : IRequest<CreateJobResponse>;
 
     public record CreateJobResponse(Job Job, JobExecution? JobExecution);
 }

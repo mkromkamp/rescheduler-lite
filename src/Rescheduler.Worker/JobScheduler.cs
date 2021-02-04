@@ -36,7 +36,7 @@ namespace Rescheduler.Worker
                 var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
                 var result = await mediator.Send(new SchedulePendingRequest(20, DateTime.UtcNow.AddSeconds(10)), ctx);
 
-                _logger.LogInformation("Queued {numbJobs} jobs", result.numScheduled);
+                _logger.LogInformation("Queued {numbJobs} jobs", result.NumScheduled);
             }
 
             _logger.LogInformation("Job scheduler stopped");

@@ -59,7 +59,7 @@ namespace Rescheduler.Core.Handlers
         }
     }
 
-    public record SchedulePendingRequest(int max, DateTime until) : IRequest<SchedulePendingResponse>;
+    public record SchedulePendingRequest(int Max, DateTime Until) : IRequest<SchedulePendingResponse>;
 
-    public record SchedulePendingResponse(int numScheduled);
+    public record SchedulePendingResponse(int NumScheduled);
 }

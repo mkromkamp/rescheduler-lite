@@ -8,7 +8,7 @@ namespace Rescheduler.Core
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddCore(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddCore(this IServiceCollection services)
         {
             services.AddMediatR(cfg => cfg.AsScoped(), Assembly.GetAssembly(typeof(CreateJobHandler)));
 

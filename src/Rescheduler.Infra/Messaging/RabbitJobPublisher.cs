@@ -15,7 +15,7 @@ namespace Rescheduler.Infra.Messaging
     {
         private readonly ILogger<RabbitJobPublisher> _logger;
         private readonly IConnectionFactory _connectionFactory;
-        private IModel _model;
+        private IModel? _model;
 
         public RabbitJobPublisher(IConnectionFactory connectionFactory, ILogger<RabbitJobPublisher> logger)
         {
