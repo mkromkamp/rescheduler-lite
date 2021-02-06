@@ -1,6 +1,22 @@
 version: '3'
 
 services:
+  rescheduler:
+    build:
+      context: .
+      dockerfile: src/Rescheduler.Api/Dockerfile
+    environment:
+      LoggingFormat: "json"
+      ConnectionStrings__RabbitMQ: "amqp://rabbitmq:rabbitmq@rabbitmq:5672/"
+      ASPNETCORE_ENVIRONMENT: Production
+    ports:
+      - "8080:80"
+    logging:
+      driver: loki
+      options:
+        loki-url: http://localhost:3100/loki/api/v1/push
+        loki-external-labels: job=dockerlogs,environment=development
+
   rabbitmq:
     image: "rabbitmq:3-management"
     hostname: "rabbit1"

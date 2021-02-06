@@ -18,7 +18,7 @@ namespace Rescheduler.Api
                 {
                     logging.ClearProviders();
                     
-                    var loggingFormat = ctx.Configuration.GetSection("LoggingFormat").Value ?? "simple";
+                    var loggingFormat = ctx.Configuration.GetSection("LoggingFormat").Value ?? "json";
                     logging.AddConsole(opts => opts.FormatterName = loggingFormat);
                 })
                 .ConfigureWebHostDefaults(webBuilder =>

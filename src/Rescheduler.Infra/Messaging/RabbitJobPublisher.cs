@@ -12,7 +12,7 @@ using Rescheduler.Core.Interfaces;
 
 namespace Rescheduler.Infra.Messaging
 {
-    public class RabbitJobPublisher : IJobPublisher
+    internal class RabbitJobPublisher : IJobPublisher
     {
         private readonly ILogger<RabbitJobPublisher> _logger;
         private readonly IConnectionFactory _connectionFactory;
