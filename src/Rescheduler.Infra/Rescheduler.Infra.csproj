@@ -16,5 +16,6 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.1"/>
     <PackageReference Include="RabbitMQ.Client" Version="6.2.1"/>
     <PackageReference Include="prometheus-net" Version="4.1.1"/>
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="5.0.0"/>
   </ItemGroup>
 </Project>

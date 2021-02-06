@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using Rescheduler.Core.Entities;
 using Rescheduler.Core.Interfaces;
@@ -15,12 +16,16 @@ namespace Rescheduler.Infra.Messaging
     {
         private readonly ILogger<RabbitJobPublisher> _logger;
         private readonly IConnectionFactory _connectionFactory;
+        private RabbitMqOptions _options;
         private IModel? _model;
 
-        public RabbitJobPublisher(IConnectionFactory connectionFactory, ILogger<RabbitJobPublisher> logger)
+        public RabbitJobPublisher(IConnectionFactory connectionFactory, ILogger<RabbitJobPublisher> logger, IOptionsMonitor<RabbitMqOptions> optionsMonitor)
         {
             _connectionFactory = connectionFactory;
             _logger = logger;
+
+            _options = optionsMonitor.CurrentValue;
+            optionsMonitor.OnChange(newOptions => _options = newOptions);
         }
 
         public Task<bool> PublishAsync(Job job, CancellationToken ctx)
@@ -29,8 +34,8 @@ namespace Rescheduler.Infra.Messaging
             {
                 var model = GetOrCreateModel();
 
-                model.EnsureTopic(job.Subject);
-                model.BasicPublish(job.Subject, "job", true, null, Encoding.UTF8.GetBytes(job.Payload));
+                model.EnsureTopic(_options.JobsExchange);
+                model.BasicPublish(_options.JobsExchange, job.Subject, true, null, Encoding.UTF8.GetBytes(job.Payload));
                 
                 return Task.FromResult(model.WaitForConfirms());
             }
@@ -48,6 +53,7 @@ namespace Rescheduler.Infra.Messaging
             try
             {
                 var model = GetOrCreateModel();
+                model.EnsureTopic(_options.JobsExchange);
                 var batchPublish = model.CreateBasicPublishBatch();
                 
                 jobs.GroupBy(j => j.Subject).ToList().ForEach(g => 
@@ -55,7 +61,7 @@ namespace Rescheduler.Infra.Messaging
                     model.EnsureTopic(g.Key);
                     foreach (var job in g.ToList())
                     {
-                        batchPublish.Add(job.Subject, "job", true, null, new ReadOnlyMemory<byte>(Encoding.UTF8.GetBytes(job.Payload)));
+                        batchPublish.Add(_options.JobsExchange, job.Subject, true, null, new ReadOnlyMemory<byte>(Encoding.UTF8.GetBytes(job.Payload)));
                     }
                 });
 

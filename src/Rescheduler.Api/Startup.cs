@@ -27,6 +27,7 @@ namespace Rescheduler.Api
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddOptions();
             services.AddSystemMetrics();
             services.AddControllers()
                 .AddJsonOptions(options =>
