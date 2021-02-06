@@ -23,26 +23,41 @@ namespace Rescheduler.Core.Handlers
 
         public async Task<SchedulePendingResponse> Handle(SchedulePendingRequest request, CancellationToken cancellationToken)
         {
-            var pendingJobs = await _jobExecutionRepository.GetAndMarkPending(1000, DateTime.UtcNow.AddSeconds(10), cancellationToken);
+            var until = DateTime.UtcNow.AddSeconds(10);
+            var totalScheduled = 0;
+
+            int numScheduled;
+            do
+            {
+                numScheduled = await ScheduleBatchAsync(250, until, cancellationToken);
+                totalScheduled += numScheduled;
+            }
+            while (numScheduled > 0);
+
+            return new SchedulePendingResponse(totalScheduled);
+        }
+
+        private async Task<int> ScheduleBatchAsync(int batchSize, DateTime until, CancellationToken ctx)
+        {
+            var pendingJobs = await _jobExecutionRepository.GetAndMarkPending(batchSize, until, ctx);
             pendingJobs = pendingJobs.ToList();
-            var result = new SchedulePendingResponse(pendingJobs.Count());
 
             if (pendingJobs.Any())
             {
                 // Try to queue scheduled jobs
-                if(!await _jobPublisher.PublishManyAsync(pendingJobs.Select(p => p.Job), cancellationToken))
+                if(!await _jobPublisher.PublishManyAsync(pendingJobs.Select(p => p.Job), ctx))
                 {
                     // Failed to publish, reschedule
                     pendingJobs.ToList().ForEach(p => p.Scheduled());
-                    await _JobExecutionRepo.UpdateManyAsync(pendingJobs, cancellationToken);
+                    await _JobExecutionRepo.UpdateManyAsync(pendingJobs, ctx);
                     
-                    return new SchedulePendingResponse(0);
+                    return 0;
                 }
 
                 // Mark messages as queued
                 var now = DateTime.UtcNow;
                 pendingJobs.ToList().ForEach(p => p.Queued(now));
-                await _JobExecutionRepo.UpdateManyAsync(pendingJobs, cancellationToken);
+                await _JobExecutionRepo.UpdateManyAsync(pendingJobs, ctx);
 
                 foreach (var pending in pendingJobs)
                 {
@@ -50,16 +65,16 @@ namespace Rescheduler.Core.Handlers
                     if (pending.Job.TryGetNextRun(DateTime.UtcNow, out var nextRun) && nextRun.HasValue)
                     {
                         var nextJobExecution = JobExecution.New(pending.Job, nextRun.Value);
-                        await _JobExecutionRepo.AddAsync(nextJobExecution, cancellationToken);
+                        await _JobExecutionRepo.AddAsync(nextJobExecution, ctx);
                     }
                 }
             }
-            
-            return result;
+
+            return pendingJobs.Count();
         }
     }
 
-    public record SchedulePendingRequest(int max, DateTime until) : IRequest<SchedulePendingResponse>;
+    public record SchedulePendingRequest() : IRequest<SchedulePendingResponse>;
 
-    public record SchedulePendingResponse(int numScheduled);
+    public record SchedulePendingResponse(int NumScheduled);
 }
