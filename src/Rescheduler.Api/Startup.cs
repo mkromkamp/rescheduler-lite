@@ -40,7 +40,7 @@ namespace Rescheduler.Api
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Rescheduler.Api", Version = "v1" });
             });
 
-            services.AddCore(_configuration)
+            services.AddCore()
                     .AddInfra(_configuration)
                     .AddWorker();
 

@@ -3,6 +3,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Extensions.Logging;
+using Moq;
 using Rescheduler.Core.Entities;
 using Rescheduler.Infra.Data;
 using Shouldly;
@@ -12,6 +15,13 @@ namespace Rescheduler.Infra.Tests.Data
 {
     public class RepositoryTests
     {
+        private readonly ILogger<Repository<JobExecution>> _logger;
+
+        public RepositoryTests()
+        {
+            _logger = Mock.Of<ILogger<Repository<JobExecution>>>();
+        }
+
         [Fact]
         public async Task GivenToBeScheduledJob_WhenMarkingPending_ShouldMarkAndReturn()
         {
@@ -20,7 +30,7 @@ namespace Rescheduler.Infra.Tests.Data
             var jobExecution = new JobExecution(Guid.NewGuid(), job.RunAt, null, ExecutionStatus.Scheduled, job);
 
             using var context = GetSeededJobContext(job, jobExecution);
-            var repo = new Repository<JobExecution>(context);
+            var repo = new Repository<JobExecution>(_logger, context);
 
             // When
             var result = await repo.GetAndMarkPending(1, DateTime.UtcNow.AddSeconds(5), CancellationToken.None);            
@@ -39,7 +49,7 @@ namespace Rescheduler.Infra.Tests.Data
             var jobExecution = new JobExecution(Guid.NewGuid(), job.RunAt, null, ExecutionStatus.Scheduled, job);
 
             using var context = GetSeededJobContext(job, jobExecution);
-            var repo = new Repository<JobExecution>(context);
+            var repo = new Repository<JobExecution>(_logger, context);
 
             // When
             var result = await repo.GetAndMarkPending(1, DateTime.UtcNow.AddSeconds(5), CancellationToken.None);            
@@ -56,7 +66,7 @@ namespace Rescheduler.Infra.Tests.Data
             var jobExecution = new JobExecution(Guid.NewGuid(), job.RunAt, null, ExecutionStatus.Scheduled, job);
 
             using var context = GetSeededJobContext(job, jobExecution);
-            var repo = new Repository<JobExecution>(context);
+            var repo = new Repository<JobExecution>(_logger, context);
 
             // When
             var result = await repo.GetAndMarkPending(1, DateTime.UtcNow.AddSeconds(5), CancellationToken.None);            
@@ -69,6 +79,7 @@ namespace Rescheduler.Infra.Tests.Data
         {
             var contextOptions = new DbContextOptionsBuilder<JobContext>()
                 .UseInMemoryDatabase("test")
+                .ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning))
                 .Options;
             
             var context = new JobContext(contextOptions);
