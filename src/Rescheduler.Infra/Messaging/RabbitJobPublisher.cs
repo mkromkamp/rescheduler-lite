@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
@@ -34,7 +35,7 @@ namespace Rescheduler.Infra.Messaging
             {
                 var model = GetOrCreateModel();
 
-                model.EnsureTopic(_options.JobsExchange);
+                model.EnsureConfig(_options.JobsExchange, job.Subject);
                 model.BasicPublish(_options.JobsExchange, job.Subject, true, null, Encoding.UTF8.GetBytes(job.Payload));
                 
                 return Task.FromResult(model.WaitForConfirms());
@@ -53,12 +54,11 @@ namespace Rescheduler.Infra.Messaging
             try
             {
                 var model = GetOrCreateModel();
-                model.EnsureTopic(_options.JobsExchange);
                 var batchPublish = model.CreateBasicPublishBatch();
                 
                 jobs.GroupBy(j => j.Subject).ToList().ForEach(g => 
                 {
-                    model.EnsureTopic(g.Key);
+                    model.EnsureConfig(_options.JobsExchange, g.Key);
                     foreach (var job in g.ToList())
                     {
                         batchPublish.Add(_options.JobsExchange, job.Subject, true, null, new ReadOnlyMemory<byte>(Encoding.UTF8.GetBytes(job.Payload)));
@@ -89,9 +89,28 @@ namespace Rescheduler.Infra.Messaging
 
     internal static class ModelExtensions
     {
+        public static void EnsureConfig(this IModel model, string topicName, string queueName)
+        {
+            model.EnsureTopic(topicName);
+            model.EnsureQueue(queueName);
+
+            model.EnsureRoute(topicName, queueName, queueName);
+        }
+
         public static void EnsureTopic(this IModel model, string topicName)
         {
             model.ExchangeDeclare(topicName, ExchangeType.Topic, true, false);
+        }
+
+        public static void EnsureQueue(this IModel model, string queueName)
+        {
+            var props = new Dictionary<string, object> { {"x-queue-type", "quorum"} };
+            model.QueueDeclare(queueName, true, false, false, props);
+        }
+
+        public static void EnsureRoute(this IModel model, string topicName, string queueName, string routingKey)
+        {
+            model.QueueBind(queueName, topicName, routingKey);
         }
     }
 }
