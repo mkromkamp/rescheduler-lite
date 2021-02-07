@@ -20,13 +20,16 @@ services:
   rabbitmq:
     image: "rabbitmq:3-management"
     hostname: "rabbit1"
+    volumes:
+      - ./docker/rabbitmq_plugins:/etc/rabbitmq/enabled_plugins
     environment:
       RABBITMQ_ERLANG_COOKIE: "SWQOKODSQALRPCLNMEQG"
       RABBITMQ_DEFAULT_USER: "rabbitmq"
       RABBITMQ_DEFAULT_PASS: "rabbitmq"
       RABBITMQ_DEFAULT_VHOST: "/"
     ports:
-      - "15672:15672"
+      - "15672:15672" # management port
+      - "15692:15692" # metrics port
       - "5672:5672"
     logging:
       driver: loki
@@ -41,6 +44,19 @@ services:
     ports:
       - "3100:3100"
     command: -config.file=/etc/loki/local-config.yaml
+
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - 9000:9090
+    volumes:
+      - ./docker/prometheus.yaml:/etc/prometheus/prometheus.yml
+    # command: --web.enable-lifecycle  --config.file=/etc/prometheus/prometheus.yml
+    logging:
+      driver: loki
+      options:
+        loki-url: http://localhost:3100/loki/api/v1/push
+        loki-external-labels: job=dockerlogs,environment=development
   
   grafana:
     image: grafana/grafana:latest
