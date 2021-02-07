@@ -16,7 +16,7 @@ namespace Rescheduler.Infra
     {
         public static IServiceCollection AddInfra(this IServiceCollection services, IConfiguration configuration)
         {
-            services.Configure<RabbitMqOptions>(configuration.GetSection("RabbitMQ"));
+            services.AddOptions<RabbitMqOptions>().BindConfiguration("RabbitMQ");
             services.AddEntityFrameworkSqlite();
             services.AddDbContext<JobContext>(
                 ctx => ctx.UseSqlite(configuration.GetConnectionString("Database"), 
