@@ -6,7 +6,7 @@ namespace Rescheduler.Core.Entities
     {
         // EF Core
         #pragma warning disable CS8618
-        private JobExecution() : base() {}
+        private JobExecution() {}
         #pragma warning restore CS8618
 
         internal JobExecution(Guid id, DateTime scheduledAt, DateTime? queuedAt, ExecutionStatus status, Job job)

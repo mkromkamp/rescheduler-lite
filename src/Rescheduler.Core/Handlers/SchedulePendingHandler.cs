@@ -12,12 +12,12 @@ namespace Rescheduler.Core.Handlers
     {
         private readonly IJobPublisher _jobPublisher;
         private readonly IJobExecutionRepository _jobExecutionRepository;
-        private readonly IRepository<JobExecution> _JobExecutionRepo;
+        private readonly IRepository<JobExecution> _jobExecutionRepo;
 
         public SchedulePendingHandler(IJobExecutionRepository jobExecutionRepository, IRepository<JobExecution> jobExecutionRepo, IJobPublisher jobPublisher)
         {
             _jobExecutionRepository = jobExecutionRepository;
-            _JobExecutionRepo = jobExecutionRepo;
+            _jobExecutionRepo = jobExecutionRepo;
             _jobPublisher = jobPublisher;
         }
 
@@ -49,7 +49,7 @@ namespace Rescheduler.Core.Handlers
                 {
                     // Failed to publish, reschedule
                     pendingJobs.ToList().ForEach(p => p.Scheduled());
-                    await _JobExecutionRepo.UpdateManyAsync(pendingJobs, ctx);
+                    await _jobExecutionRepo.UpdateManyAsync(pendingJobs, ctx);
                     
                     return 0;
                 }
@@ -57,7 +57,7 @@ namespace Rescheduler.Core.Handlers
                 // Mark messages as queued
                 var now = DateTime.UtcNow;
                 pendingJobs.ToList().ForEach(p => p.Queued(now));
-                await _JobExecutionRepo.UpdateManyAsync(pendingJobs, ctx);
+                await _jobExecutionRepo.UpdateManyAsync(pendingJobs, ctx);
 
                 foreach (var pending in pendingJobs)
                 {
@@ -65,7 +65,7 @@ namespace Rescheduler.Core.Handlers
                     if (pending.Job.TryGetNextRun(DateTime.UtcNow, out var nextRun) && nextRun.HasValue)
                     {
                         var nextJobExecution = JobExecution.New(pending.Job, nextRun.Value);
-                        await _JobExecutionRepo.AddAsync(nextJobExecution, ctx);
+                        await _jobExecutionRepo.AddAsync(nextJobExecution, ctx);
                     }
                 }
             }
@@ -74,7 +74,7 @@ namespace Rescheduler.Core.Handlers
         }
     }
 
-    public record SchedulePendingRequest() : IRequest<SchedulePendingResponse>;
+    public record SchedulePendingRequest : IRequest<SchedulePendingResponse>;
 
     public record SchedulePendingResponse(int NumScheduled);
 }

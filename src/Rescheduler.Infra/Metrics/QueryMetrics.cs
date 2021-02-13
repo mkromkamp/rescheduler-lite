@@ -11,7 +11,7 @@ namespace Rescheduler.Infra.Metrics
                     new HistogramConfiguration
                     {
                         LabelNames = new [] { "type", "method" },
-                        Buckets = Prometheus.Histogram.ExponentialBuckets(0.01, 2, 10)
+                        Buckets = Histogram.ExponentialBuckets(0.01, 2, 10)
                     });
 
         public static ITimer TimeQuery(string type, string method)

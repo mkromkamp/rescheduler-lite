@@ -18,13 +18,9 @@ namespace Rescheduler.Infra.Metrics
                     LabelNames = new[] { "method", "success" }
                 });
 
-        public MetricsBehavior()
-        {
-        }
-
         public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
         {
-            var requestType = request?.GetType().Name.ToLowerInvariant() ?? "unknown";
+            var requestType = request.GetType().Name.ToLowerInvariant();
 
             try
             {

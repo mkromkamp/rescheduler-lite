@@ -36,8 +36,9 @@ namespace Rescheduler.Infra.Tests.Data
             var result = await repo.GetAndMarkPending(1, DateTime.UtcNow.AddSeconds(5), CancellationToken.None);            
 
             // Then
-            result.ShouldNotBeEmpty();
-            result.First().Status.ShouldBe(ExecutionStatus.InFlight);
+            var jobExecutions = result.ToList();
+            jobExecutions.ShouldNotBeEmpty();
+            jobExecutions.First().Status.ShouldBe(ExecutionStatus.InFlight);
         }
 
         [Fact]

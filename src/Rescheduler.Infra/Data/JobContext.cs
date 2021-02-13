@@ -6,7 +6,7 @@ namespace Rescheduler.Infra.Data
 {
     public class JobContext : DbContext
     {
-        public JobContext() : base() {}
+        public JobContext() {}
 
         public JobContext(DbContextOptions<JobContext> options)
             : base(options)

@@ -103,7 +103,7 @@ namespace Rescheduler.Infra.Messaging
 
         public static void EnsureTopic(this IModel model, string topicName)
         {
-            model.ExchangeDeclare(topicName, ExchangeType.Topic, true, false);
+            model.ExchangeDeclare(topicName, ExchangeType.Topic, true);
         }
 
         public static void EnsureQueue(this IModel model, string queueName)

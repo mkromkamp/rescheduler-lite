@@ -29,7 +29,7 @@ namespace Rescheduler.Infra
 
             services.AddSingleton(typeof(IPipelineBehavior<,>), typeof(MetricsBehavior<,>)); 
 
-            services.AddSingleton<IConnectionFactory>(svc => new ConnectionFactory()
+            services.AddSingleton<IConnectionFactory>(_ => new ConnectionFactory()
             {
                 Uri = new Uri(configuration.GetConnectionString("RabbitMQ")),
                 AutomaticRecoveryEnabled = true,
