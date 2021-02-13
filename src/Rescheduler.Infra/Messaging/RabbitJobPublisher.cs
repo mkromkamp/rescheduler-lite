@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using Rescheduler.Core.Entities;
 using Rescheduler.Core.Interfaces;
+using Rescheduler.Infra.Metrics;
 
 namespace Rescheduler.Infra.Messaging
 {
@@ -36,6 +37,8 @@ namespace Rescheduler.Infra.Messaging
 
                 model.EnsureConfig(_options.JobsExchange, job.Subject);
                 model.BasicPublish(_options.JobsExchange, job.Subject, true, null, Encoding.UTF8.GetBytes(job.Payload));
+
+                MessagingMetrics.MessagesPublished(job.Subject);
                 
                 return Task.FromResult(model.WaitForConfirms());
             }
@@ -62,6 +65,8 @@ namespace Rescheduler.Infra.Messaging
                     {
                         batchPublish.Add(_options.JobsExchange, job.Subject, true, null, new ReadOnlyMemory<byte>(Encoding.UTF8.GetBytes(job.Payload)));
                     }
+
+                    MessagingMetrics.MessagesPublished(g.Key, g.Count());
                 });
 
                 batchPublish.Publish();
