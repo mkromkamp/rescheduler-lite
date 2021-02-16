@@ -26,6 +26,14 @@ namespace Rescheduler.Core.Interfaces
         Task AddAsync(T entity, CancellationToken ctx);
 
         /// <summary>
+        /// Store a the <see cref="IEnumerable{T}"/>
+        /// </summary>
+        /// <param name="entities">The entities</param>
+        /// <param name="ctx">The cancellation token</param>
+        /// <returns>A <see cref="Task"/> representing the async operation</returns>
+        Task AddManyAsync(IEnumerable<T> entities, CancellationToken ctx);
+
+        /// <summary>
         /// Update the state of entity <see cref="T"/>
         /// </summary>
         /// <param name="entity">The entity</param>

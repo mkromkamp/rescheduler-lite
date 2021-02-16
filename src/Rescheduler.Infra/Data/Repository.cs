@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 using Rescheduler.Core.Entities;
 using Rescheduler.Core.Interfaces;
@@ -28,6 +29,29 @@ namespace Rescheduler.Infra.Data
 
             await _dbContext.Set<T>().AddAsync(entity, ctx);
             await _dbContext.SaveChangesAsync(ctx);
+        }
+
+        public async Task AddManyAsync(IEnumerable<T> entities, CancellationToken ctx)
+        {
+            using var _ = QueryMetrics.TimeQuery(typeof(T).Name.ToLowerInvariant(), "insert_many");
+            using var transaction = await _dbContext.Database.BeginTransactionAsync(ctx);
+
+            try
+            {
+                await _dbContext.Set<T>().AddRangeAsync(entities, ctx);
+                await _dbContext.SaveChangesAsync(ctx);
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync(CancellationToken.None);
+
+                _logger.LogError(ex, "Failed batch insert transaction");
+            }
+            finally
+            {
+                await transaction.CommitAsync(CancellationToken.None);
+            }
+            
         }
 
         public async Task<T?> GetByIdAsync(Guid id, CancellationToken ctx)

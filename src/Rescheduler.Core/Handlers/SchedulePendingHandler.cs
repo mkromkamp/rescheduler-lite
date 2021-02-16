@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -45,32 +46,47 @@ namespace Rescheduler.Core.Handlers
             if (pendingJobs.Any())
             {
                 // Try to queue scheduled jobs
-                if(!await _jobPublisher.PublishManyAsync(pendingJobs.Select(p => p.Job), ctx))
+                if (!await _jobPublisher.PublishManyAsync(pendingJobs.Select(p => p.Job), ctx))
                 {
-                    // Failed to publish, reschedule
-                    pendingJobs.ToList().ForEach(p => p.Scheduled());
-                    await _jobExecutionRepo.UpdateManyAsync(pendingJobs, ctx);
-                    
+                    await RescheduleAsync(pendingJobs, ctx);
                     return 0;
                 }
 
-                // Mark messages as queued
-                var now = DateTime.UtcNow;
-                pendingJobs.ToList().ForEach(p => p.Queued(now));
-                await _jobExecutionRepo.UpdateManyAsync(pendingJobs, ctx);
-
-                foreach (var pending in pendingJobs)
-                {
-                    // If there is a next schedule available for the job queue it
-                    if (pending.Job.TryGetNextRun(DateTime.UtcNow, out var nextRun) && nextRun.HasValue)
-                    {
-                        var nextJobExecution = JobExecution.New(pending.Job, nextRun.Value);
-                        await _jobExecutionRepo.AddAsync(nextJobExecution, ctx);
-                    }
-                }
+                await MarkAsQueuedAsync(pendingJobs, ctx);
+                await ScheduleNextExecutionsAsync(pendingJobs, ctx);
             }
 
             return pendingJobs.Count();
+        }
+
+        private async Task ScheduleNextExecutionsAsync(IEnumerable<JobExecution> pendingJobs, CancellationToken ctx)
+        {
+            var nextJobExecutions = new List<JobExecution>();
+            foreach (var pending in pendingJobs)
+            {
+                // If there is a next schedule available for the job queue it
+                if (pending.Job.TryGetNextRun(DateTime.UtcNow, out var nextRun) && nextRun.HasValue)
+                {
+                    var nextJobExecution = JobExecution.New(pending.Job, nextRun.Value);
+                    nextJobExecutions.Add(nextJobExecution);
+                }
+            }
+
+            await _jobExecutionRepo.AddManyAsync(nextJobExecutions, ctx);
+        }
+
+        private async Task MarkAsQueuedAsync(IEnumerable<JobExecution> pendingJobs, CancellationToken ctx)
+        {
+            // Mark messages as queued
+            var now = DateTime.UtcNow;
+            pendingJobs.ToList().ForEach(p => p.Queued(now));
+            await _jobExecutionRepo.UpdateManyAsync(pendingJobs, ctx);
+        }
+
+        private async Task RescheduleAsync(IEnumerable<JobExecution> pendingJobs, CancellationToken ctx)
+        {
+            pendingJobs.ToList().ForEach(p => p.Scheduled());
+            await _jobExecutionRepo.UpdateManyAsync(pendingJobs, ctx);
         }
     }
 
