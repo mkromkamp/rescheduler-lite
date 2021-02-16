@@ -39,7 +39,6 @@ namespace Rescheduler.Infra.Data
             try
             {
                 await _dbContext.Set<T>().AddRangeAsync(entities, ctx);
-                await _dbContext.SaveChangesAsync(ctx);
             }
             catch (Exception ex)
             {
@@ -51,7 +50,6 @@ namespace Rescheduler.Infra.Data
             {
                 await transaction.CommitAsync(CancellationToken.None);
             }
-            
         }
 
         public async Task<T?> GetByIdAsync(Guid id, CancellationToken ctx)
@@ -70,12 +68,25 @@ namespace Rescheduler.Infra.Data
             return _dbContext.SaveChangesAsync(ctx);
         }
 
-        public Task UpdateManyAsync(IEnumerable<T> entities, CancellationToken ctx)
+        public async Task UpdateManyAsync(IEnumerable<T> entities, CancellationToken ctx)
         {
             using var _ = QueryMetrics.TimeQuery(typeof(T).Name.ToLowerInvariant(), "batch_update");
+            using var transaction = await _dbContext.Database.BeginTransactionAsync(ctx);
 
-            entities.ToList().ForEach(e => _dbContext.Entry(e).CurrentValues.SetValues(entities));
-            return _dbContext.SaveChangesAsync(ctx);
+            try
+            {
+                entities.ToList().ForEach(e => _dbContext.Entry(e).CurrentValues.SetValues(entities));
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync(CancellationToken.None);
+
+                _logger.LogError(ex, "Failed batch update transaction");
+            }
+            finally
+            {
+                await transaction.CommitAsync(CancellationToken.None);
+            }
         }
 
         public async Task<IReadOnlyList<T>> GetManyAsync(Func<IQueryable<T>, IQueryable<T>> query, CancellationToken ctx)
