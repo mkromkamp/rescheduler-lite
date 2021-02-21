@@ -12,8 +12,8 @@ namespace Rescheduler.Core.Handlers
     public class SchedulePendingHandler : IRequestHandler<SchedulePendingRequest, SchedulePendingResponse>
     {
         private readonly IJobPublisher _jobPublisher;
-        private readonly IJobExecutionRepository _jobExecutionRepository;
         private readonly IRepository<JobExecution> _jobExecutionRepo;
+        private readonly IJobExecutionRepository _jobExecutionRepository;
 
         public SchedulePendingHandler(IJobExecutionRepository jobExecutionRepository, IRepository<JobExecution> jobExecutionRepo, IJobPublisher jobPublisher)
         {
