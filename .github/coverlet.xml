@@ -5,9 +5,8 @@
       <DataCollector friendlyName="XPlat code coverage">
         <Configuration>
           <Format>opencover</Format>
-          <Exclude>./src/**/**Metrics**.cs</Exclude>
           <ExcludeByAttribute>Obsolete,GeneratedCodeAttribute,CompilerGeneratedAttribute</ExcludeByAttribute>
-          <ExcludeByFile>**/Startup.cs,**/Program.cs,**/ServiceCollectionExtensions.cs,</ExcludeByFile> <!-- Globbing filter -->
+          <ExcludeByFile>**/Startup.cs,**/Program.cs,**/ServiceCollectionExtensions.cs,**/QueryMetrics.cs,**/MetricsBehavior.cs,**/MessagingMetrics.cs,</ExcludeByFile> <!-- Globbing filter -->
           <IncludeDirectory>./src/,</IncludeDirectory>
         </Configuration>
       </DataCollector>
