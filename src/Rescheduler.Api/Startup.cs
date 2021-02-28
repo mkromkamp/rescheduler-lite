@@ -28,7 +28,10 @@ namespace Rescheduler.Api
         {
             services.AddOptions();
             services.AddSystemMetrics();
-            services.AddControllers()
+            services.AddControllers(options =>
+                {
+                    options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
+                })
                 .AddJsonOptions(options =>
                 {
                     options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;

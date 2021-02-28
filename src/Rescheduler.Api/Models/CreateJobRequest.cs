@@ -7,10 +7,10 @@ namespace Rescheduler.Api.Models
     public class CreateJobRequest
     {
         [Required]
-        public string Subject { get; set; } = default!;
+        public string? Subject { get; set; }
 
         [Required]
-        public string Payload { get; set; } = default!;
+        public string? Payload { get; set; }
 
         [Required]
         public DateTime RunAt { get; set; }
