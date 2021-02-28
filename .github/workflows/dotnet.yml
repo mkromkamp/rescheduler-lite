@@ -26,10 +26,8 @@ jobs:
       run: dotnet build --no-restore
 
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test --no-build --verbosity normal --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
 
-    # Needs fixing
-    # - name: Coverage
-    #   uses: coverallsapp/github-action@v1.1.2
-    #   with:
-    #     github-token: ${{ secrets.GITHUB_TOKEN }}
+    - uses: codecov/codecov-action@v1
+      with:
+        files: ./*.opencoverxml
