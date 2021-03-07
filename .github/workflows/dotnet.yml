@@ -42,7 +42,7 @@ jobs:
         sonarProjectName:  rescheduler-lite
         sonarOrganization: mkromkamp
         dotnetTestArguments: --logger trx --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
-        sonarBeginArguments: /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/opencover.xml" -d:sonar.cs.vstest.reportsPaths="**/TestResults/*.trx"
+        sonarBeginArguments: /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/opencover.xml"
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
