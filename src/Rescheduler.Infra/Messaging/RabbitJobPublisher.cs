@@ -45,7 +45,7 @@ namespace Rescheduler.Infra.Messaging
             catch (Exception e)
             {
                 _logger.LogError(e, "Failed to publish job {JobId} to RabbitMQ", job.Id);
-                throw;
+                return Task.FromResult(false);
             }
         }
 
@@ -75,7 +75,7 @@ namespace Rescheduler.Infra.Messaging
             catch (Exception e)
             {
                 _logger.LogError(e, "Failed to batch publish {JobIds} to RabbitMQ", jobs.Select(j => j.Id));
-                throw;
+                return Task.FromResult(false);
             }
         }
 

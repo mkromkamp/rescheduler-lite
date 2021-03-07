@@ -80,6 +80,28 @@ namespace Rescheduler.Infra.Tests.Messaging
                 .Verify(x => x.BasicPublish(_options.JobsExchange, job.Subject, true, null, It.IsAny<ReadOnlyMemory<byte>>()),
                     Times.Once);
         }
+        
+        [Fact]
+        public async Task GivenSingleJob_WhenUnsuccessfulPublishing_ThenShouldReturnFalse()
+        {
+            // Given
+            var job = Job.New("subject", "payload", true, DateTime.UtcNow, DateTime.UtcNow.AddHours(1), null);
+            _options.JobsExchange = "jobs";
+            Mock.Get(_model)
+                .Setup(x => x.WaitForConfirms())
+                .Returns(true);
+
+            Mock.Get(_model)
+                .Setup(x => x.BasicPublish(_options.JobsExchange, job.Subject, true, null, It.IsAny<ReadOnlyMemory<byte>>()))
+                .Throws<Exception>();
+
+            // When
+            var result = await _publisher.PublishAsync(job, CancellationToken.None);
+
+            // Then
+            result.ShouldBeFalse();
+        }
+        
         [Fact]
         public async Task GivenTwoJobs_WhenPublishing_ThenShouldPublishBoth()
         {
@@ -110,6 +132,28 @@ namespace Rescheduler.Infra.Tests.Messaging
             result.ShouldBeTrue();
             Mock.Get(batchPublish)
                 .Verify(x => x.Publish(), Times.Once);
+        }
+        
+        [Fact]
+        public async Task GivenTwoJobs_WhenUnsuccessfulPublishing_ThenShouldReturnFalse()
+        {
+            // Given
+            var firstJob = Job.New("subject", "payload", true, DateTime.UtcNow, DateTime.UtcNow.AddHours(1), null);
+            var secondJob = Job.New("subject", "payload", true, DateTime.UtcNow, DateTime.UtcNow.AddHours(1), null);
+            _options.JobsExchange = "jobs";
+            Mock.Get(_model)
+                .Setup(x => x.WaitForConfirms())
+                .Returns(true);
+
+            Mock.Get(_model)
+                .Setup(x => x.CreateBasicPublishBatch())
+                .Throws<Exception>();
+
+            // When
+            var result = await _publisher.PublishManyAsync(new []{firstJob, secondJob}, CancellationToken.None);
+
+            // Then
+            result.ShouldBeFalse();
         }
     }
 }
