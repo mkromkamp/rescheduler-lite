@@ -12,18 +12,30 @@ namespace Rescheduler.Api.Models
             QueuedAt = queuedAt;
             Status = status;
         }
+        
+        /// <summary>
+        /// The unique identifier of this job execution
+        /// </summary>
+        public Guid Id { get; }
 
-        public Guid Id { get; private set; }
+        /// <summary>
+        /// The date and time this execution will be ran
+        /// </summary>
+        public DateTime ScheduledAt { get; }
 
-        public DateTime ScheduledAt { get; private set; }
+        /// <summary>
+        /// If the execution is queued, the time the it was queued 
+        /// </summary>
+        public DateTime? QueuedAt { get; }
 
-        public DateTime? QueuedAt { get; private set; }
-
-        public string Status { get; private set; }
+        /// <summary>
+        /// The current status of the execution
+        /// </summary>
+        public string Status { get; }
 
         public static JobExecutionResponse From(JobExecution jobExecution)
         {
-            return new JobExecutionResponse (
+            return new(
                 jobExecution.Id,
                 jobExecution.ScheduledAt,
                 jobExecution.QueuedAt,

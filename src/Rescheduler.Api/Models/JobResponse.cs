@@ -16,23 +16,44 @@ namespace Rescheduler.Api.Models
             Cron = cron;
         }
 
-        public Guid Id { get; private set; }
+        /// <summary>
+        /// The unique identifier of this job
+        /// </summary>
+        public Guid Id { get; }
 
-        public string Subject { get; private set; }
+        /// <summary>
+        /// The subject of this job
+        /// </summary>
+        public string Subject { get; }
 
-        public string Payload { get; private set; }
+        /// <summary>
+        /// The payload of this job
+        /// </summary>
+        public string Payload { get; }
 
-        public bool Enabled { get; private set; }
+        /// <summary>
+        /// If this job is currently enabled
+        /// </summary>
+        public bool Enabled { get; }
 
-        public DateTime RunAt { get; private set; }
+        /// <summary>
+        /// The first time this job is configured to run
+        /// </summary>
+        public DateTime RunAt { get; }
 
-        public DateTime StopAfter { get; private set; }
+        /// <summary>
+        /// The last time this job is configured to run
+        /// </summary>
+        public DateTime StopAfter { get; }
 
-        public string? Cron { get; private set; }
+        /// <summary>
+        /// The cron schedule of this job
+        /// </summary>
+        public string? Cron { get; }
 
         public static JobResponse From(Job job)
         {
-            return new JobResponse(
+            return new(
                 job.Id,
                 job.Subject,
                 job.Payload,
