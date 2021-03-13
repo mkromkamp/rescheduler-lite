@@ -59,14 +59,20 @@ namespace Rescheduler.Api
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Rescheduler.Api v1"));
             }
+            
+            app.UseSwagger(c =>
+            {
+                c.RouteTemplate = "api/docs/{documentName}/openapi.json";
+            });
+            app.UseSwaggerUI(c =>
+            {
+                c.RoutePrefix = "api/docs";
+                c.SwaggerEndpoint("/api/docs/v1/openapi.json", "Rescheduler.Api v1");
+            });
 
             app.UseRouting();
-
             app.UseHttpMetrics();
-
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

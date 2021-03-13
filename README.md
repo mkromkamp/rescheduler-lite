@@ -34,7 +34,6 @@ Rescheduler-lite is in development and thus all warnings apply; feel free to pla
 - Low memory footprint
 - Built-in observability
 - Build-in backup and restore
-- Option for retry mechanisms
 - Build on top of standard components
 - Leverage [RabbitMQ](https://www.rabbitmq.com) for message passing
 
@@ -56,7 +55,7 @@ Describe architecture overview
 
 All interaction with rescheduler-lite is done through its API.
 
-For now the API docs can be access when running the application on; http://localhost:5000/swagger
+API docs can be access when running on `/api/docs`, when running the docker-compose http://localhost:8080/api/docs
 
 # Deployment
 
