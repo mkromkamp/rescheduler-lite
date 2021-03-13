@@ -18,7 +18,7 @@ namespace Rescheduler.Api.Tests.Controllers
     {
         private readonly IMediator _mediator;
 
-        private JobExecutionController _controller;
+        private readonly JobExecutionController _controller;
 
         public JobExecutionControllerTests()
         {
@@ -38,10 +38,10 @@ namespace Rescheduler.Api.Tests.Controllers
 
             // When
             var result = await _controller.GetAllAsync(Enumerable.Empty<ExecutionStatus>(), null, CancellationToken.None);
-            var actionResult = result as OkObjectResult;
+            var actionResult = result.Result as OkObjectResult;
 
             // Then
-            result.ShouldBeAssignableTo<OkObjectResult>();
+            actionResult.ShouldBeAssignableTo<OkObjectResult>();
             actionResult.StatusCode.ShouldBe(StatusCodes.Status200OK);
         }
         
@@ -55,10 +55,10 @@ namespace Rescheduler.Api.Tests.Controllers
 
             // When
             var result = await _controller.GetAllAsync(Enumerable.Empty<ExecutionStatus>(), null, CancellationToken.None);
-            var actionResult = result as NotFoundResult;
+            var actionResult = result.Result as NotFoundResult;
 
             // Then
-            result.ShouldBeAssignableTo<NotFoundResult>();
+            actionResult.ShouldBeAssignableTo<NotFoundResult>();
             actionResult.StatusCode.ShouldBe(StatusCodes.Status404NotFound);
         }
         
@@ -73,10 +73,10 @@ namespace Rescheduler.Api.Tests.Controllers
 
             // When
             var result = await _controller.GetByJobIdAsync(Guid.NewGuid(), CancellationToken.None);
-            var actionResult = result as OkObjectResult;
+            var actionResult = result.Result as OkObjectResult;
 
             // Then
-            result.ShouldBeAssignableTo<OkObjectResult>();
+            actionResult.ShouldBeAssignableTo<OkObjectResult>();
             actionResult.StatusCode.ShouldBe(StatusCodes.Status200OK);
         }
         
@@ -90,10 +90,10 @@ namespace Rescheduler.Api.Tests.Controllers
 
             // When
             var result = await _controller.GetByJobIdAsync(Guid.NewGuid(), CancellationToken.None);
-            var actionResult = result as NotFoundResult;
+            var actionResult = result.Result as NotFoundResult;
 
             // Then
-            result.ShouldBeAssignableTo<NotFoundResult>();
+            actionResult.ShouldBeAssignableTo<NotFoundResult>();
             actionResult.StatusCode.ShouldBe(StatusCodes.Status404NotFound);
         }
     }
