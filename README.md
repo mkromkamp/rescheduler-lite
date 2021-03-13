@@ -55,7 +55,7 @@ Describe architecture overview
 
 All interaction with rescheduler-lite is done through its API.
 
-API docs can be access when running on `/api/docs`, when running the docker-compose http://localhost:8080/api/docs
+API docs can be accessed on `/api/docs`, when running the docker-compose http://localhost:8080/api/docs
 
 # Deployment
 
