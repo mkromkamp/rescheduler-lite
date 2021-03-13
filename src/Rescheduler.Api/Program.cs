@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Rescheduler.Api
 {
+#pragma warning disable CS1591
     public class Program
     {
         public static void Main(string[] args)
@@ -25,4 +26,5 @@ namespace Rescheduler.Api
                     webBuilder.UseStartup<Startup>();
                 });
     }
+#pragma warning restore CS1591
 }

@@ -5,15 +5,14 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Moq;
 using Rescheduler.Api.Controllers;
-using Rescheduler.Api.Models;
 using Rescheduler.Core.Entities;
 using Rescheduler.Core.Handlers;
 using Shouldly;
 using Xunit;
 using CreateJobRequest = Rescheduler.Api.Models.CreateJobRequest;
+using CreateJobResponse = Rescheduler.Core.Handlers.CreateJobResponse;
 
 namespace Rescheduler.Api.Tests.Controllers
 {
@@ -39,13 +38,13 @@ namespace Rescheduler.Api.Tests.Controllers
 
             // When
             var result = await _controller.CreateAsync(request, CancellationToken.None);
-            var actionResult = result as UnprocessableEntityObjectResult;
+            var actionResult = result.Result as UnprocessableEntityObjectResult;
 
             // Then
-            result.ShouldBeAssignableTo<UnprocessableEntityObjectResult>();
+            actionResult.ShouldBeAssignableTo<UnprocessableEntityObjectResult>();
             actionResult.StatusCode.ShouldBe(StatusCodes.Status422UnprocessableEntity);
         }
-
+        
         [Fact]
         public async Task GivenValidRequest_WhenCreating_ShouldReturnCreated()
         {
@@ -56,20 +55,20 @@ namespace Rescheduler.Api.Tests.Controllers
                 Payload = "do things",
                 RunAt = DateTime.UtcNow.AddDays(1),
             };
-
+        
             var job = Job.New(request.Subject, request.Payload, true, request.RunAt, request.StopAfter, null);
             var jobExecution = JobExecution.New(job, request.RunAt);
-
+        
             Mock.Get(_mediator)
                 .Setup(x => x.Send(It.IsAny<Core.Handlers.CreateJobRequest>(), CancellationToken.None))
                 .ReturnsAsync(new CreateJobResponse(job, jobExecution));
-
+        
             // When
             var result = await _controller.CreateAsync(request, CancellationToken.None);
-            var actionResult = result as ObjectResult;
-
+            var actionResult = result.Result as ObjectResult;
+        
             // Then
-            result.ShouldBeAssignableTo<ObjectResult>();
+            actionResult.ShouldBeAssignableTo<ObjectResult>();
             actionResult.StatusCode.ShouldBe(StatusCodes.Status201Created);
         }
         
@@ -81,13 +80,13 @@ namespace Rescheduler.Api.Tests.Controllers
             Mock.Get(_mediator)
                 .Setup(x => x.Send(It.IsAny<GetJobRequest>(), CancellationToken.None))
                 .ReturnsAsync(new GetJobResponse(job));
-
+        
             // When
             var result = await _controller.GetByIdAsync(Guid.NewGuid(), CancellationToken.None);
-            var actionResult = result as OkObjectResult;
-
+            var actionResult = result.Result as OkObjectResult;
+        
             // Then
-            result.ShouldBeAssignableTo<OkObjectResult>();
+            actionResult.ShouldBeAssignableTo<OkObjectResult>();
             actionResult.StatusCode.ShouldBe(StatusCodes.Status200OK);
         }
         
@@ -98,13 +97,13 @@ namespace Rescheduler.Api.Tests.Controllers
             Mock.Get(_mediator)
                 .Setup(x => x.Send(It.IsAny<GetJobRequest>(), CancellationToken.None))
                 .ReturnsAsync(new GetJobResponse(null));
-
+        
             // When
             var result = await _controller.GetByIdAsync(Guid.NewGuid(), CancellationToken.None);
-            var actionResult = result as NotFoundResult;
-
+            var actionResult = result.Result as NotFoundResult;
+        
             // Then
-            result.ShouldBeAssignableTo<NotFoundResult>();
+            actionResult.ShouldBeAssignableTo<NotFoundResult>();
             actionResult.StatusCode.ShouldBe(StatusCodes.Status404NotFound);
         }
         
@@ -115,13 +114,13 @@ namespace Rescheduler.Api.Tests.Controllers
             Mock.Get(_mediator)
                 .Setup(x => x.Send(It.IsAny<GetJobsRequest>(), CancellationToken.None))
                 .ReturnsAsync(new GetJobsResponse(Enumerable.Empty<Job>()));
-
+        
             // When
             var result = await _controller.GetAllAsync(null, CancellationToken.None);
-            var actionResult = result as OkObjectResult;
-
+            var actionResult = result.Result as OkObjectResult;
+        
             // Then
-            result.ShouldBeAssignableTo<OkObjectResult>();
+            actionResult.ShouldBeAssignableTo<OkObjectResult>();
             actionResult.StatusCode.ShouldBe(StatusCodes.Status200OK);
         }
     }
