@@ -8,7 +8,7 @@ Rescheduler-lite is in development and thus all warnings apply; feel free to pla
 
 # Table of Contents
 
-- [Rescheduler-lite !.NET](#rescheduler-lite-)
+- [Rescheduler-lite !.NET [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=mkromkamp_rescheduler-lite&metric=security_rating)](https://sonarcloud.io/dashboard?id=mkromkamp_rescheduler-lite) [![codecov](https://codecov.io/gh/mkromkamp/rescheduler-lite/branch/master/graph/badge.svg?token=XRLQJI670Q)](https://codecov.io/gh/mkromkamp/rescheduler-lite)](#rescheduler-lite---)
 - [Project status](#project-status)
 - [Table of Contents](#table-of-contents)
 - [Features](#features)
@@ -49,7 +49,11 @@ rescheduler-lite aims to take away this generic scheduling of jobs while not hav
 
 # High level architecture
 
-Describe architecture overview
+Rescheduler-lite is a self-contained application that doesn't require dedicated services, outside of an RabbitMQ node, to run. The binary can be ran on any machine that runs on a supported cpu architecture as long as it has read and write access to the database file.
+
+For recommended hardware specifications refer to the Deployment section. The diagram below should give a basic understanding of how rescheduler-lite functions on a high level.
+
+![system-diagram](./docs/assets/system-diagram.png)
 
 # API
 
