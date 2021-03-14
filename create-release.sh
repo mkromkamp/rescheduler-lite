@@ -1,3 +1,6 @@
 # !/bin/bash
 
-dotnet publish -c Release --project ./src/Rescheduler.Api -o ../../bin/ -r linux-x64 -p:PublishSingleFile=true -p:PublishTrimmed=true -p:PublishReadyToRun=true --self-contained true
+dotnet publish ./src/Rescheduler.Api -c Release -o ./bin/linux-x64
+dotnet publish ./src/Rescheduler.Api -c Release -o ./bin/linux-arm64 -r linux-arm64
+dotnet publish ./src/Rescheduler.Api -c Release -o ./bin/linux-musl-x64 -r linux-musl-x64
+dotnet publish ./src/Rescheduler.Api -c Release -o ./bin/win-x64 -r win-x64
