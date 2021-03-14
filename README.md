@@ -8,7 +8,7 @@ Rescheduler-lite is in development and thus all warnings apply; feel free to pla
 
 # Table of Contents
 
-- [Rescheduler-lite !.NET [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=mkromkamp_rescheduler-lite&metric=security_rating)](https://sonarcloud.io/dashboard?id=mkromkamp_rescheduler-lite) [![codecov](https://codecov.io/gh/mkromkamp/rescheduler-lite/branch/master/graph/badge.svg?token=XRLQJI670Q)](https://codecov.io/gh/mkromkamp/rescheduler-lite)](#rescheduler-lite---)
+- [Rescheduler-lite](#rescheduler-lite---)
 - [Project status](#project-status)
 - [Table of Contents](#table-of-contents)
 - [Features](#features)
