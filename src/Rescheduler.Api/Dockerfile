@@ -9,7 +9,7 @@ COPY ./test/. ./test/
 RUN dotnet restore -r linux-musl-x64
 
 WORKDIR /source/src/Rescheduler.Api
-RUN dotnet publish -c release -o /app -r linux-musl-x64 --self-contained false --no-restore
+RUN dotnet publish -c release -o /app -r linux-musl-x64 --no-restore
 
 # final stage/image
 FROM mcr.microsoft.com/dotnet/aspnet:5.0-alpine-amd64
