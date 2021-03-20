@@ -3,7 +3,7 @@ using Rescheduler.Core.Entities;
 
 namespace Rescheduler.Api.Models
 {
-    public class JobExecutionResponse
+    public record JobExecutionResponse
     {
         public JobExecutionResponse(Guid id, DateTime scheduledAt, DateTime? queuedAt, string status)
         {

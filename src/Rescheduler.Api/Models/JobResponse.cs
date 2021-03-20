@@ -3,7 +3,7 @@ using Rescheduler.Core.Entities;
 
 namespace Rescheduler.Api.Models
 {
-    public class JobResponse
+    public record JobResponse
     {
         public JobResponse(Guid id, string subject, string payload, bool enabled, DateTime runAt, DateTime stopAfter, string? cron)
         {
