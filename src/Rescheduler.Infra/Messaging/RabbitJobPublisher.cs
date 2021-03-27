@@ -33,7 +33,7 @@ namespace Rescheduler.Infra.Messaging
         {
             try
             {
-                var model = GetOrCreateModel();
+                if(!TryGetOrCreateModel(out var model) || model is null) return Task.FromResult(false);
 
                 model.EnsureConfig(_options.JobsExchange, job.Subject);
                 model.BasicPublish(_options.JobsExchange, job.Subject, true, null, Encoding.UTF8.GetBytes(job.Payload));
@@ -55,7 +55,7 @@ namespace Rescheduler.Infra.Messaging
 
             try
             {
-                var model = GetOrCreateModel();
+                if(!TryGetOrCreateModel(out var model) || model is null) return Task.FromResult(false);
                 var batchPublish = model.CreateBasicPublishBatch();
                 
                 jobs.GroupBy(j => j.Subject).ToList().ForEach(g => 
@@ -79,15 +79,26 @@ namespace Rescheduler.Infra.Messaging
             }
         }
 
-        private IModel GetOrCreateModel()
+        private bool TryGetOrCreateModel(out IModel? model)
         {
             if (_model is null || _model.IsClosed)
             {
-                _model = _connectionFactory.CreateConnection().CreateModel();
-                _model.ConfirmSelect();
+                try
+                {   
+                    _model = _connectionFactory.CreateConnection().CreateModel();
+                    _model.ConfirmSelect();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to create RabbitMQ connection");
+
+                    model = null;
+                    return false;
+                }
             }
 
-            return _model;
+            model = _model;
+            return true;
         }
     }
 }
