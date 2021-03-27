@@ -80,6 +80,26 @@ namespace Rescheduler.Infra.Tests.Messaging
                 .Verify(x => x.BasicPublish(_options.JobsExchange, job.Subject, true, null, It.IsAny<ReadOnlyMemory<byte>>()),
                     Times.Once);
         }
+
+        [Fact]
+        public async Task GivenRabbitIsUnavailable_WhenPublishing_ThenShouldReturnFalse()
+        {
+            // Given
+            var job = Job.New("subject", "payload", true, DateTime.UtcNow, DateTime.UtcNow.AddHours(1), null);
+            _options.JobsExchange = "jobs";
+            Mock.Get(_connectionFactory)
+                .Setup(x => x.CreateConnection())
+                .Throws(new Exception());
+
+            // When
+            var result = await _publisher.PublishAsync(job, CancellationToken.None);
+
+            // Then
+            result.ShouldBeFalse();
+            Mock.Get(_model)
+                .Verify(x => x.BasicPublish(_options.JobsExchange, job.Subject, true, null, It.IsAny<ReadOnlyMemory<byte>>()),
+                    Times.Never);
+        }
         
         [Fact]
         public async Task GivenSingleJob_WhenUnsuccessfulPublishing_ThenShouldReturnFalse()
