@@ -175,5 +175,22 @@ namespace Rescheduler.Infra.Tests.Messaging
             // Then
             result.ShouldBeFalse();
         }
+        
+        [Fact]
+        public async Task GivenRabbitIsUnavailable_WhenPublishingMany_ThenShouldReturnFalse()
+        {
+            // Given
+            var job = Job.New("subject", "payload", true, DateTime.UtcNow, DateTime.UtcNow.AddHours(1), null);
+            _options.JobsExchange = "jobs";
+            Mock.Get(_connectionFactory)
+                .Setup(x => x.CreateConnection())
+                .Throws(new Exception());
+
+            // When
+            var result = await _publisher.PublishManyAsync(new []{job}, CancellationToken.None);
+
+            // Then
+            result.ShouldBeFalse();
+        }
     }
 }
