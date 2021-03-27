@@ -90,31 +90,4 @@ namespace Rescheduler.Infra.Messaging
             return _model;
         }
     }
-
-    internal static class ModelExtensions
-    {
-        public static void EnsureConfig(this IModel model, string topicName, string queueName)
-        {
-            model.EnsureTopic(topicName);
-            model.EnsureQueue(queueName);
-
-            model.EnsureRoute(topicName, queueName, queueName);
-        }
-
-        public static void EnsureTopic(this IModel model, string topicName)
-        {
-            model.ExchangeDeclare(topicName, ExchangeType.Topic, true);
-        }
-
-        public static void EnsureQueue(this IModel model, string queueName)
-        {
-            var props = new Dictionary<string, object> { {"x-queue-type", "quorum"} };
-            model.QueueDeclare(queueName, true, false, false, props);
-        }
-
-        public static void EnsureRoute(this IModel model, string topicName, string queueName, string routingKey)
-        {
-            model.QueueBind(queueName, topicName, routingKey);
-        }
-    }
 }
