@@ -6,28 +6,6 @@ Rescheduler-lite is a job/work scheduler that is easy to deploy, operate, and wo
 
 Rescheduler-lite is in development and thus all warnings apply; feel free to play around, raise PRs, get involved in discussion, but above all else don't rely on it for now(!) 🙂
 
-# Table of Contents
-
-- [Rescheduler-lite](#rescheduler-lite---)
-- [Project status](#project-status)
-- [Table of Contents](#table-of-contents)
-- [Features](#features)
-- [Goals](#goals)
-- [High level architecture](#high-level-architecture)
-- [API](#api)
-- [Deployment](#deployment)
-  - [Binary](#binary)
-  - [Docker](#docker)
-- [Contributing](#contributing)
-  - [Discussions and Questions](#discussions-and-questions)
-  - [Issues](#issues)
-  - [Documentation](#documentation)
-  - [Development](#development)
-    - [Docker](#docker-1)
-- [Monitoring](#monitoring)
-  - [Logs](#logs)
-  - [Metrics](#metrics)
-
 # Features
 
 - Single binary
