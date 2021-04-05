@@ -7,8 +7,10 @@ services:
       dockerfile: src/Rescheduler.Api/Dockerfile
     environment:
       LoggingFormat: "json"
-      ConnectionStrings__RabbitMQ: "amqp://rabbitmq:rabbitmq@rabbitmq:5672/"
-      ASPNETCORE_ENVIRONMENT: Production
+      Messaging__ServiceBus_Enabled: "false"
+      Messaging__RabbitMQ_Enabled: "true"
+      Messaging__RabbitMQ_ConnectionString: "amqp://rabbitmq:rabbitmq@rabbitmq:5672/"
+      ASPNETCORE_ENVIRONMENT: Development
     ports:
       - "8080:80"
     logging:
