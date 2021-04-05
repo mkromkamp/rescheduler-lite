@@ -13,7 +13,7 @@ Rescheduler-lite is in development and thus all warnings apply; feel free to pla
 - Built-in observability
 - Build-in backup and restore
 - Build on top of standard components
-- Leverage [RabbitMQ](https://www.rabbitmq.com) for message passing
+- Leverage [RabbitMQ](https://www.rabbitmq.com) or [Azure Service Bus](https://azure.microsoft.com/services/service-bus/) for message passing
 
 # Goals
 
