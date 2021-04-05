@@ -20,13 +20,13 @@ namespace Rescheduler.Infra.Messaging
         private RabbitMqOptions _options;
         private IModel? _model;
 
-        public RabbitJobPublisher(IConnectionFactory connectionFactory, ILogger<RabbitJobPublisher> logger, IOptionsMonitor<RabbitMqOptions> optionsMonitor)
+        public RabbitJobPublisher(IConnectionFactory connectionFactory, ILogger<RabbitJobPublisher> logger, IOptionsMonitor<MessagingOptions> optionsMonitor)
         {
             _connectionFactory = connectionFactory;
             _logger = logger;
 
-            _options = optionsMonitor.CurrentValue;
-            optionsMonitor.OnChange(newOptions => _options = newOptions);
+            _options = optionsMonitor.CurrentValue.RabbitMq;
+            optionsMonitor.OnChange(newOptions => _options = newOptions.RabbitMq);
         }
 
         public Task<bool> PublishAsync(Job job, CancellationToken ctx)

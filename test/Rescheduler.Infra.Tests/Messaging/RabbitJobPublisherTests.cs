@@ -49,11 +49,12 @@ namespace Rescheduler.Infra.Tests.Messaging
                 .Setup(x => x.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(),
                     It.IsAny<IDictionary<string, object>>()));
 
-            _options = new RabbitMqOptions();
-            var optionsMonitor = Mock.Of<IOptionsMonitor<RabbitMqOptions>>();
+            
+            _options = new RabbitMqOptions{Enabled = true};
+            var optionsMonitor = Mock.Of<IOptionsMonitor<MessagingOptions>>();
             Mock.Get(optionsMonitor)
                 .SetupGet(x => x.CurrentValue)
-                .Returns(_options);
+                .Returns(new MessagingOptions {RabbitMq = _options});
 
             _publisher = new RabbitJobPublisher(_connectionFactory, _logger, optionsMonitor);
         }
