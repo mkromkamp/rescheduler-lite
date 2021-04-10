@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
-using Azure.Messaging.ServiceBus.Administration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Rescheduler.Core.Entities;
@@ -16,23 +15,29 @@ namespace Rescheduler.Infra.Messaging
     internal class ServiceBusPublisher : IJobPublisher
     {
         private readonly ILogger _logger;
-        private readonly ServiceBusClient _serviceBusClient;
+        
         private ServiceBusOptions _options;
+        private ServiceBusSender _serviceBusSender;
 
         public ServiceBusPublisher(ILogger<ServiceBusPublisher> logger, IOptionsMonitor<ServiceBusOptions> optionsMonitor, ServiceBusClient serviceBusClient)
         {
             _logger = logger;
-            _serviceBusClient = serviceBusClient;
             _options = optionsMonitor.CurrentValue;
+            _serviceBusSender = serviceBusClient.CreateSender(_options.JobsQueue);
+
             optionsMonitor.OnChange(newOptions =>
             {
-                if (newOptions is not null)
-                    _options = newOptions;
+                if (newOptions is null) return;
+
+                _options = newOptions;
+                _serviceBusSender = serviceBusClient.CreateSender(_options.JobsQueue);
             });
         }
 
         public Task<bool> PublishAsync(JobExecution jobExecution, CancellationToken ctx)
         {
+            using var _ = MessagingMetrics.TimePublishDuration();
+
             var job = jobExecution.Job;
             var message = new ServiceBusMessage(job.Payload)
             {
@@ -48,6 +53,8 @@ namespace Rescheduler.Infra.Messaging
 
         public async Task<bool> PublishManyAsync(IEnumerable<JobExecution> jobExecutions, CancellationToken ctx)
         {
+            using var _ = MessagingMetrics.TimeBatchPublishDuration();
+
             jobExecutions = jobExecutions.ToList();
             if (!jobExecutions.Any()) return true;
 
@@ -92,7 +99,7 @@ namespace Rescheduler.Infra.Messaging
         {
             try
             {
-                await func(_serviceBusClient.CreateSender(_options.JobsQueue));
+                await func(_serviceBusSender);
                 return true;
             }
             catch (Exception ex)

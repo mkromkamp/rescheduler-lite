@@ -31,6 +31,8 @@ namespace Rescheduler.Infra.Messaging
 
         public Task<bool> PublishAsync(JobExecution jobExecution, CancellationToken ctx)
         {
+            using var _ = MessagingMetrics.TimePublishDuration();
+
             try
             {
                 if(!TryGetOrCreateModel(out var model) || model is null) return Task.FromResult(false);
@@ -52,6 +54,7 @@ namespace Rescheduler.Infra.Messaging
 
         public Task<bool> PublishManyAsync(IEnumerable<JobExecution> jobExecutions, CancellationToken ctx)
         {
+            using var _ = MessagingMetrics.TimeBatchPublishDuration();
             jobExecutions = jobExecutions.ToList();
 
             try
