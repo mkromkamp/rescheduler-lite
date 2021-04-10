@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
+using Azure.Messaging.ServiceBus.Administration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Rescheduler.Core.Entities;
@@ -30,41 +31,64 @@ namespace Rescheduler.Infra.Messaging
             });
         }
 
-        public Task<bool> PublishAsync(Job job, CancellationToken ctx)
+        public Task<bool> PublishAsync(JobExecution jobExecution, CancellationToken ctx)
         {
+            var job = jobExecution.Job;
             var message = new ServiceBusMessage(job.Payload)
             {
+                MessageId = jobExecution.Id.ToString(),
                 PartitionKey = job.Id.ToString(),
                 Subject = job.Subject,
             };
 
             MessagingMetrics.MessagesPublished(job.Subject);
             
-            return WithConnectionAsync(conn => conn.SendMessageAsync(message, ctx));
+            return WithSenderAsync(conn => conn.SendMessageAsync(message, ctx));
         }
 
-        public Task<bool> PublishManyAsync(IEnumerable<Job> jobs, CancellationToken ctx)
+        public async Task<bool> PublishManyAsync(IEnumerable<JobExecution> jobExecutions, CancellationToken ctx)
         {
-            var jobsList = jobs.ToList();
-            if (!jobsList.Any()) return new ValueTask<bool>(true).AsTask();
-            
-            var messages = jobsList.Select(job => 
-                new ServiceBusMessage(job.Payload)
-                {
-                    PartitionKey = job.Id.ToString(),
-                    Subject = job.Subject,
-                });
+            jobExecutions = jobExecutions.ToList();
+            if (!jobExecutions.Any()) return true;
 
-            jobsList
-                .GroupBy(job => job.Subject)
-                .ToList()
-                .ForEach(jobGroup => 
-                    MessagingMetrics.MessagesPublished(jobGroup.Key, jobGroup.Count()));
-            
-            return WithConnectionAsync(conn => conn.SendMessagesAsync(messages, ctx));
+            if (_options.PartitionedQueue)
+            {
+                return await PublishPartitioned(jobExecutions, ctx);
+            }
+            else
+            {
+                return await PublishBatched(jobExecutions, ctx);
+            }
+
+            async Task<bool> PublishPartitioned(IEnumerable<JobExecution> jobExecutions, CancellationToken ctx)
+            {
+                var tasks = jobExecutions.ToList().Select(jobExecution => PublishAsync(jobExecution, ctx));
+                var result = await Task.WhenAll(tasks);
+
+                // Any tasks failed -> we consider the batch to be failed
+                return result.Contains(false) is false;
+            }
+
+            async Task<bool> PublishBatched(IEnumerable<JobExecution> jobExecutions, CancellationToken ctx)
+            {
+                var messages = jobExecutions.Select(jobExecution =>
+                    new ServiceBusMessage(jobExecution.Job.Payload)
+                    {
+                        MessageId = jobExecution.Id.ToString(),
+                        Subject = jobExecution.Job.Subject,
+                    });
+
+                jobExecutions
+                    .GroupBy(jobExecution => jobExecution.Job.Subject)
+                    .ToList()
+                    .ForEach(jobGroup =>
+                        MessagingMetrics.MessagesPublished(jobGroup.Key, jobGroup.Count()));
+
+                return await WithSenderAsync(conn => conn.SendMessagesAsync(messages, ctx));
+            }
         }
 
-        private async Task<bool> WithConnectionAsync(Func<ServiceBusSender, Task> func)
+        private async Task<bool> WithSenderAsync(Func<ServiceBusSender, Task> func)
         {
             try
             {

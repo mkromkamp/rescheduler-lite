@@ -8,19 +8,19 @@ namespace Rescheduler.Core.Interfaces
     public interface IJobPublisher
     {
         /// <summary>
-        /// Publish a <see cref="Job"/>.
+        /// Publish a <see cref="JobExecution"/>.
         /// </summary>
-        /// <param name="job">The job</param>
+        /// <param name="jobExecution">The job execution</param>
         /// <param name="ctx">The CancellationToken</param>
         /// <returns>A <see cref="Task{T}"/> representing the async operation</returns>
-        Task<bool> PublishAsync(Job job, CancellationToken ctx);
+        Task<bool> PublishAsync(JobExecution jobExecution, CancellationToken ctx);
 
         /// <summary>
-        /// Batch publish a list of <see cref="Job"/>.
+        /// Batch publish a list of <see cref="JobExecution"/>.
         /// </summary>
-        /// <param name="jobs">The jobs</param>
+        /// <param name="jobExecutions">The job execution</param>
         /// <param name="ctx">The CancellationToken</param>
         /// <returns>A <see cref="Task{T}"/> representing the async operation</returns>
-        Task<bool> PublishManyAsync(IEnumerable<Job> jobs, CancellationToken ctx);
+        Task<bool> PublishManyAsync(IEnumerable<JobExecution> jobExecutions, CancellationToken ctx);
     }
 }

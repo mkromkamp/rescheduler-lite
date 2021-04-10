@@ -36,6 +36,11 @@ namespace Rescheduler.Infra.Messaging
         public bool Enabled { get; set; } = false;
 
         /// <summary>
+        /// Toggle the usage of partitioned queues
+        /// </summary>
+        public bool PartitionedQueue { get; set; } = false;
+
+        /// <summary>
         /// The Service bus queue that jobs are published to
         /// </summary>
         public string JobsQueue { get; set; } = "jobs";
