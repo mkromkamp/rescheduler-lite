@@ -69,7 +69,7 @@ namespace Rescheduler.Infra.Messaging
 
             async Task<bool> PublishPartitioned(IEnumerable<JobExecution> jobExecutions, CancellationToken ctx)
             {
-                var tasks = jobExecutions.ToList().Select(jobExecution => PublishAsync(jobExecution, ctx));
+                var tasks = jobExecutions.Select(jobExecution => PublishAsync(jobExecution, ctx));
                 var result = await Task.WhenAll(tasks);
 
                 // Any tasks failed -> we consider the batch to be failed

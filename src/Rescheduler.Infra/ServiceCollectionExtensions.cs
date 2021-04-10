@@ -30,12 +30,12 @@ namespace Rescheduler.Infra
             
             services.AddSingleton(typeof(IPipelineBehavior<,>), typeof(MetricsBehavior<,>));
 
-            services.AddMessaging(configuration);
+            services.AddMessaging();
 
             return services;
         }
 
-        private static IServiceCollection AddMessaging(this IServiceCollection services, IConfiguration configuration)
+        private static IServiceCollection AddMessaging(this IServiceCollection services)
         {
             services.AddOptions<MessagingOptions>().BindConfiguration("Messaging");
             var options = services.BuildServiceProvider().GetRequiredService<IOptions<MessagingOptions>>();
