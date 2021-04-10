@@ -27,7 +27,7 @@ namespace Rescheduler.Core.Tests.Handlers
             _jobExecutionRepository = Mock.Of<IJobExecutionRepository>();
 
             Mock.Get(_jobPublisher)
-                .Setup(x => x.PublishManyAsync(It.IsAny<IEnumerable<Job>>(), CancellationToken.None))
+                .Setup(x => x.PublishManyAsync(It.IsAny<IEnumerable<JobExecution>>(), CancellationToken.None))
                 .ReturnsAsync(true);
 
             _handler = new SchedulePendingHandler(_jobExecutionRepository, _jobExecutionRepo, _jobPublisher);
@@ -81,7 +81,7 @@ namespace Rescheduler.Core.Tests.Handlers
             
             // Then
             Mock.Get(_jobPublisher)
-                .Verify(x => x.PublishManyAsync(It.IsAny<IEnumerable<Job>>(), CancellationToken.None), 
+                .Verify(x => x.PublishManyAsync(It.IsAny<IEnumerable<JobExecution>>(), CancellationToken.None), 
                     Times.Never);
         }
         
@@ -157,7 +157,7 @@ namespace Rescheduler.Core.Tests.Handlers
             
             // Then
             Mock.Get(_jobPublisher)
-                .Verify(x => x.PublishManyAsync(It.IsAny<IEnumerable<Job>>(), CancellationToken.None), 
+                .Verify(x => x.PublishManyAsync(It.IsAny<IEnumerable<JobExecution>>(), CancellationToken.None), 
                     Times.Once);
         }
         
@@ -178,7 +178,7 @@ namespace Rescheduler.Core.Tests.Handlers
                 .ReturnsAsync(executions)
                 .ReturnsAsync(Enumerable.Empty<JobExecution>());
             Mock.Get(_jobPublisher)
-                .Setup(x => x.PublishManyAsync(It.IsAny<IEnumerable<Job>>(), CancellationToken.None))
+                .Setup(x => x.PublishManyAsync(It.IsAny<IEnumerable<JobExecution>>(), CancellationToken.None))
                 .ReturnsAsync(false);
             
             // When
