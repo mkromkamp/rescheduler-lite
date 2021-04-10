@@ -51,7 +51,7 @@ namespace Rescheduler.Infra.Messaging
             var messages = jobsList.Select(job => 
                 new ServiceBusMessage(job.Payload)
                 {
-                    SessionId = job.Id.ToString(),
+                    PartitionKey = job.Id.ToString(),
                     Subject = job.Subject,
                 });
 
