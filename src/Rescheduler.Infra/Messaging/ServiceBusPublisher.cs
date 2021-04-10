@@ -53,8 +53,6 @@ namespace Rescheduler.Infra.Messaging
 
         public async Task<bool> PublishManyAsync(IEnumerable<JobExecution> jobExecutions, CancellationToken ctx)
         {
-            using var _ = MessagingMetrics.TimeBatchPublishDuration();
-
             jobExecutions = jobExecutions.ToList();
             if (!jobExecutions.Any()) return true;
 
@@ -78,6 +76,8 @@ namespace Rescheduler.Infra.Messaging
 
             async Task<bool> PublishBatched(IEnumerable<JobExecution> jobExecutions, CancellationToken ctx)
             {
+                using var _ = MessagingMetrics.TimeBatchPublishDuration();
+                
                 var messages = jobExecutions.Select(jobExecution =>
                     new ServiceBusMessage(jobExecution.Job.Payload)
                     {
