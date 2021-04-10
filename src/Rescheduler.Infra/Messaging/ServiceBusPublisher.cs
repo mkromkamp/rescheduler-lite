@@ -8,14 +8,15 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Rescheduler.Core.Entities;
 using Rescheduler.Core.Interfaces;
+using Rescheduler.Infra.Metrics;
 
 namespace Rescheduler.Infra.Messaging
 {
     internal class ServiceBusPublisher : IJobPublisher
     {
         private readonly ILogger _logger;
+        private readonly ServiceBusClient _serviceBusClient;
         private ServiceBusOptions _options;
-        private ServiceBusClient _serviceBusClient;
 
         public ServiceBusPublisher(ILogger<ServiceBusPublisher> logger, IOptionsMonitor<ServiceBusOptions> optionsMonitor, ServiceBusClient serviceBusClient)
         {
@@ -36,6 +37,8 @@ namespace Rescheduler.Infra.Messaging
                 PartitionKey = job.Id.ToString(),
                 Subject = job.Subject,
             };
+
+            MessagingMetrics.MessagesPublished(job.Subject);
             
             return WithConnectionAsync(conn => conn.SendMessageAsync(message, ctx));
         }
@@ -48,18 +51,31 @@ namespace Rescheduler.Infra.Messaging
             var messages = jobsList.Select(job => 
                 new ServiceBusMessage(job.Payload)
                 {
-                    PartitionKey = job.Id.ToString(),
+                    SessionId = job.Id.ToString(),
                     Subject = job.Subject,
                 });
+
+            jobsList
+                .GroupBy(job => job.Subject)
+                .ToList()
+                .ForEach(jobGroup => 
+                    MessagingMetrics.MessagesPublished(jobGroup.Key, jobGroup.Count()));
             
             return WithConnectionAsync(conn => conn.SendMessagesAsync(messages, ctx));
         }
 
         private async Task<bool> WithConnectionAsync(Func<ServiceBusSender, Task> func)
         {
-            await func(_serviceBusClient.CreateSender((_options.JobsQueue)));
-
-            return true;
+            try
+            {
+                await func(_serviceBusClient.CreateSender(_options.JobsQueue));
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to publish jobs to Azure Service Bus");
+                return false;
+            }
         }
     }
 }
