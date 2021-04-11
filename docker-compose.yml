@@ -5,6 +5,8 @@ services:
     build:
       context: .
       dockerfile: src/Rescheduler.Api/Dockerfile
+    volumes:
+      - rescheduler-data:/app
     environment:
       LoggingFormat: "json"
       Messaging__RabbitMq__Enabled: "true"
@@ -78,6 +80,7 @@ services:
         loki-external-labels: job=dockerlogs,environment=development
 
 volumes:
+  rescheduler-data:
   grafana-data:
   loki-data:
   prometheus-data:
