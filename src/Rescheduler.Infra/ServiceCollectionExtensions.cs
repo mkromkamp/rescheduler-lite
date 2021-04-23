@@ -2,7 +2,6 @@ using System;
 using Azure.Messaging.ServiceBus;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -40,8 +39,11 @@ namespace Rescheduler.Infra
             services.AddOptions();
             services.Configure<MessagingOptions>(configuration.GetSection("Messaging"));
             var options = services.BuildServiceProvider().GetRequiredService<IOptions<MessagingOptions>>();
+
+            if(!(options.Value.RabbitMq?.Enabled ?? false) && !(options.Value.ServiceBus?.Enabled ?? false)) 
+                throw new ArgumentException("No message bus is configured");
             
-            if (options.Value.RabbitMq.Enabled)
+            if (options.Value.RabbitMq?.Enabled ?? false)
             {
                 services.AddSingleton<IJobPublisher, RabbitJobPublisher>();
                 services.AddSingleton<IConnectionFactory>(_ => new ConnectionFactory()
@@ -52,7 +54,7 @@ namespace Rescheduler.Infra
                 });
             }
 
-            if (options.Value.ServiceBus.Enabled)
+            if (options.Value.ServiceBus?.Enabled ?? false)
             {
                 services.AddSingleton<IJobPublisher, ServiceBusPublisher>();
                 services.AddSingleton(_ => new ServiceBusClient(options.Value.ServiceBus.ConnectionString));
