@@ -92,10 +92,10 @@ namespace Rescheduler.Core.Tests.Handlers
             var request = new SchedulePendingRequest();
             var executions = new[]
             {
-                JobExecution.New(Job.New("test", "test payload", true, DateTime.Now, DateTime.Now, "* * * * *"),
-                    DateTime.Now),
-                JobExecution.New(Job.New("test", "test payload", true, DateTime.Now, DateTime.Now, "* * * * *"),
-                    DateTime.Now),
+                JobExecution.New(Job.New("test", "test payload", true, DateTime.UtcNow, DateTime.UtcNow, "* * * * *"),
+                    DateTime.UtcNow),
+                JobExecution.New(Job.New("test", "test payload", true, DateTime.UtcNow, DateTime.UtcNow, "* * * * *"),
+                    DateTime.UtcNow),
             };
             Mock.Get(_jobExecutionRepository)
                 .SetupSequence(x => x.GetAndMarkPending(It.IsAny<int>(), It.IsAny<DateTime>(), CancellationToken.None))
@@ -116,10 +116,10 @@ namespace Rescheduler.Core.Tests.Handlers
             var request = new SchedulePendingRequest();
             var executions = new[]
             {
-                JobExecution.New(Job.New("test", "test payload", true, DateTime.Now, DateTime.Now, "* * * * *"),
-                    DateTime.Now),
-                JobExecution.New(Job.New("test", "test payload", true, DateTime.Now, DateTime.Now, "* * * * *"),
-                    DateTime.Now),
+                JobExecution.New(Job.New("test", "test payload", true, DateTime.UtcNow, DateTime.UtcNow, "* * * * *"),
+                    DateTime.UtcNow),
+                JobExecution.New(Job.New("test", "test payload", true, DateTime.UtcNow, DateTime.UtcNow, "* * * * *"),
+                    DateTime.UtcNow),
             };
             Mock.Get(_jobExecutionRepository)
                 .SetupSequence(x => x.GetAndMarkPending(It.IsAny<int>(), It.IsAny<DateTime>(), CancellationToken.None))
@@ -142,10 +142,10 @@ namespace Rescheduler.Core.Tests.Handlers
             var request = new SchedulePendingRequest();
             var executions = new[]
             {
-                JobExecution.New(Job.New("test", "test payload", true, DateTime.Now, DateTime.Now, "* * * * *"),
-                    DateTime.Now),
-                JobExecution.New(Job.New("test", "test payload", true, DateTime.Now, DateTime.Now, "* * * * *"),
-                    DateTime.Now),
+                JobExecution.New(Job.New("test", "test payload", true, DateTime.UtcNow, DateTime.UtcNow, "* * * * *"),
+                    DateTime.UtcNow),
+                JobExecution.New(Job.New("test", "test payload", true, DateTime.UtcNow, DateTime.UtcNow, "* * * * *"),
+                    DateTime.UtcNow),
             };
             Mock.Get(_jobExecutionRepository)
                 .SetupSequence(x => x.GetAndMarkPending(It.IsAny<int>(), It.IsAny<DateTime>(), CancellationToken.None))
@@ -168,10 +168,10 @@ namespace Rescheduler.Core.Tests.Handlers
             var request = new SchedulePendingRequest();
             var executions = new[]
             {
-                JobExecution.New(Job.New("test", "test payload", true, DateTime.Now, DateTime.Now, "* * * * *"),
-                    DateTime.Now),
-                JobExecution.New(Job.New("test", "test payload", true, DateTime.Now, DateTime.Now, "* * * * *"),
-                    DateTime.Now),
+                JobExecution.New(Job.New("test", "test payload", true, DateTime.UtcNow, DateTime.UtcNow, "* * * * *"),
+                    DateTime.UtcNow),
+                JobExecution.New(Job.New("test", "test payload", true, DateTime.UtcNow, DateTime.UtcNow, "* * * * *"),
+                    DateTime.UtcNow),
             };
             Mock.Get(_jobExecutionRepository)
                 .SetupSequence(x => x.GetAndMarkPending(It.IsAny<int>(), It.IsAny<DateTime>(), CancellationToken.None))
