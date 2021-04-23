@@ -49,11 +49,12 @@ namespace Rescheduler.Infra.Tests.Messaging
                 .Setup(x => x.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(),
                     It.IsAny<IDictionary<string, object>>()));
 
-            _options = new RabbitMqOptions();
-            var optionsMonitor = Mock.Of<IOptionsMonitor<RabbitMqOptions>>();
+            
+            _options = new RabbitMqOptions{Enabled = true};
+            var optionsMonitor = Mock.Of<IOptionsMonitor<MessagingOptions>>();
             Mock.Get(optionsMonitor)
                 .SetupGet(x => x.CurrentValue)
-                .Returns(_options);
+                .Returns(new MessagingOptions {RabbitMq = _options});
 
             _publisher = new RabbitJobPublisher(_connectionFactory, _logger, optionsMonitor);
         }
@@ -63,6 +64,7 @@ namespace Rescheduler.Infra.Tests.Messaging
         {
             // Given
             var job = Job.New("subject", "payload", true, DateTime.UtcNow, DateTime.UtcNow.AddHours(1), null);
+            var jobExecution = JobExecution.New(job, job.RunAt);
             _options.JobsExchange = "jobs";
             Mock.Get(_model)
                 .Setup(x => x.WaitForConfirms())
@@ -72,7 +74,7 @@ namespace Rescheduler.Infra.Tests.Messaging
                 .Setup(x => x.BasicPublish(_options.JobsExchange, job.Subject, true, null, It.IsAny<ReadOnlyMemory<byte>>()));
 
             // When
-            var result = await _publisher.PublishAsync(job, CancellationToken.None);
+            var result = await _publisher.PublishAsync(jobExecution, CancellationToken.None);
 
             // Then
             result.ShouldBeTrue();
@@ -86,13 +88,14 @@ namespace Rescheduler.Infra.Tests.Messaging
         {
             // Given
             var job = Job.New("subject", "payload", true, DateTime.UtcNow, DateTime.UtcNow.AddHours(1), null);
+            var jobExecution = JobExecution.New(job, job.RunAt);
             _options.JobsExchange = "jobs";
             Mock.Get(_connectionFactory)
                 .Setup(x => x.CreateConnection())
                 .Throws(new Exception());
 
             // When
-            var result = await _publisher.PublishAsync(job, CancellationToken.None);
+            var result = await _publisher.PublishAsync(jobExecution, CancellationToken.None);
 
             // Then
             result.ShouldBeFalse();
@@ -106,6 +109,7 @@ namespace Rescheduler.Infra.Tests.Messaging
         {
             // Given
             var job = Job.New("subject", "payload", true, DateTime.UtcNow, DateTime.UtcNow.AddHours(1), null);
+            var jobExecution = JobExecution.New(job, job.RunAt);
             _options.JobsExchange = "jobs";
             Mock.Get(_model)
                 .Setup(x => x.WaitForConfirms())
@@ -116,7 +120,7 @@ namespace Rescheduler.Infra.Tests.Messaging
                 .Throws<Exception>();
 
             // When
-            var result = await _publisher.PublishAsync(job, CancellationToken.None);
+            var result = await _publisher.PublishAsync(jobExecution, CancellationToken.None);
 
             // Then
             result.ShouldBeFalse();
@@ -128,6 +132,8 @@ namespace Rescheduler.Infra.Tests.Messaging
             // Given
             var firstJob = Job.New("subject", "payload", true, DateTime.UtcNow, DateTime.UtcNow.AddHours(1), null);
             var secondJob = Job.New("subject", "payload", true, DateTime.UtcNow, DateTime.UtcNow.AddHours(1), null);
+            var firstJobExecution = JobExecution.New(firstJob, firstJob.RunAt);
+            var secondJobExecution = JobExecution.New(secondJob, secondJob.RunAt);
             _options.JobsExchange = "jobs";
             Mock.Get(_model)
                 .Setup(x => x.WaitForConfirms())
@@ -146,7 +152,7 @@ namespace Rescheduler.Infra.Tests.Messaging
                 .Setup(x => x.BasicPublish(_options.JobsExchange, secondJob.Subject, true, null, It.IsAny<ReadOnlyMemory<byte>>()));
 
             // When
-            var result = await _publisher.PublishManyAsync(new []{firstJob, secondJob}, CancellationToken.None);
+            var result = await _publisher.PublishManyAsync(new []{firstJobExecution, secondJobExecution}, CancellationToken.None);
 
             // Then
             result.ShouldBeTrue();
@@ -160,6 +166,8 @@ namespace Rescheduler.Infra.Tests.Messaging
             // Given
             var firstJob = Job.New("subject", "payload", true, DateTime.UtcNow, DateTime.UtcNow.AddHours(1), null);
             var secondJob = Job.New("subject", "payload", true, DateTime.UtcNow, DateTime.UtcNow.AddHours(1), null);
+            var firstJobExecution = JobExecution.New(firstJob, firstJob.RunAt);
+            var secondJobExecution = JobExecution.New(secondJob, secondJob.RunAt);
             _options.JobsExchange = "jobs";
             Mock.Get(_model)
                 .Setup(x => x.WaitForConfirms())
@@ -170,7 +178,7 @@ namespace Rescheduler.Infra.Tests.Messaging
                 .Throws<Exception>();
 
             // When
-            var result = await _publisher.PublishManyAsync(new []{firstJob, secondJob}, CancellationToken.None);
+            var result = await _publisher.PublishManyAsync(new []{firstJobExecution, secondJobExecution}, CancellationToken.None);
 
             // Then
             result.ShouldBeFalse();
@@ -181,13 +189,14 @@ namespace Rescheduler.Infra.Tests.Messaging
         {
             // Given
             var job = Job.New("subject", "payload", true, DateTime.UtcNow, DateTime.UtcNow.AddHours(1), null);
+            var jobExecution = JobExecution.New(job, job.RunAt);
             _options.JobsExchange = "jobs";
             Mock.Get(_connectionFactory)
                 .Setup(x => x.CreateConnection())
                 .Throws(new Exception());
 
             // When
-            var result = await _publisher.PublishManyAsync(new []{job}, CancellationToken.None);
+            var result = await _publisher.PublishManyAsync(new []{jobExecution}, CancellationToken.None);
 
             // Then
             result.ShouldBeFalse();

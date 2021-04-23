@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Rescheduler.Core\Rescheduler.Core.csproj" />
+    <ProjectReference Include="..\Rescheduler.Core\Rescheduler.Core.csproj"/>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.5" />
@@ -15,7 +15,9 @@
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.5" />
     <PackageReference Include="RabbitMQ.Client" Version="6.2.1" />
+    <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.1.2" />
     <PackageReference Include="prometheus-net" Version="4.1.1" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="5.0.0" />
+    <PackageReference Include="System.Text.Encodings.Web" Version="5.0.1" />
   </ItemGroup>
 </Project>

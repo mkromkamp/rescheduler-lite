@@ -46,7 +46,7 @@ namespace Rescheduler.Core.Handlers
             if (pendingJobs.Any())
             {
                 // Try to queue scheduled jobs
-                if (!await _jobPublisher.PublishManyAsync(pendingJobs.Select(p => p.Job), ctx))
+                if (!await _jobPublisher.PublishManyAsync(pendingJobs, ctx))
                 {
                     await RescheduleAsync(pendingJobs, ctx);
                     return 0;

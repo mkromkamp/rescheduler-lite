@@ -20,20 +20,28 @@ namespace Rescheduler.Infra.Messaging
         private RabbitMqOptions _options;
         private IModel? _model;
 
-        public RabbitJobPublisher(IConnectionFactory connectionFactory, ILogger<RabbitJobPublisher> logger, IOptionsMonitor<RabbitMqOptions> optionsMonitor)
+        public RabbitJobPublisher(IConnectionFactory connectionFactory, ILogger<RabbitJobPublisher> logger, IOptionsMonitor<MessagingOptions> optionsMonitor)
         {
             _connectionFactory = connectionFactory;
             _logger = logger;
 
-            _options = optionsMonitor.CurrentValue;
-            optionsMonitor.OnChange(newOptions => _options = newOptions);
+            _options = optionsMonitor.CurrentValue.RabbitMq;
+            optionsMonitor.OnChange(newOptions => 
+            {
+                if (newOptions?.RabbitMq is null) return;
+                
+                _options = newOptions.RabbitMq;
+            });
         }
 
-        public Task<bool> PublishAsync(Job job, CancellationToken ctx)
+        public Task<bool> PublishAsync(JobExecution jobExecution, CancellationToken ctx)
         {
+            using var _ = MessagingMetrics.TimePublishDuration();
+
             try
             {
                 if(!TryGetOrCreateModel(out var model) || model is null) return Task.FromResult(false);
+                var job = jobExecution.Job;
 
                 model.EnsureConfig(_options.JobsExchange, job.Subject);
                 model.BasicPublish(_options.JobsExchange, job.Subject, true, null, Encoding.UTF8.GetBytes(job.Payload));
@@ -44,26 +52,27 @@ namespace Rescheduler.Infra.Messaging
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Failed to publish job {JobId} to RabbitMQ", job.Id);
+                _logger.LogError(e, "Failed to publish job {JobId} to RabbitMQ", jobExecution.Job.Id);
                 return Task.FromResult(false);
             }
         }
 
-        public Task<bool> PublishManyAsync(IEnumerable<Job> jobs, CancellationToken ctx)
+        public Task<bool> PublishManyAsync(IEnumerable<JobExecution> jobExecutions, CancellationToken ctx)
         {
-            jobs = jobs.ToList();
+            using var _ = MessagingMetrics.TimeBatchPublishDuration();
+            jobExecutions = jobExecutions.ToList();
 
             try
             {
                 if(!TryGetOrCreateModel(out var model) || model is null) return Task.FromResult(false);
                 var batchPublish = model.CreateBasicPublishBatch();
                 
-                jobs.GroupBy(j => j.Subject).ToList().ForEach(g => 
+                jobExecutions.GroupBy(j => j.Job.Subject).ToList().ForEach(g => 
                 {
                     model.EnsureConfig(_options.JobsExchange, g.Key);
-                    foreach (var job in g.ToList())
+                    foreach (var jobExecution in g.ToList())
                     {
-                        batchPublish.Add(_options.JobsExchange, job.Subject, true, null, new ReadOnlyMemory<byte>(Encoding.UTF8.GetBytes(job.Payload)));
+                        batchPublish.Add(_options.JobsExchange, jobExecution.Job.Subject, true, null, new ReadOnlyMemory<byte>(Encoding.UTF8.GetBytes(jobExecution.Job.Payload)));
                     }
 
                     MessagingMetrics.MessagesPublished(g.Key, g.Count());
@@ -74,7 +83,7 @@ namespace Rescheduler.Infra.Messaging
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Failed to batch publish {JobIds} to RabbitMQ", jobs.Select(j => j.Id));
+                _logger.LogError(e, "Failed to batch publish {JobIds} to RabbitMQ", jobExecutions.Select(j => j.Job.Id));
                 return Task.FromResult(false);
             }
         }
