@@ -19,17 +19,17 @@ namespace Rescheduler.Infra.Messaging
         private ServiceBusOptions _options;
         private ServiceBusSender _serviceBusSender;
 
-        public ServiceBusPublisher(ILogger<ServiceBusPublisher> logger, IOptionsMonitor<ServiceBusOptions> optionsMonitor, ServiceBusClient serviceBusClient)
+        public ServiceBusPublisher(ILogger<ServiceBusPublisher> logger, IOptionsMonitor<MessagingOptions> optionsMonitor, ServiceBusClient serviceBusClient)
         {
             _logger = logger;
-            _options = optionsMonitor.CurrentValue;
+            _options = optionsMonitor.CurrentValue.ServiceBus;
             _serviceBusSender = serviceBusClient.CreateSender(_options.JobsQueue);
 
             optionsMonitor.OnChange(newOptions =>
             {
-                if (newOptions is null) return;
+                if (newOptions?.ServiceBus is null) return;
 
-                _options = newOptions;
+                _options = newOptions.ServiceBus;
                 _serviceBusSender = serviceBusClient.CreateSender(_options.JobsQueue);
             });
         }

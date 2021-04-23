@@ -26,7 +26,12 @@ namespace Rescheduler.Infra.Messaging
             _logger = logger;
 
             _options = optionsMonitor.CurrentValue.RabbitMq;
-            optionsMonitor.OnChange(newOptions => _options = newOptions.RabbitMq);
+            optionsMonitor.OnChange(newOptions => 
+            {
+                if (newOptions?.RabbitMq is null) return;
+                
+                _options = newOptions.RabbitMq;
+            });
         }
 
         public Task<bool> PublishAsync(JobExecution jobExecution, CancellationToken ctx)

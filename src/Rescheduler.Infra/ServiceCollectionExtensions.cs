@@ -30,14 +30,15 @@ namespace Rescheduler.Infra
             
             services.AddSingleton(typeof(IPipelineBehavior<,>), typeof(MetricsBehavior<,>));
 
-            services.AddMessaging();
+            services.AddMessaging(configuration);
 
             return services;
         }
 
-        private static IServiceCollection AddMessaging(this IServiceCollection services)
+        private static IServiceCollection AddMessaging(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddOptions<MessagingOptions>().BindConfiguration("Messaging");
+            services.AddOptions();
+            services.Configure<MessagingOptions>(configuration.GetSection("Messaging"));
             var options = services.BuildServiceProvider().GetRequiredService<IOptions<MessagingOptions>>();
             
             if (options.Value.RabbitMq.Enabled)

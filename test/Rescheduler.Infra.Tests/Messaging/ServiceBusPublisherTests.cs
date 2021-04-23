@@ -33,10 +33,10 @@ namespace Rescheduler.Infra.Tests.Messaging
                 PartitionedQueue = false
             };
 
-            var optionsMonitor = Mock.Of<IOptionsMonitor<ServiceBusOptions>>();
+            var optionsMonitor = Mock.Of<IOptionsMonitor<MessagingOptions>>();
             Mock.Get(optionsMonitor)
                 .SetupGet(x => x.CurrentValue)
-                .Returns(_options);
+                .Returns(new MessagingOptions{ServiceBus = _options});
 
             _serviceBusClient = Mock.Of<ServiceBusClient>();
             _serviceBusSender = Mock.Of<ServiceBusSender>();
