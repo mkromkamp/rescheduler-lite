@@ -65,6 +65,7 @@ namespace Rescheduler.Infra
 
             if (options.Value.SnsOptions.Enabled)
             {
+                services.AddSingleton<IJobPublisher, SnsPublisher>();
                 services.AddDefaultAWSOptions(configuration.GetAWSOptions());
                 services.AddAWSService<IAmazonSimpleNotificationService>();
             }
