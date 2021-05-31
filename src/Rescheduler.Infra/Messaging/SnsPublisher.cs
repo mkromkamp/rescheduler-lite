@@ -21,7 +21,7 @@ namespace Rescheduler.Infra.Messaging
         
         private SnsOptions _options;
 
-        public SnsPublisher(ILogger logger, IAmazonSimpleNotificationService sns, IOptionsMonitor<MessagingOptions> optionsMonitor)
+        public SnsPublisher(ILogger<SnsPublisher> logger, IAmazonSimpleNotificationService sns, IOptionsMonitor<MessagingOptions> optionsMonitor)
         {
             _logger = logger;
             _sns = sns;
