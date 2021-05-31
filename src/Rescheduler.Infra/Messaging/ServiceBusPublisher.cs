@@ -53,39 +53,38 @@ namespace Rescheduler.Infra.Messaging
 
         public async Task<bool> PublishManyAsync(IEnumerable<JobExecution> jobExecutions, CancellationToken ctx)
         {
-            jobExecutions = jobExecutions.ToList();
-            if (!jobExecutions.Any()) return true;
+            // jobExecutions = jobExecutions.ToList();
+            var jobExecutionsList = jobExecutions.ToList();
+            if (!jobExecutionsList.Any()) return true;
 
             if (_options.PartitionedQueue)
             {
-                return await PublishPartitioned(jobExecutions, ctx);
-            }
-            else
-            {
-                return await PublishBatched(jobExecutions, ctx);
+                return await PublishPartitioned(jobExecutionsList.ToList());
             }
 
-            async Task<bool> PublishPartitioned(IEnumerable<JobExecution> jobExecutions, CancellationToken ctx)
+            return await PublishBatched(jobExecutionsList);
+
+            async Task<bool> PublishPartitioned(List<JobExecution> executions)
             {
-                var tasks = jobExecutions.Select(jobExecution => PublishAsync(jobExecution, ctx));
+                var tasks = executions.Select(jobExecution => PublishAsync(jobExecution, ctx));
                 var result = await Task.WhenAll(tasks);
 
                 // Any tasks failed -> we consider the batch to be failed
                 return result.Contains(false) is false;
             }
 
-            async Task<bool> PublishBatched(IEnumerable<JobExecution> jobExecutions, CancellationToken ctx)
+            async Task<bool> PublishBatched(List<JobExecution> executions)
             {
                 using var _ = MessagingMetrics.TimeBatchPublishDuration();
                 
-                var messages = jobExecutions.Select(jobExecution =>
+                var messages = executions.Select(jobExecution =>
                     new ServiceBusMessage(jobExecution.Job.Payload)
                     {
                         MessageId = jobExecution.Id.ToString(),
                         Subject = jobExecution.Job.Subject,
                     });
 
-                jobExecutions
+                executions
                     .GroupBy(jobExecution => jobExecution.Job.Subject)
                     .ToList()
                     .ForEach(jobGroup =>
