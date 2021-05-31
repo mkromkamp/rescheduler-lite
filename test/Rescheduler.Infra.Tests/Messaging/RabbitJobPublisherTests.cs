@@ -50,7 +50,7 @@ namespace Rescheduler.Infra.Tests.Messaging
                     It.IsAny<IDictionary<string, object>>()));
 
             
-            _options = new RabbitMqOptions{Enabled = true};
+            _options = new RabbitMqOptions{Enabled = true, JobsExchange = "jobs"};
             var optionsMonitor = Mock.Of<IOptionsMonitor<MessagingOptions>>();
             Mock.Get(optionsMonitor)
                 .SetupGet(x => x.CurrentValue)
@@ -65,7 +65,6 @@ namespace Rescheduler.Infra.Tests.Messaging
             // Given
             var job = Job.New("subject", "payload", true, DateTime.UtcNow, DateTime.UtcNow.AddHours(1), null);
             var jobExecution = JobExecution.New(job, job.RunAt);
-            _options.JobsExchange = "jobs";
             Mock.Get(_model)
                 .Setup(x => x.WaitForConfirms())
                 .Returns(true);
@@ -89,7 +88,6 @@ namespace Rescheduler.Infra.Tests.Messaging
             // Given
             var job = Job.New("subject", "payload", true, DateTime.UtcNow, DateTime.UtcNow.AddHours(1), null);
             var jobExecution = JobExecution.New(job, job.RunAt);
-            _options.JobsExchange = "jobs";
             Mock.Get(_connectionFactory)
                 .Setup(x => x.CreateConnection())
                 .Throws(new Exception());
@@ -110,7 +108,6 @@ namespace Rescheduler.Infra.Tests.Messaging
             // Given
             var job = Job.New("subject", "payload", true, DateTime.UtcNow, DateTime.UtcNow.AddHours(1), null);
             var jobExecution = JobExecution.New(job, job.RunAt);
-            _options.JobsExchange = "jobs";
             Mock.Get(_model)
                 .Setup(x => x.WaitForConfirms())
                 .Returns(true);
@@ -134,7 +131,6 @@ namespace Rescheduler.Infra.Tests.Messaging
             var secondJob = Job.New("subject", "payload", true, DateTime.UtcNow, DateTime.UtcNow.AddHours(1), null);
             var firstJobExecution = JobExecution.New(firstJob, firstJob.RunAt);
             var secondJobExecution = JobExecution.New(secondJob, secondJob.RunAt);
-            _options.JobsExchange = "jobs";
             Mock.Get(_model)
                 .Setup(x => x.WaitForConfirms())
                 .Returns(true);
@@ -168,7 +164,6 @@ namespace Rescheduler.Infra.Tests.Messaging
             var secondJob = Job.New("subject", "payload", true, DateTime.UtcNow, DateTime.UtcNow.AddHours(1), null);
             var firstJobExecution = JobExecution.New(firstJob, firstJob.RunAt);
             var secondJobExecution = JobExecution.New(secondJob, secondJob.RunAt);
-            _options.JobsExchange = "jobs";
             Mock.Get(_model)
                 .Setup(x => x.WaitForConfirms())
                 .Returns(true);
@@ -190,7 +185,6 @@ namespace Rescheduler.Infra.Tests.Messaging
             // Given
             var job = Job.New("subject", "payload", true, DateTime.UtcNow, DateTime.UtcNow.AddHours(1), null);
             var jobExecution = JobExecution.New(job, job.RunAt);
-            _options.JobsExchange = "jobs";
             Mock.Get(_connectionFactory)
                 .Setup(x => x.CreateConnection())
                 .Throws(new Exception());
