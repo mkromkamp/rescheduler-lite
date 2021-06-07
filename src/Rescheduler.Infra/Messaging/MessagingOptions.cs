@@ -15,7 +15,7 @@ namespace Rescheduler.Infra.Messaging
         /// <summary>
         /// Aws Sns options
         /// </summary>
-        public SnsOptions SnsOptions { get; init; } = new();
+        public SnsOptions Sns { get; init; } = new();
     }
     
     internal class RabbitMqOptions

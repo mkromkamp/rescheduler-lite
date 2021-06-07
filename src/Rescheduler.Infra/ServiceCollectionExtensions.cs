@@ -43,7 +43,7 @@ namespace Rescheduler.Infra
 
             if(!options.Value.RabbitMq.Enabled 
                && !options.Value.ServiceBus.Enabled 
-               && !options.Value.SnsOptions.Enabled) 
+               && !options.Value.Sns.Enabled) 
                 throw new ArgumentException("No message bus is configured");
             
             if (options.Value.RabbitMq.Enabled)
@@ -63,7 +63,7 @@ namespace Rescheduler.Infra
                 services.AddSingleton(_ => new ServiceBusClient(options.Value.ServiceBus.ConnectionString));
             }
 
-            if (options.Value.SnsOptions.Enabled)
+            if (options.Value.Sns.Enabled)
             {
                 services.AddSingleton<IJobPublisher, SnsPublisher>();
                 services.AddDefaultAWSOptions(configuration.GetAWSOptions());

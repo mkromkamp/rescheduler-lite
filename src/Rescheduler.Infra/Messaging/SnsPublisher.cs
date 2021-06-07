@@ -25,13 +25,13 @@ namespace Rescheduler.Infra.Messaging
         {
             _logger = logger;
             _sns = sns;
-            _options = optionsMonitor.CurrentValue.SnsOptions;
+            _options = optionsMonitor.CurrentValue.Sns;
             
             optionsMonitor.OnChange(newOptions =>
             {
                 if (newOptions?.ServiceBus is null) return;
 
-                _options = newOptions.SnsOptions;
+                _options = newOptions.Sns;
             });
         }
 
@@ -68,6 +68,7 @@ namespace Rescheduler.Infra.Messaging
             {
                 var request = new PublishRequest(_options.TopicArn, jobExecution.Job.Payload, jobExecution.Job.Subject)
                 {
+                    MessageGroupId = _options.FifoTopic ? jobExecution.Job.Id.ToString() : null,
                     MessageDeduplicationId = _options.FifoTopic ? jobExecution.Id.ToString() : null
                 };
 
