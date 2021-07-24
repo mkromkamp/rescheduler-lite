@@ -13,7 +13,7 @@ Rescheduler-lite is in development and thus all warnings apply; feel free to pla
 - Built-in observability
 - Build-in backup and restore
 - Build on top of standard components
-- Leverage [RabbitMQ](https://www.rabbitmq.com) or [Azure Service Bus](https://azure.microsoft.com/services/service-bus/) for message passing
+- Leverage [RabbitMQ](https://www.rabbitmq.com), [Azure Service Bus](https://azure.microsoft.com/services/service-bus/), or [Aws SNS](https://aws.amazon.com/sns) for message passing
 
 # Goals
 
@@ -27,7 +27,7 @@ rescheduler-lite aims to take away this generic scheduling of jobs while not hav
 
 # High level architecture
 
-Rescheduler-lite is a self-contained application that doesn't require dedicated services, outside of an RabbitMQ node or Azure Service bus queue, to run. The binary can be ran on any machine with a supported cpu architecture as long as it has read and write access to the database file.
+Rescheduler-lite is a self-contained application that doesn't require dedicated services, outside of an RabbitMQ node, Azure Service bus queue, or Aws SNS topic, to run. The binary can be ran on any machine with a supported cpu architecture as long as it has read and write access to the database file.
 
 For recommended hardware specifications refer to the [Deployment](#deployment) section. The diagram below should give a basic understanding of how rescheduler-lite functions on a high level.
 
