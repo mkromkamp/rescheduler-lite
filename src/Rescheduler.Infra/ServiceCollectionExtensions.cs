@@ -1,4 +1,5 @@
 using System;
+using Amazon.SimpleNotificationService;
 using Azure.Messaging.ServiceBus;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -40,10 +41,12 @@ namespace Rescheduler.Infra
             services.Configure<MessagingOptions>(configuration.GetSection("Messaging"));
             var options = services.BuildServiceProvider().GetRequiredService<IOptions<MessagingOptions>>();
 
-            if(!(options.Value.RabbitMq?.Enabled ?? false) && !(options.Value.ServiceBus?.Enabled ?? false)) 
+            if(!options.Value.RabbitMq.Enabled 
+               && !options.Value.ServiceBus.Enabled 
+               && !options.Value.Sns.Enabled) 
                 throw new ArgumentException("No message bus is configured");
             
-            if (options.Value.RabbitMq?.Enabled ?? false)
+            if (options.Value.RabbitMq.Enabled)
             {
                 services.AddSingleton<IJobPublisher, RabbitJobPublisher>();
                 services.AddSingleton<IConnectionFactory>(_ => new ConnectionFactory()
@@ -54,10 +57,17 @@ namespace Rescheduler.Infra
                 });
             }
 
-            if (options.Value.ServiceBus?.Enabled ?? false)
+            if (options.Value.ServiceBus.Enabled)
             {
                 services.AddSingleton<IJobPublisher, ServiceBusPublisher>();
                 services.AddSingleton(_ => new ServiceBusClient(options.Value.ServiceBus.ConnectionString));
+            }
+
+            if (options.Value.Sns.Enabled)
+            {
+                services.AddSingleton<IJobPublisher, SnsPublisher>();
+                services.AddDefaultAWSOptions(configuration.GetAWSOptions());
+                services.AddAWSService<IAmazonSimpleNotificationService>();
             }
 
             return services;
