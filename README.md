@@ -43,7 +43,7 @@ API docs can be accessed on `/api/docs`, when running the docker-compose http://
 
 Rescheduler-lite consists of a single binary that can be deployed virtually everywhere. The only constraint is the availability of some form of persistent storage.
 
-Alongside rescheduler-lite it is needed to deploy a RabbitMQ node. RabbitMQ is used to pass messages from rescheduler-lite to consumers
+Alongside rescheduler-lite it is needed to deploy a messaging technology. Currently RabbitMQ, Azure Service Bus, and AWS SNS are supported. These messaging techonologies are needed to pass messages from rescheduler-lite to consumers.
 
 ## Binary
 
