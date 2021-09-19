@@ -9,15 +9,15 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.1" />
-    <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.7.2.28" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.9" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.9">
+    <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.7.2.39" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.10">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.10" />
     <PackageReference Include="RabbitMQ.Client" Version="6.2.2" />
-    <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.2.1" />
+    <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.3.0" />
     <PackageReference Include="prometheus-net" Version="5.0.1" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="5.0.0" />
     <PackageReference Include="System.Text.Encodings.Web" Version="5.0.1" />
