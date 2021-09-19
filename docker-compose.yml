@@ -17,11 +17,6 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
     ports:
       - "8080:80"
-    logging:
-      driver: loki
-      options:
-        loki-url: http://localhost:3100/loki/api/v1/push
-        loki-external-labels: job=dockerlogs,environment=development
 
   rabbitmq:
     image: "rabbitmq:3-management-alpine"
@@ -38,50 +33,7 @@ services:
       - "15672:15672" # management port
       - "15692:15692" # metrics port
       - "5672:5672"
-    logging:
-      driver: loki
-      options:
-        loki-url: http://localhost:3100/loki/api/v1/push
-        loki-external-labels: job=dockerlogs,environment=development
-
-  loki:
-    image: grafana/loki:2.0.0
-    volumes:
-      - ./docker/loki.yaml:/etc/loki/local-config.yaml
-      - loki-data:/loki
-    ports:
-      - "3100:3100"
-    command: -config.file=/etc/loki/local-config.yaml
-
-  prometheus:
-    image: prom/prometheus
-    ports:
-      - 9000:9090
-    volumes:
-      - ./docker/prometheus.yaml:/etc/prometheus/prometheus.yml
-      - prometheus-data:/prometheus
-    # command: --web.enable-lifecycle  --config.file=/etc/prometheus/prometheus.yml
-    logging:
-      driver: loki
-      options:
-        loki-url: http://localhost:3100/loki/api/v1/push
-        loki-external-labels: job=dockerlogs,environment=development
-  
-  grafana:
-    image: grafana/grafana:latest
-    ports:
-      - "3000:3000"
-    volumes:
-      - grafana-data:/var/lib/grafana
-    logging:
-      driver: loki
-      options:
-        loki-url: http://localhost:3100/loki/api/v1/push
-        loki-external-labels: job=dockerlogs,environment=development
 
 volumes:
   rescheduler-data:
-  grafana-data:
-  loki-data:
-  prometheus-data:
   rabbitmq-data:
