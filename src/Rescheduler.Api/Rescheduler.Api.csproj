@@ -15,7 +15,7 @@
    <TrimmerRemoveSymbols>true</TrimmerRemoveSymbols>
    <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
    <DebuggerSupport>false</DebuggerSupport>
-   <PublishReadyToRun>false</PublishReadyToRun> &lt;!&ndash; Reduce file size &ndash;&gt;
+   <PublishReadyToRun>false</PublishReadyToRun> <!-- Reduce file size -->
    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
   </PropertyGroup>
   <ItemGroup>
