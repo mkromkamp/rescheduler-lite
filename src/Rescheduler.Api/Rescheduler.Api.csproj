@@ -7,21 +7,21 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>
     <!-- Publish setting -->
-    <PublishSingleFile>true</PublishSingleFile>
-    <SelfContained>true</SelfContained>
-    <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
-    <PublishTrimmed>true</PublishTrimmed>
-    <TrimMode>link</TrimMode>
-    <TrimmerRemoveSymbols>true</TrimmerRemoveSymbols>
-    <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
-    <DebuggerSupport>false</DebuggerSupport>
-    <PublishReadyToRun>false</PublishReadyToRun> <!-- Reduce file size -->
-    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+<!--    <PublishSingleFile>true</PublishSingleFile>-->
+<!--    <SelfContained>true</SelfContained>-->
+<!--    <RuntimeIdentifier>linux-x64</RuntimeIdentifier>-->
+<!--    <PublishTrimmed>true</PublishTrimmed>-->
+<!--    <TrimMode>link</TrimMode>-->
+<!--    <TrimmerRemoveSymbols>true</TrimmerRemoveSymbols>-->
+<!--    <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>-->
+<!--    <DebuggerSupport>false</DebuggerSupport>-->
+<!--    <PublishReadyToRun>false</PublishReadyToRun> &lt;!&ndash; Reduce file size &ndash;&gt;-->
+<!--    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>-->
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.9" NoWarn="NU1605" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="5.0.9" NoWarn="NU1605" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.9">
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.10" NoWarn="NU1605" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="5.0.10" NoWarn="NU1605" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.10">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
