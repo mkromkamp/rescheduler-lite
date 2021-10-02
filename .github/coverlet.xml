@@ -6,7 +6,7 @@
         <Configuration>
           <Format>opencover</Format>
           <ExcludeByAttribute>Obsolete,GeneratedCodeAttribute,CompilerGeneratedAttribute</ExcludeByAttribute>
-          <ExcludeByFile>**/Startup.cs,**/Program.cs,**/ServiceCollectionExtensions.cs,**/QueryMetrics.cs,**/MetricsBehavior.cs,**/MessagingMetrics.cs,</ExcludeByFile> <!-- Globbing filter -->
+          <ExcludeByFile>**/Startup.cs,**/Program.cs,**/ServiceCollectionExtensions.cs,**/QueryMetrics.cs,**/MetricsBehavior.cs,**/MessagingMetrics.cs,**/ILoggerExtensions.cs,</ExcludeByFile> <!-- Globbing filter -->
           <IncludeDirectory>./src/,</IncludeDirectory>
         </Configuration>
       </DataCollector>
