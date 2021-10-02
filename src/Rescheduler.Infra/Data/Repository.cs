@@ -166,8 +166,6 @@ namespace Rescheduler.Infra.Data
 
                 await _dbContext.SaveChangesAsync(ctx);
                 await transaction.CommitAsync(ctx);
-
-                await _dbContext.Database.ExecuteSqlRawAsync("VACUUM;", ctx);
             }
             catch (Exception ex)
             {
