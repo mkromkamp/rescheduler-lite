@@ -24,7 +24,7 @@ namespace Rescheduler.Core.Handlers
 
         public async Task<SchedulePendingResponse> Handle(SchedulePendingRequest request, CancellationToken cancellationToken)
         {
-            var until = DateTime.UtcNow.AddSeconds(10);
+            var until = DateTime.UtcNow;
             var totalScheduled = 0;
 
             int numScheduled;

@@ -2,26 +2,15 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.Extensions.Logging;
-using Moq;
 using Rescheduler.Core.Entities;
 using Rescheduler.Infra.Data;
 using Shouldly;
 using Xunit;
 
-namespace Rescheduler.Infra.Tests.Data
+namespace Rescheduler.Infra.Tests.Data.JobExecutionsRepository
 {
-    public class RepositoryTests
+    public class GetAndMarkPendingTests : JobExecutionsRepositoryTests
     {
-        private readonly ILogger<Repository<JobExecution>> _logger;
-
-        public RepositoryTests()
-        {
-            _logger = Mock.Of<ILogger<Repository<JobExecution>>>();
-        }
-
         [Fact]
         public async Task GivenToBeScheduledJob_WhenMarkingPending_ShouldMarkAndReturn()
         {
@@ -74,26 +63,6 @@ namespace Rescheduler.Infra.Tests.Data
 
             // Then
             result.ShouldBeEmpty();
-        }
-
-        private static JobContext GetSeededJobContext(Job job, JobExecution jobExecution)
-        {
-            var contextOptions = new DbContextOptionsBuilder<JobContext>()
-                .UseInMemoryDatabase("test")
-                .ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning))
-                .Options;
-            
-            var context = new JobContext(contextOptions);
-
-            context.Database.EnsureDeleted();
-            context.Database.EnsureCreated();
-
-            context.Add(job);
-            context.Add(jobExecution);
-
-            context.SaveChanges();
-
-            return context;
         }
     }
 }
