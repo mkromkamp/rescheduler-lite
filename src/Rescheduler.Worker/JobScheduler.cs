@@ -24,22 +24,39 @@ namespace Rescheduler.Worker
         {
             using var logScope = _logger.BeginScope("{service}", "JobScheduler");
 
+            await RecoverJobExecutionsAsync(ctx);
+
             _logger.LogInformation("Job scheduler started");
 
+            await RunSchedulerAsync(ctx);
+
+            _logger.LogInformation("Job scheduler stopped");
+        }
+
+        private async Task RecoverJobExecutionsAsync(CancellationToken ctx)
+        {
+            using var scope = _scopeFactory.CreateScope();
+
+            var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+            var recovered = await mediator.Send(new RecoverJobExecutionsRequest(), ctx);
+            
+            _logger.LogInformation("Recovered {NumExecutions} executions", recovered);
+        }
+
+        private async Task RunSchedulerAsync(CancellationToken ctx)
+        {
             while (!ctx.IsCancellationRequested)
             {
-                await Task.Delay(TimeSpan.FromSeconds(30), ctx);
+                await Task.Delay(TimeSpan.FromSeconds(3), ctx);
 
                 // Scope this part due to DbContext disposing etc.
                 using var scope = _scopeFactory.CreateScope();
-                
+
                 var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
                 var result = await mediator.Send(new SchedulePendingRequest(), ctx);
 
-                _logger.LogInformation("Queued {numbJobs} jobs", result.NumScheduled);
+                _logger.LogInformation("Queued {NumbJobs} jobs", result.NumScheduled);
             }
-
-            _logger.LogInformation("Job scheduler stopped");
         }
     }
 }
