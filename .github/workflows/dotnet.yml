@@ -8,7 +8,6 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -19,7 +18,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.103
+        dotnet-version: 5.0.401
 
     - name: Restore dependencies
       run: dotnet restore
@@ -29,12 +28,54 @@ jobs:
 
     - name: Test
       run: dotnet test --no-build --verbosity normal --collect:"XPlat Code Coverage" --settings .github/coverlet.xml
-
-    - name: Codecov
-      uses: codecov/codecov-action@v1
-      with:
-        files: ./*.opencoverxml
         
+    - name: SonarScanner
+      uses: highbyte/sonarscan-dotnet@2.0
+      with:
+        sonarProjectKey: mkromkamp_rescheduler-lite
+        sonarProjectName:  rescheduler-lite
+        sonarOrganization: mkromkamp
+        dotnetTestArguments: --logger trx --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
+        sonarBeginArguments: /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/opencover.xml"
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  
+  coverage:
+    needs: [build]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 5.0.401
+
+      - name: Test
+        run: dotnet test --verbosity normal --collect:"XPlat Code Coverage" --settings .github/coverlet.xml
+
+      - name: Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          files: ./*.opencoverxml
+
+  sonar:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0 
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.401
+
     - name: SonarScanner
       uses: highbyte/sonarscan-dotnet@2.0
       with:
