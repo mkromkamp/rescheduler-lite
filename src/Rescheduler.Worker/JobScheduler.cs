@@ -22,7 +22,10 @@ namespace Rescheduler.Worker
 
         protected override async Task ExecuteAsync(CancellationToken ctx)
         {
-            using var logScope = _logger.BeginScope("{service}", "JobScheduler");
+            // Wait for the service to start and apply pending db migrations
+            await Task.Delay(TimeSpan.FromSeconds(5), ctx);
+            
+            using var logScope = _logger.BeginScope("{Service}", "JobScheduler");
 
             await RecoverJobExecutionsAsync(ctx);
 
