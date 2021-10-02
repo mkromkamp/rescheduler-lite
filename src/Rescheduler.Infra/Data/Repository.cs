@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 using Rescheduler.Core.Entities;
 using Rescheduler.Core.Interfaces;
@@ -97,10 +96,37 @@ namespace Rescheduler.Infra.Data
             return result?.AsReadOnly() ?? new List<T>().AsReadOnly();
         }
 
+        public async Task<int> RecoverAsync(CancellationToken ctx)
+        {
+            using var _ = QueryMetrics.TimeQuery(nameof(JobExecution).ToLowerInvariant(), "recover_executions");
+            await using var transaction = await _dbContext.Database.BeginTransactionAsync(ctx);
+
+            try
+            {
+                var inFlight = await _dbContext.Set<JobExecution>()
+                    .Where(s => s.Status == ExecutionStatus.InFlight && s.Job.Enabled)
+                    .ToListAsync(ctx);
+                
+                inFlight.ForEach(j => j.Scheduled());
+
+                await _dbContext.SaveChangesAsync(ctx);
+                await transaction.CommitAsync(ctx);
+
+                return inFlight.Count;
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync(ctx);
+                
+                _logger.LogError(ex, "Failed to recover jobs executions");
+                return 0;
+            }
+        }
+
         public async Task<IEnumerable<JobExecution>> GetAndMarkPending(int max, DateTime until, CancellationToken ctx)
         {
             using var _ = QueryMetrics.TimeQuery(nameof(JobExecution).ToLowerInvariant(), "mark_and_get_pending");
-            using var transaction = await _dbContext.Database.BeginTransactionAsync(ctx);
+            await using var transaction = await _dbContext.Database.BeginTransactionAsync(ctx);
 
             try
             {
@@ -114,6 +140,7 @@ namespace Rescheduler.Infra.Data
                 jobs.ForEach(j => j.InFlight());
                 
                 await _dbContext.SaveChangesAsync(ctx);
+                await transaction.CommitAsync(CancellationToken.None);
 
                 return jobs;
             }
@@ -123,10 +150,6 @@ namespace Rescheduler.Infra.Data
 
                 _logger.LogError(ex, "Failed to get pending job executions");
                 return Enumerable.Empty<JobExecution>();
-            }
-            finally
-            {
-                await transaction.CommitAsync(CancellationToken.None);
             }
         }
     }
