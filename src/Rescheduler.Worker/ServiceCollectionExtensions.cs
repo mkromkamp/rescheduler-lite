@@ -7,6 +7,7 @@ namespace Rescheduler.Worker
         public static IServiceCollection AddWorker(this IServiceCollection services)
         {
             services.AddHostedService<JobScheduler>();
+            services.AddHostedService<CompactionWorker>();
 
             return services;
         }

@@ -5,10 +5,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Rescheduler.Infra\Rescheduler.Infra.csproj"/>
-    <ProjectReference Include="..\Rescheduler.Core\Rescheduler.Core.csproj"/>
+    <ProjectReference Include="..\Rescheduler.Infra\Rescheduler.Infra.csproj" />
+    <ProjectReference Include="..\Rescheduler.Core\Rescheduler.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0"/>
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0" />
   </ItemGroup>
 </Project>
