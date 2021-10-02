@@ -28,18 +28,6 @@ jobs:
 
     - name: Test
       run: dotnet test --no-build --verbosity normal --collect:"XPlat Code Coverage" --settings .github/coverlet.xml
-        
-    - name: SonarScanner
-      uses: highbyte/sonarscan-dotnet@2.0
-      with:
-        sonarProjectKey: mkromkamp_rescheduler-lite
-        sonarProjectName:  rescheduler-lite
-        sonarOrganization: mkromkamp
-        dotnetTestArguments: --logger trx --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
-        sonarBeginArguments: /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/opencover.xml"
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   
   coverage:
     needs: [build]
