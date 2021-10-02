@@ -64,6 +64,7 @@ jobs:
           files: ./*.opencoverxml
 
   sonar:
+    needs: [build]
     runs-on: ubuntu-latest
 
     steps:
