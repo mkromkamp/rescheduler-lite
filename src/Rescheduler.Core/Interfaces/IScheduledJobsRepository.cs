@@ -10,5 +10,6 @@ namespace Rescheduler.Core.Interfaces
     {
         Task<int> RecoverAsync(CancellationToken ctx);
         Task<IEnumerable<JobExecution>> GetAndMarkPending(int max, DateTime until, CancellationToken ctx);
+        Task CompactAsync(DateTime before, CancellationToken ctx);
     }
 }

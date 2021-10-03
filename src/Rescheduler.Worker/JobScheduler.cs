@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Rescheduler.Core.Handlers;
+using Rescheduler.Infra;
 
 namespace Rescheduler.Worker
 {
@@ -20,45 +21,48 @@ namespace Rescheduler.Worker
             _scopeFactory = scopeFactory;
         }
 
-        protected override async Task ExecuteAsync(CancellationToken ctx)
+        protected override Task ExecuteAsync(CancellationToken cancellationToken)
+        {
+            return Task.Run(() => RunAsync(cancellationToken), cancellationToken);
+        }
+
+        private async Task RunAsync(CancellationToken ctx)
         {
             // Wait for the service to start and apply pending db migrations
             await Task.Delay(TimeSpan.FromSeconds(5), ctx);
-            
+
             using var logScope = _logger.BeginScope("{Service}", "JobScheduler");
 
             await RecoverJobExecutionsAsync(ctx);
-
-            _logger.LogInformation("Job scheduler started");
-
             await RunSchedulerAsync(ctx);
-
-            _logger.LogInformation("Job scheduler stopped");
         }
 
-        private async Task RecoverJobExecutionsAsync(CancellationToken ctx)
+        internal async Task RecoverJobExecutionsAsync(CancellationToken ctx)
         {
             using var scope = _scopeFactory.CreateScope();
+            await using var _ = _logger.Time(LogLevel.Information, "Recovery executions");
 
             var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
             var recovered = await mediator.Send(new RecoverJobExecutionsRequest(), ctx);
             
-            _logger.LogInformation("Recovered {NumExecutions} executions", recovered);
+            if (recovered.NumRecovered > 0)
+                _logger.LogInformation("Recovered {NumExecutions}", recovered.NumRecovered);
         }
 
-        private async Task RunSchedulerAsync(CancellationToken ctx)
+        internal async Task RunSchedulerAsync(CancellationToken ctx)
         {
             while (!ctx.IsCancellationRequested)
             {
-                await Task.Delay(TimeSpan.FromSeconds(3), ctx);
-
                 // Scope this part due to DbContext disposing etc.
                 using var scope = _scopeFactory.CreateScope();
-
                 var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+                
                 var result = await mediator.Send(new SchedulePendingRequest(), ctx);
 
-                _logger.LogInformation("Queued {NumbJobs} jobs", result.NumScheduled);
+                if (result.NumScheduled > 0)
+                    _logger.LogInformation("Queued {NumbJobs} jobs", result.NumScheduled);
+                
+                await Task.Delay(TimeSpan.FromSeconds(3), ctx);
             }
         }
     }

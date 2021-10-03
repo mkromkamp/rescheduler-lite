@@ -152,5 +152,27 @@ namespace Rescheduler.Infra.Data
                 return Enumerable.Empty<JobExecution>();
             }
         }
+
+        public async Task CompactAsync(DateTime before, CancellationToken ctx)
+        {
+            using var _ = QueryMetrics.TimeQuery(nameof(JobExecution).ToLowerInvariant(), "compact_executions");
+            await using var transaction = await _dbContext.Database.BeginTransactionAsync(ctx);
+
+            try
+            {
+                await _dbContext.Set<JobExecution>()
+                    .Where(s => s.Status == ExecutionStatus.Queued && s.QueuedAt <= before)
+                    .ForEachAsync(j => _dbContext.Set<JobExecution>().Remove(j), ctx);
+
+                await _dbContext.SaveChangesAsync(ctx);
+                await transaction.CommitAsync(ctx);
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync(CancellationToken.None);
+
+                _logger.LogError(ex, "Failed to compact job executions");
+            }
+        }
     }
 }
