@@ -37,7 +37,7 @@ namespace Rescheduler.Worker
             await RunSchedulerAsync(ctx);
         }
 
-        private async Task RecoverJobExecutionsAsync(CancellationToken ctx)
+        internal async Task RecoverJobExecutionsAsync(CancellationToken ctx)
         {
             using var scope = _scopeFactory.CreateScope();
             await using var _ = _logger.Time(LogLevel.Information, "Recovery executions");
@@ -49,19 +49,20 @@ namespace Rescheduler.Worker
                 _logger.LogInformation("Recovered {NumExecutions}", recovered.NumRecovered);
         }
 
-        private async Task RunSchedulerAsync(CancellationToken ctx)
+        internal async Task RunSchedulerAsync(CancellationToken ctx)
         {
             while (!ctx.IsCancellationRequested)
             {
-                await Task.Delay(TimeSpan.FromSeconds(3), ctx);
-
                 // Scope this part due to DbContext disposing etc.
                 using var scope = _scopeFactory.CreateScope();
-
                 var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+                
                 var result = await mediator.Send(new SchedulePendingRequest(), ctx);
 
-                _logger.LogInformation("Queued {NumbJobs} jobs", result.NumScheduled);
+                if (result.NumScheduled > 0)
+                    _logger.LogInformation("Queued {NumbJobs} jobs", result.NumScheduled);
+                
+                await Task.Delay(TimeSpan.FromSeconds(3), ctx);
             }
         }
     }
