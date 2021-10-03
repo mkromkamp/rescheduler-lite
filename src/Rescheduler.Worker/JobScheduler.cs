@@ -21,9 +21,9 @@ namespace Rescheduler.Worker
             _scopeFactory = scopeFactory;
         }
 
-        protected override Task ExecuteAsync(CancellationToken ctx)
+        protected override Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            return Task.Run(() => RunAsync(ctx), ctx);
+            return Task.Run(() => RunAsync(cancellationToken), cancellationToken);
         }
 
         private async Task RunAsync(CancellationToken ctx)

@@ -72,7 +72,10 @@ namespace Rescheduler.Worker.Tests
                 .ReturnsAsync(new SchedulePendingResponse(0));
 
             // When 
+#pragma warning disable 4014
             _worker.RunSchedulerAsync(cts.Token);
+#pragma warning restore 4014
+            
             await Task.Delay(100, cts.Token);
             cts.Cancel();
 
