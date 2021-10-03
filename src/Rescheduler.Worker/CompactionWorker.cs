@@ -24,14 +24,16 @@ namespace Rescheduler.Worker
 
         protected override Task ExecuteAsync(CancellationToken ctx)
         {
-            return Task.Run(() => RunCompaction(ctx), ctx);
+            return Task.Run(() =>
+            {
+                // Wait for the service to start and apply pending db migrations
+                Task.Delay(TimeSpan.FromSeconds(5), ctx);
+                return RunCompaction(ctx);
+            }, ctx);
         }
 
-        private async Task RunCompaction(CancellationToken ctx)
+        internal async Task RunCompaction(CancellationToken ctx)
         {
-            // Wait for the service to start and apply pending db migrations
-            await Task.Delay(TimeSpan.FromSeconds(5), ctx);
-
             using var logScope = _logger.BeginScope("{Service}", "CompactionWorker");
 
             while (!ctx.IsCancellationRequested)
