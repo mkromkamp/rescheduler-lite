@@ -73,10 +73,10 @@ If you feel like there is missing or incorrect documentation feel free to create
 
 In order to start ~hacking~ developing on rescheduler-lite the following is needed
 
-- [.NET 5 SDK](https://dotnet.microsoft.com/download/dotnet/5.0)
+- [.NET 6 SDK](https://dotnet.microsoft.com/download/dotnet/6.0)
 - [favorite IDE, VScode is free and easy to get started with](https://code.visualstudio.com/)
-- [docker](https://docs.docker.com/get-docker/)
-- [docker-compose](https://docs.docker.com/compose/install/)
+- [Docker](https://docs.docker.com/get-docker/)
+- [Docker compose](https://docs.docker.com/compose/install/)
 
 After that you should be able to start developing on the project and run any development dependencies (RabbitMQ) in Docker
 

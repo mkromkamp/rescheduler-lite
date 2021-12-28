@@ -1,32 +1,32 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-    <LangVersion>9.0</LangVersion>
+    <TargetFramework>net6.0</TargetFramework>
+    <LangVersion>10.0</LangVersion>
     <Nullable>enable</Nullable>
     <!-- Generate XML docs -->
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>
     <!-- Publish setting -->
-   <PublishSingleFile>true</PublishSingleFile>
-   <SelfContained>true</SelfContained>
-   <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
-   <PublishTrimmed>true</PublishTrimmed>
-   <TrimMode>link</TrimMode>
-   <TrimmerRemoveSymbols>true</TrimmerRemoveSymbols>
-   <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
-   <DebuggerSupport>false</DebuggerSupport>
-   <PublishReadyToRun>false</PublishReadyToRun> <!-- Reduce file size -->
-   <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+   <!-- <PublishSingleFile>true</PublishSingleFile> -->
+   <!-- <SelfContained>true</SelfContained> -->
+   <!-- <RuntimeIdentifier>linux-x64</RuntimeIdentifier> -->
+   <!-- <PublishTrimmed>true</PublishTrimmed> -->
+   <!-- <TrimMode>link</TrimMode> -->
+   <!-- <TrimmerRemoveSymbols>true</TrimmerRemoveSymbols> -->
+   <!-- <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch> -->
+   <!-- <DebuggerSupport>false</DebuggerSupport> -->
+   <!-- <PublishReadyToRun>false</PublishReadyToRun> Reduce file size -->
+   <!-- <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract> -->
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.10" NoWarn="NU1605" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="5.0.10" NoWarn="NU1605" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.10">
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.1" NoWarn="NU1605" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="6.0.1" NoWarn="NU1605" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.1">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.2" />
-    <PackageReference Include="prometheus-net.AspNetCore" Version="5.0.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+    <PackageReference Include="prometheus-net.AspNetCore" Version="5.0.2" />
     <PackageReference Include="prometheus-net.SystemMetrics" Version="2.0.0" />
   </ItemGroup>
   <ItemGroup>
