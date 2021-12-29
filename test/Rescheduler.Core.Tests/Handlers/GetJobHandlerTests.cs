@@ -8,52 +8,51 @@ using Rescheduler.Core.Interfaces;
 using Shouldly;
 using Xunit;
 
-namespace Rescheduler.Core.Tests.Handlers
+namespace Rescheduler.Core.Tests.Handlers;
+
+public class GetJobHandlerTests
 {
-    public class GetJobHandlerTests
+    private readonly IRepository<Job> _jobRepository;
+
+    private readonly GetJobHandler _handler;
+
+    public GetJobHandlerTests()
     {
-        private readonly IRepository<Job> _jobRepository;
+        _jobRepository = Mock.Of<IRepository<Job>>();
 
-        private readonly GetJobHandler _handler;
+        _handler = new GetJobHandler(_jobRepository);
+    }
 
-        public GetJobHandlerTests()
-        {
-            _jobRepository = Mock.Of<IRepository<Job>>();
+    [Fact]
+    public async Task GivenExistingJob_WhenHandling_ShouldReturnJob()
+    {
+        // Given
+        var job = Job.New("subject", "test payload", true, DateTime.UtcNow, DateTime.UtcNow.AddYears(1), "*/10 * * * *");
+        Mock.Get(_jobRepository)
+            .Setup(x => x.GetByIdAsync(job.Id, CancellationToken.None))
+            .ReturnsAsync(job);
 
-            _handler = new GetJobHandler(_jobRepository);
-        }
+        // When
+        var getJobResponse = await _handler.Handle(new GetJobRequest(job.Id), CancellationToken.None);
 
-        [Fact]
-        public async Task GivenExistingJob_WhenHandling_ShouldReturnJob()
-        {
-            // Given
-            var job = Job.New("subject", "test payload", true, DateTime.UtcNow, DateTime.UtcNow.AddYears(1), "*/10 * * * *");
-            Mock.Get(_jobRepository)
-                .Setup(x => x.GetByIdAsync(job.Id, CancellationToken.None))
-                .ReturnsAsync(job);
+        // Then
+        getJobResponse.Job.ShouldNotBeNull();
+        getJobResponse.Job.ShouldBe(job);
+    }
 
-            // When
-            var getJobResponse = await _handler.Handle(new GetJobRequest(job.Id), CancellationToken.None);
+    [Fact]
+    public async Task GivenNonExistingJob_WhenHandling_ShouldNotReturnJob()
+    {
+        // Given
+        var job = Job.New("subject", "test payload", true, DateTime.UtcNow, DateTime.UtcNow.AddYears(1), "*/10 * * * *");
+        Mock.Get(_jobRepository)
+            .Setup(x => x.GetByIdAsync(job.Id, CancellationToken.None))
+            .ReturnsAsync((Job)null);
 
-            // Then
-            getJobResponse.Job.ShouldNotBeNull();
-            getJobResponse.Job.ShouldBe(job);
-        }
+        // When
+        var getJobResponse = await _handler.Handle(new GetJobRequest(job.Id), CancellationToken.None);
 
-        [Fact]
-        public async Task GivenNonExistingJob_WhenHandling_ShouldNotReturnJob()
-        {
-            // Given
-            var job = Job.New("subject", "test payload", true, DateTime.UtcNow, DateTime.UtcNow.AddYears(1), "*/10 * * * *");
-            Mock.Get(_jobRepository)
-                .Setup(x => x.GetByIdAsync(job.Id, CancellationToken.None))
-                .ReturnsAsync((Job)null);
-
-            // When
-            var getJobResponse = await _handler.Handle(new GetJobRequest(job.Id), CancellationToken.None);
-
-            // Then
-            getJobResponse.Job.ShouldBeNull();
-        }
+        // Then
+        getJobResponse.Job.ShouldBeNull();
     }
 }

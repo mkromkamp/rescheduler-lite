@@ -7,29 +7,28 @@ using MediatR;
 using Rescheduler.Core.Entities;
 using Rescheduler.Core.Interfaces;
 
-namespace Rescheduler.Core.Handlers
+namespace Rescheduler.Core.Handlers;
+
+internal class GetJobExecutionsHandler : IRequestHandler<GetJobExecutionsRequest, GetJobExecutionsResponse>
 {
-    internal class GetJobExecutionsHandler : IRequestHandler<GetJobExecutionsRequest, GetJobExecutionsResponse>
+    private readonly IRepository<JobExecution> _repository;
+
+    public GetJobExecutionsHandler(IRepository<JobExecution> repository)
     {
-        private readonly IRepository<JobExecution> _repository;
-
-        public GetJobExecutionsHandler(IRepository<JobExecution> repository)
-        {
-            _repository = repository;
-        }
-
-        public async Task<GetJobExecutionsResponse> Handle(GetJobExecutionsRequest request, CancellationToken cancellationToken)
-        {
-            var result = await _repository.GetManyAsync(
-                (q) => q.Where(x => x.Job.Id == request.JobId)
-                        .OrderByDescending(x => x.ScheduledAt),
-                cancellationToken);
-
-            return new GetJobExecutionsResponse(result);
-        }
+        _repository = repository;
     }
 
-    public record GetJobExecutionsRequest(Guid JobId) : IRequest<GetJobExecutionsResponse>;
+    public async Task<GetJobExecutionsResponse> Handle(GetJobExecutionsRequest request, CancellationToken cancellationToken)
+    {
+        var result = await _repository.GetManyAsync(
+            (q) => q.Where(x => x.Job.Id == request.JobId)
+                .OrderByDescending(x => x.ScheduledAt),
+            cancellationToken);
 
-    public record GetJobExecutionsResponse(IEnumerable<JobExecution> Executions);
+        return new GetJobExecutionsResponse(result);
+    }
 }
+
+public record GetJobExecutionsRequest(Guid JobId) : IRequest<GetJobExecutionsResponse>;
+
+public record GetJobExecutionsResponse(IEnumerable<JobExecution> Executions);
