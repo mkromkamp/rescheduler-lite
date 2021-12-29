@@ -1,5 +1,3 @@
-using System;
-using Moq;
 using Rescheduler.Core.Entities;
 using Shouldly;
 using Xunit;

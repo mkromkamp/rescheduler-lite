@@ -1,6 +1,3 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Moq;
 using Rescheduler.Core.Entities;
 using Rescheduler.Core.Handlers;

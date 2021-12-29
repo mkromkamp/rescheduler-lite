@@ -1,4 +1,3 @@
-using System;
 using Amazon.SimpleNotificationService;
 using Azure.Messaging.ServiceBus;
 using MediatR;
