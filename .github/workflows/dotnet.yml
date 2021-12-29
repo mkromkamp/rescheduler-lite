@@ -24,56 +24,30 @@ jobs:
       run: dotnet restore
 
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build --configuration Release --no-restore
 
     - name: Test
-      run: dotnet test --no-build --verbosity normal --collect:"XPlat Code Coverage" --settings .github/coverlet.xml
-  
-  coverage:
-    needs: [build]
-    runs-on: ubuntu-latest
+      run: dotnet test --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage
 
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0 
+    - name: Copy Coverage To Predictable Location
+      run: cp coverage/**/coverage.cobertura.xml coverage.cobertura.xml
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: 6.0.x
-
-      - name: Test
-        run: dotnet test --verbosity normal --collect:"XPlat Code Coverage" --settings .github/coverlet.xml
-
-      - name: Codecov
-        uses: codecov/codecov-action@v1
-        with:
-          files: ./*.opencoverxml
-
-  sonar:
-    needs: [build]
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v2
+    - name: Code Coverage Summary Report
+      uses: irongut/CodeCoverageSummary@v1.2.0
       with:
-        fetch-depth: 0 
+        filename: coverage.cobertura.xml
+        badge: true
+        fail_below_min: true
+        format: markdown
+        hide_branch_rate: false
+        hide_complexity: false
+        indicators: true
+        output: both
+        thresholds: '60 80'
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v1
+    - name: Add Coverage PR Comment
+      uses: marocchino/sticky-pull-request-comment@v2
+      if: github.event_name == 'pull_request'
       with:
-        dotnet-version: 6.0.x
-
-    - name: SonarScanner
-      uses: highbyte/sonarscan-dotnet@v2.1.2
-      with:
-        sonarProjectKey: mkromkamp_rescheduler-lite
-        sonarProjectName:  rescheduler-lite
-        sonarOrganization: mkromkamp
-        dotnetTestArguments: --logger trx --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
-        sonarBeginArguments: /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/opencover.xml"
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+        recreate: true
+        path: code-coverage-results.md
