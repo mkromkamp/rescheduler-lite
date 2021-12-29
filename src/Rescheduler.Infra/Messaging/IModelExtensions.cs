@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using RabbitMQ.Client;
 
 namespace Rescheduler.Infra.Messaging;

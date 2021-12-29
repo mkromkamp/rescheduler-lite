@@ -1,5 +1,3 @@
-using System;
-
 namespace Rescheduler.Core.Entities;
 
 public abstract class EntityBase

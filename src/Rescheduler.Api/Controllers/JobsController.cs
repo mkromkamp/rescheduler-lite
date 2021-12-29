@@ -1,10 +1,5 @@
-using System;
-using System.Collections.Generic;
 using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Rescheduler.Api.Models;
 using Rescheduler.Core.Handlers;

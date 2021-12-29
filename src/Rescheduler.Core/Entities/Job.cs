@@ -1,4 +1,3 @@
-using System;
 using Cronos;
 
 namespace Rescheduler.Core.Entities;

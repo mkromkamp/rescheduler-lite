@@ -1,8 +1,3 @@
-using System;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-
 namespace Rescheduler.Api;
 #pragma warning disable CS1591
 public class Program

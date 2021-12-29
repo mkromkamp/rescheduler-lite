@@ -1,4 +1,3 @@
-using System;
 using Rescheduler.Core.Entities;
 
 namespace Rescheduler.Api.Models;

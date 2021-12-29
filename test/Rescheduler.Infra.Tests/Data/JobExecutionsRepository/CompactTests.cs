@@ -1,6 +1,3 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Rescheduler.Core.Entities;
 using Rescheduler.Infra.Data;
 using Shouldly;
