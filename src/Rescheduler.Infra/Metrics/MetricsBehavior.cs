@@ -3,38 +3,37 @@ using System.Threading.Tasks;
 using MediatR;
 using Prometheus;
 
-namespace Rescheduler.Infra.Metrics
+namespace Rescheduler.Infra.Metrics;
+
+internal class MetricsBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> 
+    where TRequest : class
+    where TResponse : class
 {
-    internal class MetricsBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> 
-        where TRequest : class
-        where TResponse : class
+    private static readonly Counter RequestProcessedCount = 
+        Prometheus.Metrics.CreateCounter(
+            "sched_requested_processed_total", 
+            "Number of processed requests.", 
+            new CounterConfiguration
+            {
+                LabelNames = new[] { "method", "success" }
+            });
+
+    public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
     {
-        private static readonly Counter RequestProcessedCount = 
-            Prometheus.Metrics.CreateCounter(
-                "sched_requested_processed_total", 
-                "Number of processed requests.", 
-                new CounterConfiguration
-                {
-                    LabelNames = new[] { "method", "success" }
-                });
+        var requestType = request.GetType().Name.ToLowerInvariant();
 
-        public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
+        try
         {
-            var requestType = request.GetType().Name.ToLowerInvariant();
-
-            try
-            {
-                var result = await next();
+            var result = await next();
                 
-                RequestProcessedCount.WithLabels(requestType, "true").Inc();
+            RequestProcessedCount.WithLabels(requestType, "true").Inc();
                 
-                return result;
-            }
-            catch (System.Exception)
-            {
-                RequestProcessedCount.WithLabels(requestType, "false").Inc();
-                throw;
-            }
+            return result;
+        }
+        catch (System.Exception)
+        {
+            RequestProcessedCount.WithLabels(requestType, "false").Inc();
+            throw;
         }
     }
 }

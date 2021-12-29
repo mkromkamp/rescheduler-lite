@@ -8,111 +8,110 @@ using Rescheduler.Core.Interfaces;
 using Shouldly;
 using Xunit;
 
-namespace Rescheduler.Core.Tests.Handlers
+namespace Rescheduler.Core.Tests.Handlers;
+
+public class CreateJobRequestHandlerTests
 {
-    public class CreateJobRequestHandlerTests
+    private readonly IRepository<Job> _jobRepository;
+    private readonly IRepository<JobExecution> _jobExecutionRepository;
+
+    private readonly CreateJobHandler _handler;
+
+    public CreateJobRequestHandlerTests()
     {
-        private readonly IRepository<Job> _jobRepository;
-        private readonly IRepository<JobExecution> _jobExecutionRepository;
+        _jobRepository = Mock.Of<IRepository<Job>>();
 
-        private readonly CreateJobHandler _handler;
+        _jobExecutionRepository = Mock.Of<IRepository<JobExecution>>();
 
-        public CreateJobRequestHandlerTests()
-        {
-            _jobRepository = Mock.Of<IRepository<Job>>();
+        _handler = new CreateJobHandler(_jobRepository, _jobExecutionRepository);
+    }
 
-            _jobExecutionRepository = Mock.Of<IRepository<JobExecution>>();
+    [Fact]
+    public async Task GivenEnabledJob_WhenHandling_ShouldStoreJob()
+    {
+        // Given
+        var enabled = true;
+        var job = Job.New("test", "test payload", enabled, DateTime.UtcNow, DateTime.UtcNow.AddYears(1), "*/10 * * * *");
 
-            _handler = new CreateJobHandler(_jobRepository, _jobExecutionRepository);
-        }
+        // When
+        var createJobResponse = await _handler.Handle(new CreateJobRequest(job), CancellationToken.None);
 
-        [Fact]
-        public async Task GivenEnabledJob_WhenHandling_ShouldStoreJob()
-        {
-            // Given
-            var enabled = true;
-            var job = Job.New("test", "test payload", enabled, DateTime.UtcNow, DateTime.UtcNow.AddYears(1), "*/10 * * * *");
-
-            // When
-            var createJobResponse = await _handler.Handle(new CreateJobRequest(job), CancellationToken.None);
-
-            // Then
-            createJobResponse.Job.ShouldNotBeNull();
-            Mock.Get(_jobRepository)
-                .Verify(x => x.AddAsync(job, CancellationToken.None),
+        // Then
+        createJobResponse.Job.ShouldNotBeNull();
+        Mock.Get(_jobRepository)
+            .Verify(x => x.AddAsync(job, CancellationToken.None),
                 Times.Once);
-        }
+    }
 
-        [Fact]
-        public async Task GivenDisabledJob_WhenHandling_ShouldStoreJob()
-        {
-            // Given
-            var enabled = false;
-            var job = Job.New("test", "test payload", enabled, DateTime.UtcNow, DateTime.UtcNow.AddYears(1), "*/10 * * * *");
+    [Fact]
+    public async Task GivenDisabledJob_WhenHandling_ShouldStoreJob()
+    {
+        // Given
+        var enabled = false;
+        var job = Job.New("test", "test payload", enabled, DateTime.UtcNow, DateTime.UtcNow.AddYears(1), "*/10 * * * *");
 
-            // When
-            var createJobResponse = await _handler.Handle(new CreateJobRequest(job), CancellationToken.None);
+        // When
+        var createJobResponse = await _handler.Handle(new CreateJobRequest(job), CancellationToken.None);
 
-            // Then
-            createJobResponse.Job.ShouldNotBeNull();
-            Mock.Get(_jobRepository)
-                .Verify(x => x.AddAsync(job, CancellationToken.None),
+        // Then
+        createJobResponse.Job.ShouldNotBeNull();
+        Mock.Get(_jobRepository)
+            .Verify(x => x.AddAsync(job, CancellationToken.None),
                 Times.Once);
-        }
+    }
 
-        [Fact]
-        public async Task GivenJobWithNextRun_WhenHandling_ShouldStoreJobExecution()
-        {
-            // Given
-            var enabled = true;
-            var job = Job.New("test", "test payload", enabled, DateTime.UtcNow, DateTime.UtcNow.AddYears(1), "*/10 * * * *");
+    [Fact]
+    public async Task GivenJobWithNextRun_WhenHandling_ShouldStoreJobExecution()
+    {
+        // Given
+        var enabled = true;
+        var job = Job.New("test", "test payload", enabled, DateTime.UtcNow, DateTime.UtcNow.AddYears(1), "*/10 * * * *");
 
-            // When
-            var createJobResponse = await _handler.Handle(new CreateJobRequest(job), CancellationToken.None);
+        // When
+        var createJobResponse = await _handler.Handle(new CreateJobRequest(job), CancellationToken.None);
 
-            // Then
-            createJobResponse.Job.ShouldNotBeNull();
-            createJobResponse.JobExecution.ShouldNotBeNull();
-            Mock.Get(_jobExecutionRepository)
-                .Verify(x => x.AddAsync(It.IsAny<JobExecution>(), CancellationToken.None),
+        // Then
+        createJobResponse.Job.ShouldNotBeNull();
+        createJobResponse.JobExecution.ShouldNotBeNull();
+        Mock.Get(_jobExecutionRepository)
+            .Verify(x => x.AddAsync(It.IsAny<JobExecution>(), CancellationToken.None),
                 Times.Once);
-        }
+    }
 
-        [Fact]
-        public async Task GivenDisabledJobWithNextRun_WhenHandling_ShouldNotStoreJobExecution()
-        {
-            // Given
-            var enabled = false;
-            var job = Job.New("test", "test payload", enabled, DateTime.UtcNow, DateTime.UtcNow.AddYears(1), "*/10 * * * *");
+    [Fact]
+    public async Task GivenDisabledJobWithNextRun_WhenHandling_ShouldNotStoreJobExecution()
+    {
+        // Given
+        var enabled = false;
+        var job = Job.New("test", "test payload", enabled, DateTime.UtcNow, DateTime.UtcNow.AddYears(1), "*/10 * * * *");
 
-            // When
-            var createJobResponse = await _handler.Handle(new CreateJobRequest(job), CancellationToken.None);
+        // When
+        var createJobResponse = await _handler.Handle(new CreateJobRequest(job), CancellationToken.None);
 
-            // Then
-            createJobResponse.Job.ShouldNotBeNull();
-            createJobResponse.JobExecution.ShouldBeNull();
-            Mock.Get(_jobExecutionRepository)
-                .Verify(x => x.AddAsync(It.IsAny<JobExecution>(), CancellationToken.None),
+        // Then
+        createJobResponse.Job.ShouldNotBeNull();
+        createJobResponse.JobExecution.ShouldBeNull();
+        Mock.Get(_jobExecutionRepository)
+            .Verify(x => x.AddAsync(It.IsAny<JobExecution>(), CancellationToken.None),
                 Times.Never);
-        }
+    }
 
 
-        [Fact]
-        public async Task GivenJobWithoutNextRun_WhenHandling_ShouldNotStoreJobExecution()
-        {
-            // Given
-            var enabled = true;
-            var job = Job.New("test", "test payload", enabled, DateTime.UtcNow.AddDays(-1), DateTime.UtcNow.AddYears(-1), "*/10 * * * *");
+    [Fact]
+    public async Task GivenJobWithoutNextRun_WhenHandling_ShouldNotStoreJobExecution()
+    {
+        // Given
+        var enabled = true;
+        var job = Job.New("test", "test payload", enabled, DateTime.UtcNow.AddDays(-1), DateTime.UtcNow.AddYears(-1), "*/10 * * * *");
 
-            // When
-            var createJobResponse = await _handler.Handle(new CreateJobRequest(job), CancellationToken.None);
+        // When
+        var createJobResponse = await _handler.Handle(new CreateJobRequest(job), CancellationToken.None);
 
-            // Then
-            createJobResponse.Job.ShouldNotBeNull();
-            createJobResponse.JobExecution.ShouldBeNull();
-            Mock.Get(_jobExecutionRepository)
-                .Verify(x => x.AddAsync(It.IsAny<JobExecution>(), CancellationToken.None),
+        // Then
+        createJobResponse.Job.ShouldNotBeNull();
+        createJobResponse.JobExecution.ShouldBeNull();
+        Mock.Get(_jobExecutionRepository)
+            .Verify(x => x.AddAsync(It.IsAny<JobExecution>(), CancellationToken.None),
                 Times.Never);
-        }
     }
 }

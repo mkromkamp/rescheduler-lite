@@ -4,22 +4,21 @@ using System.Threading.Tasks;
 using MediatR;
 using Rescheduler.Core.Interfaces;
 
-namespace Rescheduler.Core.Handlers
+namespace Rescheduler.Core.Handlers;
+
+public class CompactionHandler : INotificationHandler<CompactionRequest>
 {
-    public class CompactionHandler : INotificationHandler<CompactionRequest>
+    private readonly IJobExecutionRepository _jobExecutionRepository;
+
+    public CompactionHandler(IJobExecutionRepository jobExecutionRepository)
     {
-        private readonly IJobExecutionRepository _jobExecutionRepository;
-
-        public CompactionHandler(IJobExecutionRepository jobExecutionRepository)
-        {
-            _jobExecutionRepository = jobExecutionRepository;
-        }
-
-        public async Task Handle(CompactionRequest notification, CancellationToken ctx)
-        {
-            await _jobExecutionRepository.CompactAsync(notification.Before, ctx);
-        }
+        _jobExecutionRepository = jobExecutionRepository;
     }
 
-    public record CompactionRequest(DateTime Before) : INotification;
+    public async Task Handle(CompactionRequest notification, CancellationToken ctx)
+    {
+        await _jobExecutionRepository.CompactAsync(notification.Before, ctx);
+    }
 }
+
+public record CompactionRequest(DateTime Before) : INotification;

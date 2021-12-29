@@ -12,74 +12,73 @@ using Rescheduler.Core.Entities;
 using Rescheduler.Core.Interfaces;
 using Rescheduler.Infra.Metrics;
 
-namespace Rescheduler.Infra.Messaging
+namespace Rescheduler.Infra.Messaging;
+
+internal class SnsPublisher : IJobPublisher
 {
-    internal class SnsPublisher : IJobPublisher
+    private readonly ILogger _logger;
+    private readonly IAmazonSimpleNotificationService _sns;
+        
+    private SnsOptions _options;
+
+    public SnsPublisher(ILogger<SnsPublisher> logger, IAmazonSimpleNotificationService sns, IOptionsMonitor<MessagingOptions> optionsMonitor)
     {
-        private readonly ILogger _logger;
-        private readonly IAmazonSimpleNotificationService _sns;
-        
-        private SnsOptions _options;
-
-        public SnsPublisher(ILogger<SnsPublisher> logger, IAmazonSimpleNotificationService sns, IOptionsMonitor<MessagingOptions> optionsMonitor)
-        {
-            _logger = logger;
-            _sns = sns;
-            _options = optionsMonitor.CurrentValue.Sns;
+        _logger = logger;
+        _sns = sns;
+        _options = optionsMonitor.CurrentValue.Sns;
             
-            optionsMonitor.OnChange(newOptions =>
-            {
-                if (newOptions?.ServiceBus is null) return;
-
-                _options = newOptions.Sns;
-            });
-        }
-
-        public async Task<bool> PublishAsync(JobExecution jobExecution, CancellationToken ctx)
+        optionsMonitor.OnChange(newOptions =>
         {
-            using var _ = MessagingMetrics.TimePublishDuration();
+            if (newOptions?.ServiceBus is null) return;
+
+            _options = newOptions.Sns;
+        });
+    }
+
+    public async Task<bool> PublishAsync(JobExecution jobExecution, CancellationToken ctx)
+    {
+        using var _ = MessagingMetrics.TimePublishDuration();
             
-            return await PublishJobExecutionAsync(jobExecution, ctx);
-            }
+        return await PublishJobExecutionAsync(jobExecution, ctx);
+    }
 
-        public async Task<bool> PublishManyAsync(IEnumerable<JobExecution> jobExecutions, CancellationToken ctx)
+    public async Task<bool> PublishManyAsync(IEnumerable<JobExecution> jobExecutions, CancellationToken ctx)
+    {
+        using var _ = MessagingMetrics.TimeBatchPublishDuration();
+
+        var jobExecutionsList = jobExecutions.ToList();
+        try
         {
-            using var _ = MessagingMetrics.TimeBatchPublishDuration();
+            var tasks = jobExecutionsList.Select(execution => PublishJobExecutionAsync(execution, ctx));
+            var results = await Task.WhenAll(tasks);
 
-            var jobExecutionsList = jobExecutions.ToList();
-            try
-            {
-                var tasks = jobExecutionsList.Select(execution => PublishJobExecutionAsync(execution, ctx));
-                var results = await Task.WhenAll(tasks);
-
-                // Any tasks failed -> we consider the batch to be failed
-                return results.Contains(false) is false;
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "Failed to batch publish {JobIds} to Sns", jobExecutionsList.Select(j => j.Job.Id));
-                return false;
-            }
+            // Any tasks failed -> we consider the batch to be failed
+            return results.Contains(false) is false;
         }
-        
-        private async Task<bool> PublishJobExecutionAsync(JobExecution jobExecution, CancellationToken ctx)
+        catch (Exception e)
         {
-            try
+            _logger.LogError(e, "Failed to batch publish {JobIds} to Sns", jobExecutionsList.Select(j => j.Job.Id));
+            return false;
+        }
+    }
+        
+    private async Task<bool> PublishJobExecutionAsync(JobExecution jobExecution, CancellationToken ctx)
+    {
+        try
+        {
+            var request = new PublishRequest(_options.TopicArn, jobExecution.Job.Payload, jobExecution.Job.Subject)
             {
-                var request = new PublishRequest(_options.TopicArn, jobExecution.Job.Payload, jobExecution.Job.Subject)
-                {
-                    MessageGroupId = _options.FifoTopic ? jobExecution.Job.Id.ToString() : null,
-                    MessageDeduplicationId = _options.FifoTopic ? jobExecution.Id.ToString() : null
-                };
+                MessageGroupId = _options.FifoTopic ? jobExecution.Job.Id.ToString() : null,
+                MessageDeduplicationId = _options.FifoTopic ? jobExecution.Id.ToString() : null
+            };
 
-                return (await _sns.PublishAsync(request, ctx))
-                    .HttpStatusCode.Equals(HttpStatusCode.OK);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "Failed to publish job {JobId} to Sns", jobExecution.Job.Id);
-                return false;
-            }
+            return (await _sns.PublishAsync(request, ctx))
+                .HttpStatusCode.Equals(HttpStatusCode.OK);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Failed to publish job {JobId} to Sns", jobExecution.Job.Id);
+            return false;
         }
     }
 }

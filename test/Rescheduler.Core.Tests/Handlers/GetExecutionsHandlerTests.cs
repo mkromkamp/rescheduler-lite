@@ -10,58 +10,57 @@ using Rescheduler.Core.Interfaces;
 using Shouldly;
 using Xunit;
 
-namespace Rescheduler.Core.Tests.Handlers
+namespace Rescheduler.Core.Tests.Handlers;
+
+public class GetExecutionsHandlerTests
 {
-    public class GetExecutionsHandlerTests
+    private readonly IRepository<JobExecution> _jobExecutionRepository;
+
+    private readonly GetExecutionsHandler _handler;
+
+    public GetExecutionsHandlerTests()
     {
-        private readonly IRepository<JobExecution> _jobExecutionRepository;
+        _jobExecutionRepository = Mock.Of<IRepository<JobExecution>>();
 
-        private readonly GetExecutionsHandler _handler;
+        _handler = new GetExecutionsHandler(_jobExecutionRepository);
+    }
 
-        public GetExecutionsHandlerTests()
-        {
-            _jobExecutionRepository = Mock.Of<IRepository<JobExecution>>();
+    [Fact]
+    public async Task GivenOneExecution_WhenHandling_ShouldReturn()
+    {
+        // Given
+        var request = new GetExecutionsRequest(Enumerable.Empty<ExecutionStatus>(), "subject", 10, 0);
+        Mock.Get(_jobExecutionRepository)
+            .Setup(x => x.GetManyAsync(It.IsAny<Func<IQueryable<JobExecution>, IQueryable<JobExecution>>>(), CancellationToken.None))
+            .ReturnsAsync(new List<JobExecution>
+            {
+                JobExecution.New(Job.New("subject", "payload", true, DateTime.UtcNow, DateTime.UtcNow, null), DateTime.UtcNow)
+            }.AsReadOnly());
 
-            _handler = new GetExecutionsHandler(_jobExecutionRepository);
-        }
+        // When
+        var result = await _handler.Handle(request, CancellationToken.None);
 
-        [Fact]
-        public async Task GivenOneExecution_WhenHandling_ShouldReturn()
-        {
-            // Given
-            var request = new GetExecutionsRequest(Enumerable.Empty<ExecutionStatus>(), "subject", 10, 0);
-            Mock.Get(_jobExecutionRepository)
-                .Setup(x => x.GetManyAsync(It.IsAny<Func<IQueryable<JobExecution>, IQueryable<JobExecution>>>(), CancellationToken.None))
-                .ReturnsAsync(new List<JobExecution>
-                {
-                    JobExecution.New(Job.New("subject", "payload", true, DateTime.UtcNow, DateTime.UtcNow, null), DateTime.UtcNow)
-                }.AsReadOnly());
-
-            // When
-            var result = await _handler.Handle(request, CancellationToken.None);
-
-            // Then
-            result.Executions.ShouldHaveSingleItem();
-        }
+        // Then
+        result.Executions.ShouldHaveSingleItem();
+    }
         
-        [Fact]
-        public async Task GivenTwoExecution_WhenHandling_ShouldReturn()
-        {
-            // Given
-            var request = new GetExecutionsRequest(Enumerable.Empty<ExecutionStatus>(), "subject", 10, 0);
-            Mock.Get(_jobExecutionRepository)
-                .Setup(x => x.GetManyAsync(It.IsAny<Func<IQueryable<JobExecution>, IQueryable<JobExecution>>>(), CancellationToken.None))
-                .ReturnsAsync(new List<JobExecution>
-                {
-                    JobExecution.New(Job.New("subject", "payload", true, DateTime.UtcNow, DateTime.UtcNow, null), DateTime.UtcNow),
-                    JobExecution.New(Job.New("subject", "payload", true, DateTime.UtcNow, DateTime.UtcNow, null), DateTime.UtcNow)
-                }.AsReadOnly());
+    [Fact]
+    public async Task GivenTwoExecution_WhenHandling_ShouldReturn()
+    {
+        // Given
+        var request = new GetExecutionsRequest(Enumerable.Empty<ExecutionStatus>(), "subject", 10, 0);
+        Mock.Get(_jobExecutionRepository)
+            .Setup(x => x.GetManyAsync(It.IsAny<Func<IQueryable<JobExecution>, IQueryable<JobExecution>>>(), CancellationToken.None))
+            .ReturnsAsync(new List<JobExecution>
+            {
+                JobExecution.New(Job.New("subject", "payload", true, DateTime.UtcNow, DateTime.UtcNow, null), DateTime.UtcNow),
+                JobExecution.New(Job.New("subject", "payload", true, DateTime.UtcNow, DateTime.UtcNow, null), DateTime.UtcNow)
+            }.AsReadOnly());
 
-            // When
-            var result = await _handler.Handle(request, CancellationToken.None);
+        // When
+        var result = await _handler.Handle(request, CancellationToken.None);
 
-            // Then
-            result.Executions.Count().ShouldBe(2);
-        }
+        // Then
+        result.Executions.Count().ShouldBe(2);
     }
 }

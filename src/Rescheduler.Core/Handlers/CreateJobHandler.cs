@@ -5,37 +5,36 @@ using MediatR;
 using Rescheduler.Core.Entities;
 using Rescheduler.Core.Interfaces;
 
-namespace Rescheduler.Core.Handlers
+namespace Rescheduler.Core.Handlers;
+
+internal class CreateJobHandler : IRequestHandler<CreateJobRequest, CreateJobResponse>
 {
-    internal class CreateJobHandler : IRequestHandler<CreateJobRequest, CreateJobResponse>
+    private readonly IRepository<Job> _jobRepository;
+    private readonly IRepository<JobExecution> _jobExecutionRepository;
+
+    public CreateJobHandler(IRepository<Job> jobRepository, IRepository<JobExecution> jobExecutionRepository)
     {
-        private readonly IRepository<Job> _jobRepository;
-        private readonly IRepository<JobExecution> _jobExecutionRepository;
-
-        public CreateJobHandler(IRepository<Job> jobRepository, IRepository<JobExecution> jobExecutionRepository)
-        {
-            _jobRepository = jobRepository;
-            _jobExecutionRepository = jobExecutionRepository;
-        }
-
-        public async Task<CreateJobResponse> Handle(CreateJobRequest request, CancellationToken cancellationToken)
-        {
-            await _jobRepository.AddAsync(request.Job, cancellationToken);
-
-            JobExecution? jobExecution = null;
-            if (request.Job.Enabled
-                && request.Job.TryGetNextRun(DateTime.UtcNow, out var runAt)
-                && runAt.HasValue)
-            {
-                jobExecution = JobExecution.New(request.Job, runAt.Value);
-                await _jobExecutionRepository.AddAsync(jobExecution, cancellationToken);
-            }
-
-            return new CreateJobResponse(request.Job, jobExecution);
-        }
+        _jobRepository = jobRepository;
+        _jobExecutionRepository = jobExecutionRepository;
     }
 
-    public record CreateJobRequest (Job Job) : IRequest<CreateJobResponse>;
+    public async Task<CreateJobResponse> Handle(CreateJobRequest request, CancellationToken cancellationToken)
+    {
+        await _jobRepository.AddAsync(request.Job, cancellationToken);
 
-    public record CreateJobResponse(Job Job, JobExecution? JobExecution);
+        JobExecution? jobExecution = null;
+        if (request.Job.Enabled
+            && request.Job.TryGetNextRun(DateTime.UtcNow, out var runAt)
+            && runAt.HasValue)
+        {
+            jobExecution = JobExecution.New(request.Job, runAt.Value);
+            await _jobExecutionRepository.AddAsync(jobExecution, cancellationToken);
+        }
+
+        return new CreateJobResponse(request.Job, jobExecution);
+    }
 }
+
+public record CreateJobRequest (Job Job) : IRequest<CreateJobResponse>;
+
+public record CreateJobResponse(Job Job, JobExecution? JobExecution);
