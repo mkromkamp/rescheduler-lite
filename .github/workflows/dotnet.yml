@@ -29,13 +29,19 @@ jobs:
     - name: Test
       run: dotnet test Rescheduler.sln --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage
 
-    - name: Copy Coverage To Predictable Location
-      run: cp coverage/**/coverage.cobertura.xml coverage.cobertura.xml
+    # - name: Copy Coverage To Predictable Location
+    #   run: cp -n coverage/**/coverage.cobertura.xml coverage.cobertura.xml
+
+    - name: Collect coverage files
+      id: coverage
+      run: find ./coverage | grep coverage.cobertura.xml | xargs | tr ' ' ','
+      env: 
+        coverage_files: find ./coverage | grep coverage.cobertura.xml | xargs | tr ' ' ','
 
     - name: Code Coverage Summary Report
       uses: irongut/CodeCoverageSummary@v1.2.0
       with:
-        filename: coverage.cobertura.xml
+        filename: ${{ env.COVERAGE_FILES }} #coverage.cobertura.xml
         badge: true
         fail_below_min: true
         format: markdown
