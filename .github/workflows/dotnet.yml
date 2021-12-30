@@ -36,7 +36,7 @@ jobs:
       id: coverage
       run: find ./coverage | grep coverage.cobertura.xml | xargs | tr ' ' ','
       env: 
-        coverage_files: find ./coverage | grep coverage.cobertura.xml | xargs | tr ' ' ','
+        COVERAGE_FILES: ${{ find ./coverage | grep coverage.cobertura.xml | xargs | tr ' ' ',' }}
 
     - name: Code Coverage Summary Report
       uses: irongut/CodeCoverageSummary@v1.2.0
