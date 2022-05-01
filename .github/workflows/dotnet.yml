@@ -71,6 +71,7 @@ jobs:
         sonarProjectKey: mkromkamp_rescheduler-lite
         sonarProjectName:  rescheduler-lite
         sonarOrganization: mkromkamp
+        dotnetDisableTests: true
         dotnetTestArguments: --logger trx --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
         sonarBeginArguments: /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/opencover.xml"
       env:
