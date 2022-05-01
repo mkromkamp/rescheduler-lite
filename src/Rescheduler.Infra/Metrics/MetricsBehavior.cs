@@ -4,7 +4,7 @@ using Prometheus;
 namespace Rescheduler.Infra.Metrics;
 
 internal class MetricsBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> 
-    where TRequest : class
+    where TRequest : IRequest<TResponse>
     where TResponse : class
 {
     private static readonly Counter RequestProcessedCount = 
