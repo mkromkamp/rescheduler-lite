@@ -16,7 +16,7 @@ internal class MetricsBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest
                 LabelNames = new[] { "method", "success" }
             });
 
-    public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
+    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
         var requestType = request.GetType().Name.ToLowerInvariant();
 
