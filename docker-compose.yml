@@ -1,22 +1,22 @@
 version: '3'
 
 services:
-  rescheduler:
-    build:
-      context: .
-      dockerfile: src/Rescheduler.Api/Dockerfile
-    volumes:
-      - rescheduler-data:/app
-    environment:
-      LoggingFormat: "json"
-      Messaging__RabbitMq__Enabled: "true"
-      Messaging__RabbitMq__ConnectionString: "amqp://rabbitmq:rabbitmq@rabbitmq:5672/"
-      Messaging__ServiceBus__Enabled: "false"
-      Messaging__ServiceBus__PartitionedQueue: "false"
-      Messaging__ServiceBus__ConnectionString: ""
-      ASPNETCORE_ENVIRONMENT: Development
-    ports:
-      - "8080:80"
+#  rescheduler:
+#    build:
+#      context: .
+#      dockerfile: src/Rescheduler.Api/Dockerfile
+#    volumes:
+#      - rescheduler-data:/app
+#    environment:
+#      LoggingFormat: "json"
+#      Messaging__RabbitMq__Enabled: "true"
+#      Messaging__RabbitMq__ConnectionString: "amqp://rabbitmq:rabbitmq@rabbitmq:5672/"
+#      Messaging__ServiceBus__Enabled: "false"
+#      Messaging__ServiceBus__PartitionedQueue: "false"
+#      Messaging__ServiceBus__ConnectionString: ""
+#      ASPNETCORE_ENVIRONMENT: Development
+#    ports:
+#      - "8080:80"
 
   rabbitmq:
     image: "rabbitmq:3-management-alpine"

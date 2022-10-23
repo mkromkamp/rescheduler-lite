@@ -16,9 +16,9 @@ jobs:
         fetch-depth: 0 
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: 7.0.x
 
     - name: Restore dependencies
       run: dotnet restore
@@ -34,14 +34,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0 
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 6.0.x
+          dotnet-version: 7.0.x
 
       - name: Test
         run: dotnet test --verbosity normal --collect:"XPlat Code Coverage" --settings .github/coverlet.xml
@@ -56,25 +56,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 0 
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 6.0.x
-
-    - name: SonarScanner
-      uses: highbyte/sonarscan-dotnet@v2.1.2
-      with:
-        sonarProjectKey: mkromkamp_rescheduler-lite
-        sonarProjectName:  rescheduler-lite
-        sonarOrganization: mkromkamp
-        dotnetDisableTests: true
-        dotnetTestArguments: --logger trx --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
-        sonarBeginArguments: /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/opencover.xml"
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        dotnet-version: 7.0.x
+        
+    - name: Restore tools
+      run: dotnet tool restore
+        
+    - name: Begin collect
+      run: dotnet sonarscanner begin /k:"mkromkamp_rescheduler-lite" /o:"mkromkamp" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.login=${{ secrets.SONAR_TOKEN }} /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
+        
+    - name: Test
+      run: |
+        dotnet build --no-incremental
+        dotnet coverage collect 'dotnet test' -f xml  -o 'coverage.xml'
+        
+    - name: End collect
+      run: dotnet sonarscanner end /d:sonar.login=${{ secrets.SONAR_TOKEN }}
 
