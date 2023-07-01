@@ -44,12 +44,14 @@ jobs:
           dotnet-version: 7.0.x
 
       - name: Test
-        run: dotnet test --verbosity normal --collect:"XPlat Code Coverage" --settings .github/coverlet.xml
+        run: dotnet test --collect:"XPlat Code Coverage" --settings .github/coverlet.xml
 
       - name: Codecov
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v3
         with:
-          files: ./*.opencoverxml
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: "**/coverage.opencover.xml"
+          verbose: true
 
   sonar:
     needs: [build]
