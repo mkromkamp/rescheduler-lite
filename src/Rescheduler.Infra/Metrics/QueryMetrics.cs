@@ -1,4 +1,5 @@
 using Prometheus;
+using ITimer = Prometheus.ITimer;
 
 namespace Rescheduler.Infra.Metrics;
 
