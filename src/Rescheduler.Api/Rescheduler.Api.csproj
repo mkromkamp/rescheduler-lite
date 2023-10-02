@@ -27,7 +27,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
-    <PackageReference Include="prometheus-net.AspNetCore" Version="6.0.0" />
+    <PackageReference Include="prometheus-net.AspNetCore" Version="8.0.1" />
     <PackageReference Include="prometheus-net.SystemMetrics" Version="2.0.0" />
   </ItemGroup>
   <ItemGroup>
