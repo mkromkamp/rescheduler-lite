@@ -43,7 +43,7 @@ API docs can be accessed on `/api/docs`, when running the docker-compose http://
 
 Rescheduler-lite consists of a single binary that can be deployed virtually everywhere. The only constraint is the availability of some form of persistent storage.
 
-Alongside rescheduler-lite it is needed to deploy a messaging technology. Currently RabbitMQ, Azure Service Bus, and AWS SNS are supported. These messaging techonologies are needed to pass messages from rescheduler-lite to consumers.
+Alongside rescheduler-lite it is needed to deploy a messaging technology. Currently RabbitMQ, Azure Service Bus, and AWS SNS are supported. These messaging technologies are needed to pass messages from rescheduler-lite to consumers.
 
 ## Binary
 
@@ -73,7 +73,7 @@ If you feel like there is missing or incorrect documentation feel free to create
 
 In order to start ~hacking~ developing on rescheduler-lite the following is needed
 
-- [.NET 6 SDK](https://dotnet.microsoft.com/download/dotnet/6.0)
+- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
 - [favorite IDE, VScode is free and easy to get started with](https://code.visualstudio.com/)
 - [Docker](https://docs.docker.com/get-docker/)
 - [Docker compose](https://docs.docker.com/compose/install/)
