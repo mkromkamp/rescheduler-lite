@@ -12,6 +12,5 @@
     <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.0-rc.1.23419.4" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0-rc.1.23419.4" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0-rc.1.23419.4" />
-    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="12.1.1" />
   </ItemGroup>
 </Project>
