@@ -11,14 +11,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 0 
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 8.0.x
+        global-json-file: global.json
 
     - name: Restore dependencies
       run: dotnet restore
@@ -34,20 +34,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0 
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 8.0.x
+          global-json-file: global.json
 
       - name: Test
         run: dotnet test --collect:"XPlat Code Coverage" --settings .github/coverlet.xml
 
       - name: Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: "**/coverage.opencover.xml"
@@ -58,14 +58,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 0 
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 8.0.x
+        global-json-file: global.json
         
     - name: Restore tools
       run: dotnet tool restore
