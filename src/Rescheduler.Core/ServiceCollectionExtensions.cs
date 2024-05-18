@@ -9,8 +9,12 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddCore(this IServiceCollection services)
     {
-        services.AddMediatR(cfg => cfg.AsScoped(), Assembly.GetAssembly(typeof(CreateJobHandler)));
-
+        services.AddMediatR(cfg =>
+        {
+            cfg.Lifetime = ServiceLifetime.Scoped;
+            cfg.RegisterServicesFromAssemblyContaining<CreateJobHandler>();
+        });
+        
         return services;
     }
 }
