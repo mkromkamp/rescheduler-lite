@@ -7,6 +7,7 @@ using Moq;
 using Rescheduler.Core.Entities;
 using Rescheduler.Core.Interfaces;
 using Rescheduler.Infra.Messaging;
+using Rescheduler.Infra.Metrics;
 using Shouldly;
 using Xunit;
 
@@ -15,6 +16,7 @@ namespace Rescheduler.Infra.Tests.Messaging;
 public class SnsPublisherTests
 {
     private readonly ILogger<SnsPublisher> _logger;
+    private readonly IMessagingMetrics _metrics;
     private SnsOptions _options;
     private readonly IAmazonSimpleNotificationService _sns;
 
@@ -23,6 +25,7 @@ public class SnsPublisherTests
     public SnsPublisherTests()
     {
         _logger = Mock.Of<ILogger<SnsPublisher>>();
+        _metrics = Mock.Of<IMessagingMetrics>();
         _options = new SnsOptions
         {
             Enabled = true,
@@ -41,7 +44,7 @@ public class SnsPublisherTests
             .Setup(x => x.PublishAsync(It.IsAny<PublishRequest>(), CancellationToken.None))
             .ReturnsAsync(new PublishResponse {HttpStatusCode = HttpStatusCode.OK});
 
-        _publisher = new SnsPublisher(_logger, _sns, optionsMonitor);
+        _publisher = new SnsPublisher(_logger, _sns, optionsMonitor, _metrics);
     }
 
     [Fact]

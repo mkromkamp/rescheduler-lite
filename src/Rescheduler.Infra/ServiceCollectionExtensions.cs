@@ -1,6 +1,5 @@
 using Amazon.SimpleNotificationService;
 using Azure.Messaging.ServiceBus;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,8 +25,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IRepository<Job>, Repository<Job>>();
         services.AddScoped<IRepository<JobExecution>, Repository<JobExecution>>();
         services.AddScoped<IJobExecutionRepository, Repository<JobExecution>>();
-            
-        services.AddSingleton(typeof(IPipelineBehavior<,>), typeof(MetricsBehavior<,>));
+        services.AddSingleton<IMessagingMetrics, MessagingMetrics>();
 
         services.AddMessaging(configuration);
 

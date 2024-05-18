@@ -1,41 +1,59 @@
-using Prometheus;
-using ITimer = Prometheus.ITimer;
+using System.Diagnostics.Metrics;
 
 namespace Rescheduler.Infra.Metrics;
 
-internal class MessagingMetrics
+internal interface IMessagingMetrics
 {
-    private static readonly Counter MessagesPublishedTotal = 
-        Prometheus.Metrics.CreateCounter(
-            "sched_messages_published_count", 
-            "Total messages published",
-            new CounterConfiguration
-            {
-                LabelNames = new [] { "subject" },
-            });
+    void MessagesPublished(string subject, int numPublished = 1);
+    void TimePublishDuration(TimeSpan timeSpan);
+    void TimePublishBatchDuration(TimeSpan timeSpan);
+}
 
-    private static readonly Histogram MessagePublishDuration =
-        Prometheus.Metrics.CreateHistogram(
-            "sched_message_publish_duration",
-            "Duration to publish messages",
-            new HistogramConfiguration
-            {
-                LabelNames = new [] { "operation" },
-            }
+internal class MessagingMetrics : IMessagingMetrics
+{
+    private readonly Counter<int> _messagesPublishedTotal;
+    private readonly Histogram<double> _messagePublishDurationSeconds;
+
+    public MessagingMetrics(IMeterFactory meterFactory)
+    {
+        var meter = meterFactory.Create("Rescheduler");
+        _messagesPublishedTotal = meter.CreateCounter<int>
+        (
+            "messages.published.total", 
+            description: "Total number of tasks published"
         );
-
-    public static void MessagesPublished(string subject, int numPublished = 1)
-    {
-        MessagesPublishedTotal.WithLabels(subject).Inc(numPublished);
+        _messagePublishDurationSeconds = meter.CreateHistogram<double>
+        (
+            "messages.publish.duration", 
+            unit: "second",
+            description: "Duration to publish tasks"
+        );
     }
 
-    public static ITimer TimePublishDuration()
+    public void MessagesPublished(string subject, int numPublished = 1)
     {
-        return MessagePublishDuration.WithLabels("single").NewTimer();
+        _messagesPublishedTotal.Add
+        (
+            numPublished, 
+            new KeyValuePair<string, object?>("subject", subject)
+        );
     }
-
-    public static ITimer TimeBatchPublishDuration()
+    
+    public void TimePublishDuration(TimeSpan timeSpan)
     {
-        return MessagePublishDuration.WithLabels("batch").NewTimer();
+        _messagePublishDurationSeconds.Record
+        (
+            timeSpan.TotalSeconds, 
+            new KeyValuePair<string, object?>("operation", "single")
+        );
+    }
+    
+    public void TimePublishBatchDuration(TimeSpan timeSpan)
+    {
+        _messagePublishDurationSeconds.Record
+        (
+            timeSpan.TotalSeconds, 
+            new KeyValuePair<string, object?>("operation", "batch")
+        );
     }
 }

@@ -1,5 +1,3 @@
-using System.Reflection;
-using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Rescheduler.Core.Handlers;
 

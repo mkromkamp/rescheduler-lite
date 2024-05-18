@@ -2,8 +2,8 @@ using System.Reflection;
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using Prometheus;
-using Prometheus.SystemMetrics;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
 using Rescheduler.Core;
 using Rescheduler.Infra;
 using Rescheduler.Infra.Data;
@@ -22,7 +22,7 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddOptions();
-        services.AddSystemMetrics();
+        services.AddMetrics();
         services.AddControllers(options =>
             {
                 options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
@@ -32,6 +32,23 @@ public class Startup
                 options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
+        
+        services.AddOpenTelemetry()
+            .ConfigureResource(resource =>
+            {
+                resource.AddService("Rescheduler");
+            })
+            .WithMetrics(metrics => metrics
+                .AddAspNetCoreInstrumentation()
+                .AddRuntimeInstrumentation()
+                .AddProcessInstrumentation()
+                .AddMeter("Rescheduler")
+                // .AddEventCountersInstrumentation(ec =>
+                // {
+                //     ec.AddEventSources("Microsoft.EntityFrameworkCore");
+                //     ec.AddEventSources("Microsoft.Data.SqlClient.EventSource");
+                // })
+                .AddPrometheusExporter());
             
         services.AddSwaggerGen(c =>
         {
@@ -72,13 +89,12 @@ public class Startup
         });
 
         app.UseRouting();
-        app.UseHttpMetrics();
         app.UseAuthorization();
+        app.UseOpenTelemetryPrometheusScrapingEndpoint();
 
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();
-            endpoints.MapMetrics();
         });
     }
 }

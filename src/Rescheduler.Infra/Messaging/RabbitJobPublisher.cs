@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -12,13 +13,15 @@ internal class RabbitJobPublisher : IJobPublisher
 {
     private readonly ILogger<RabbitJobPublisher> _logger;
     private readonly IConnectionFactory _connectionFactory;
+    private readonly IMessagingMetrics _metrics;
     private RabbitMqOptions _options;
     private IModel? _model;
 
-    public RabbitJobPublisher(IConnectionFactory connectionFactory, ILogger<RabbitJobPublisher> logger, IOptionsMonitor<MessagingOptions> optionsMonitor)
+    public RabbitJobPublisher(IConnectionFactory connectionFactory, ILogger<RabbitJobPublisher> logger, IOptionsMonitor<MessagingOptions> optionsMonitor, IMessagingMetrics metrics)
     {
         _connectionFactory = connectionFactory;
         _logger = logger;
+        _metrics = metrics;
 
         _options = optionsMonitor.CurrentValue.RabbitMq;
         optionsMonitor.OnChange(newOptions => 
@@ -31,18 +34,18 @@ internal class RabbitJobPublisher : IJobPublisher
 
     public Task<bool> PublishAsync(JobExecution jobExecution, CancellationToken ctx)
     {
-        using var _ = MessagingMetrics.TimePublishDuration();
+        var t = Stopwatch.StartNew();
 
         try
         {
-            if(!TryGetOrCreateModel(out var model) || model is null) return Task.FromResult(false);
+            if (!TryGetOrCreateModel(out var model) || model is null) return Task.FromResult(false);
             var job = jobExecution.Job;
 
             model.EnsureConfig(_options.JobsExchange, job.Subject);
             model.BasicPublish(_options.JobsExchange, job.Subject, true, null, Encoding.UTF8.GetBytes(job.Payload));
 
-            MessagingMetrics.MessagesPublished(job.Subject);
-                
+            _metrics.MessagesPublished(job.Subject);
+
             return Task.FromResult(model.WaitForConfirms());
         }
         catch (Exception e)
@@ -50,11 +53,15 @@ internal class RabbitJobPublisher : IJobPublisher
             _logger.LogError(e, "Failed to publish job {JobId} to RabbitMQ", jobExecution.Job.Id);
             return Task.FromResult(false);
         }
+        finally
+        {
+            _metrics.TimePublishDuration(t.Elapsed);
+        }
     }
 
     public Task<bool> PublishManyAsync(IEnumerable<JobExecution> jobExecutions, CancellationToken ctx)
     {
-        using var _ = MessagingMetrics.TimeBatchPublishDuration();
+        var t = Stopwatch.StartNew();
         jobExecutions = jobExecutions.ToList();
 
         try
@@ -70,7 +77,7 @@ internal class RabbitJobPublisher : IJobPublisher
                     batchPublish.Add(_options.JobsExchange, jobExecution.Job.Subject, true, null, new ReadOnlyMemory<byte>(Encoding.UTF8.GetBytes(jobExecution.Job.Payload)));
                 }
 
-                MessagingMetrics.MessagesPublished(g.Key, g.Count());
+                _metrics.MessagesPublished(g.Key, g.Count());
             });
 
             batchPublish.Publish();
@@ -80,6 +87,10 @@ internal class RabbitJobPublisher : IJobPublisher
         {
             _logger.LogError(e, "Failed to batch publish {JobIds} to RabbitMQ", jobExecutions.Select(j => j.Job.Id));
             return Task.FromResult(false);
+        }
+        finally
+        {
+            _metrics.TimePublishBatchDuration(t.Elapsed);
         }
     }
 
