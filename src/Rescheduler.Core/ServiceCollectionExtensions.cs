@@ -9,10 +9,9 @@ public static class ServiceCollectionExtensions
     {
         services.AddMediatR(cfg =>
         {
-            cfg.RegisterServicesFromAssemblyContaining<CreateJobHandler>();
             cfg.Lifetime = ServiceLifetime.Scoped;
+            cfg.RegisterServicesFromAssemblyContaining<CreateJobHandler>();
         });
-
         return services;
     }
 }
