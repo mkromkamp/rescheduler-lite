@@ -4,6 +4,7 @@ using Moq;
 using RabbitMQ.Client;
 using Rescheduler.Core.Entities;
 using Rescheduler.Infra.Messaging;
+using Rescheduler.Infra.Metrics;
 using Shouldly;
 using Xunit;
 
@@ -12,6 +13,7 @@ namespace Rescheduler.Infra.Tests.Messaging;
 public class RabbitJobPublisherTests
 {
     private readonly ILogger<RabbitJobPublisher> _logger;
+    private readonly IMessagingMetrics _metrics;
     private readonly IConnectionFactory _connectionFactory;
     private readonly RabbitMqOptions _options;
 
@@ -23,6 +25,7 @@ public class RabbitJobPublisherTests
     public RabbitJobPublisherTests()
     {
         _logger = Mock.Of<ILogger<RabbitJobPublisher>>();
+        _metrics = Mock.Of<IMessagingMetrics>();
             
         _connectionFactory = Mock.Of<IConnectionFactory>();
         _connection = Mock.Of<IConnection>();
@@ -51,7 +54,7 @@ public class RabbitJobPublisherTests
             .SetupGet(x => x.CurrentValue)
             .Returns(new MessagingOptions {RabbitMq = _options});
 
-        _publisher = new RabbitJobPublisher(_connectionFactory, _logger, optionsMonitor);
+        _publisher = new RabbitJobPublisher(_connectionFactory, _logger, optionsMonitor, _metrics);
     }
 
     [Fact]

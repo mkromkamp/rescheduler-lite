@@ -5,6 +5,7 @@ using Moq;
 using Rescheduler.Core.Entities;
 using Rescheduler.Core.Interfaces;
 using Rescheduler.Infra.Messaging;
+using Rescheduler.Infra.Metrics;
 using Shouldly;
 using Xunit;
 
@@ -13,6 +14,7 @@ namespace Rescheduler.Infra.Tests.Messaging;
 public class ServiceBusPublisherTests
 {
     private readonly ILogger<ServiceBusPublisher> _logger;
+    private readonly IMessagingMetrics _metrics;
     private ServiceBusOptions _options;
     private readonly ServiceBusClient _serviceBusClient;
     private readonly ServiceBusSender _serviceBusSender;
@@ -22,6 +24,7 @@ public class ServiceBusPublisherTests
     public ServiceBusPublisherTests()
     {
         _logger = Mock.Of<ILogger<ServiceBusPublisher>>();
+        _metrics = Mock.Of<IMessagingMetrics>();
         _options = new ServiceBusOptions
         {
             Enabled = true, 
@@ -47,7 +50,7 @@ public class ServiceBusPublisherTests
         Mock.Get(_serviceBusSender)
             .Setup(x => x.SendMessagesAsync(It.IsAny<IEnumerable<ServiceBusMessage>>(), CancellationToken.None));
 
-        _publisher = new ServiceBusPublisher(_logger, optionsMonitor, _serviceBusClient);
+        _publisher = new ServiceBusPublisher(_logger, optionsMonitor, _serviceBusClient, _metrics);
     }
 
     [Fact]

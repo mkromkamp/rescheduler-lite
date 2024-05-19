@@ -1,5 +1,3 @@
-version: '3'
-
 services:
 #  rescheduler:
 #    build:
@@ -33,6 +31,17 @@ services:
       - "15672:15672" # management port
       - "15692:15692" # metrics port
       - "5672:5672"
+        
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.100.0
+    command: ["--config=/etc/otel-collector-config.yaml"]
+    volumes:
+      - ./docker/otel-config.yaml:/etc/otel-collector-config.yaml
+    ports:
+      - "1337:1337"   # pprof extension
+      - "8080:8080"   # Prometheus exporter metrics
+      - "13133:13133" # health_check extension
+      - "4317:4317"   # OTLP gRPC receiver
 
 volumes:
   rescheduler-data:

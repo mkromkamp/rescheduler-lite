@@ -2,8 +2,9 @@ using System.Reflection;
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using Prometheus;
-using Prometheus.SystemMetrics;
+using OpenTelemetry.Exporter;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
 using Rescheduler.Core;
 using Rescheduler.Infra;
 using Rescheduler.Infra.Data;
@@ -22,7 +23,7 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddOptions();
-        services.AddSystemMetrics();
+        services.AddMetrics();
         services.AddControllers(options =>
             {
                 options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
@@ -32,6 +33,42 @@ public class Startup
                 options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
+
+        if (_configuration.GetSection("Telemetry:Metrics:Otlp").GetValue("Enabled", false))
+        {
+            if (!Uri.TryCreate(_configuration.GetSection("Telemetry:Metrics:Otlp").GetValue<string>("Endpoint"), UriKind.Absolute, out var uri))
+            {
+                uri = Program.DefaultOtlpEndpoint;
+            }
+
+            if (!Enum.TryParse(_configuration.GetSection("Telemetry:Metrics:Otlp").GetValue<string>("Protocol"), true, out OtlpExportProtocol protocol))
+            {
+                protocol = OtlpExportProtocol.Grpc;
+            }
+            
+            services.AddOpenTelemetry()
+                .ConfigureResource(resource =>
+                {
+                    resource.Clear();
+                    resource.AddService("Rescheduler");
+                    resource.AddEnvironmentVariableDetector();
+                })
+                .WithMetrics(metrics => metrics
+                    .AddAspNetCoreInstrumentation()
+                    .AddRuntimeInstrumentation()
+                    .AddProcessInstrumentation()
+                    .AddMeter("Rescheduler")
+                    .AddEventCountersInstrumentation(ec =>
+                    {
+                        ec.AddEventSources("Microsoft.EntityFrameworkCore");
+                        ec.AddEventSources("Microsoft.Data.SqlClient.EventSource");
+                    })
+                    .AddOtlpExporter(otlp =>
+                    {
+                        otlp.Protocol = protocol;
+                        otlp.Endpoint = uri;
+                    }));
+        }
             
         services.AddSwaggerGen(c =>
         {
@@ -72,13 +109,11 @@ public class Startup
         });
 
         app.UseRouting();
-        app.UseHttpMetrics();
         app.UseAuthorization();
 
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();
-            endpoints.MapMetrics();
         });
     }
 }

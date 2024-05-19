@@ -1,7 +1,13 @@
+using OpenTelemetry.Exporter;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Resources;
+
 namespace Rescheduler.Api;
 #pragma warning disable CS1591
 public class Program
 {
+    internal static readonly Uri DefaultOtlpEndpoint = new("http://localhost:4317");
+    
     public static void Main(string[] args)
     {
         try
@@ -20,9 +26,37 @@ public class Program
             .ConfigureLogging((ctx, logging) =>
             {
                 logging.ClearProviders();
+
+                if (ctx.Configuration.GetSection("Telemetry:Logs:Console").GetValue("Enabled", false))
+                {
+                    var loggingFormat = ctx.Configuration.GetSection("Telemetry:Logs:Console:Format").Value ?? "json";
+                    logging.AddConsole(opts => opts.FormatterName = loggingFormat);  
+                }
+                
+                if (ctx.Configuration.GetSection("Telemetry:Logs:Otlp").GetValue("Enabled", false))
+                {
+                    if (!Uri.TryCreate(ctx.Configuration.GetSection("Telemetry:Logs:Otlp").GetValue<string>("Endpoint"), UriKind.Absolute, out var uri))
+                    {
+                        uri = DefaultOtlpEndpoint;
+                    }
+
+                    if (!Enum.TryParse(ctx.Configuration.GetSection("Telemetry:Logs:Otlp").GetValue<string>("Protocol"), true, out OtlpExportProtocol protocol))
+                    {
+                        protocol = OtlpExportProtocol.Grpc;
+                    }
                     
-                var loggingFormat = ctx.Configuration.GetSection("LoggingFormat").Value ?? "json";
-                logging.AddConsole(opts => opts.FormatterName = loggingFormat);
+                    logging.AddOpenTelemetry(options =>
+                    {
+                        options
+                            .SetResourceBuilder(ResourceBuilder.CreateDefault()
+                                .AddService("Rescheduler"))
+                            .AddOtlpExporter(otlp =>
+                            {
+                                otlp.Protocol = protocol;
+                                otlp.Endpoint = uri;
+                            });
+                    });
+                }
             })
             .ConfigureWebHostDefaults(webBuilder =>
             {

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Azure.Messaging.ServiceBus;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -10,13 +11,15 @@ namespace Rescheduler.Infra.Messaging;
 internal class ServiceBusPublisher : IJobPublisher
 {
     private readonly ILogger _logger;
+    private readonly IMessagingMetrics _metrics;
         
     private ServiceBusOptions _options;
     private ServiceBusSender _serviceBusSender;
 
-    public ServiceBusPublisher(ILogger<ServiceBusPublisher> logger, IOptionsMonitor<MessagingOptions> optionsMonitor, ServiceBusClient serviceBusClient)
+    public ServiceBusPublisher(ILogger<ServiceBusPublisher> logger, IOptionsMonitor<MessagingOptions> optionsMonitor, ServiceBusClient serviceBusClient, IMessagingMetrics metrics)
     {
         _logger = logger;
+        _metrics = metrics;
         _options = optionsMonitor.CurrentValue.ServiceBus;
         _serviceBusSender = serviceBusClient.CreateSender(_options.JobsQueue);
 
@@ -29,9 +32,9 @@ internal class ServiceBusPublisher : IJobPublisher
         });
     }
 
-    public Task<bool> PublishAsync(JobExecution jobExecution, CancellationToken ctx)
+    public async Task<bool> PublishAsync(JobExecution jobExecution, CancellationToken ctx)
     {
-        using var _ = MessagingMetrics.TimePublishDuration();
+        var t = Stopwatch.StartNew();
 
         var job = jobExecution.Job;
         var message = new ServiceBusMessage(job.Payload)
@@ -41,9 +44,12 @@ internal class ServiceBusPublisher : IJobPublisher
             Subject = job.Subject,
         };
 
-        MessagingMetrics.MessagesPublished(job.Subject);
+        _metrics.MessagesPublished(job.Subject);
             
-        return WithSenderAsync(conn => conn.SendMessageAsync(message, ctx));
+        var res = await WithSenderAsync(conn => conn.SendMessageAsync(message, ctx));
+        _metrics.TimePublishDuration(t.Elapsed);
+
+        return res;
     }
 
     public async Task<bool> PublishManyAsync(IEnumerable<JobExecution> jobExecutions, CancellationToken ctx)
@@ -70,7 +76,7 @@ internal class ServiceBusPublisher : IJobPublisher
 
         async Task<bool> PublishBatched(List<JobExecution> executions)
         {
-            using var _ = MessagingMetrics.TimeBatchPublishDuration();
+            var t = Stopwatch.StartNew();
                 
             var messages = executions.Select(jobExecution =>
                 new ServiceBusMessage(jobExecution.Job.Payload)
@@ -83,9 +89,12 @@ internal class ServiceBusPublisher : IJobPublisher
                 .GroupBy(jobExecution => jobExecution.Job.Subject)
                 .ToList()
                 .ForEach(jobGroup =>
-                    MessagingMetrics.MessagesPublished(jobGroup.Key, jobGroup.Count()));
+                    _metrics.MessagesPublished(jobGroup.Key, jobGroup.Count()));
 
-            return await WithSenderAsync(conn => conn.SendMessagesAsync(messages, ctx));
+            var res = await WithSenderAsync(conn => conn.SendMessagesAsync(messages, ctx));
+            _metrics.TimePublishBatchDuration(t.Elapsed);
+            
+            return res;
         }
     }
 

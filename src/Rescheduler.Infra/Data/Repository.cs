@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Rescheduler.Core.Entities;
 using Rescheduler.Core.Interfaces;
-using Rescheduler.Infra.Metrics;
 
 namespace Rescheduler.Infra.Data;
 
@@ -19,15 +18,12 @@ internal class Repository<T> : IJobExecutionRepository, IRepository<T> where T :
 
     public async Task AddAsync(T entity, CancellationToken ctx)
     {
-        using var _ = QueryMetrics.TimeQuery(typeof(T).Name.ToLowerInvariant(), "insert");
-
         await _dbContext.Set<T>().AddAsync(entity, ctx);
         await _dbContext.SaveChangesAsync(ctx);
     }
 
     public async Task AddManyAsync(IEnumerable<T> entities, CancellationToken ctx)
     {
-        using var _ = QueryMetrics.TimeQuery(typeof(T).Name.ToLowerInvariant(), "insert_many");
         using var transaction = await _dbContext.Database.BeginTransactionAsync(ctx);
 
         try
@@ -48,23 +44,18 @@ internal class Repository<T> : IJobExecutionRepository, IRepository<T> where T :
 
     public async Task<T?> GetByIdAsync(Guid id, CancellationToken ctx)
     {
-        using var _ = QueryMetrics.TimeQuery(typeof(T).Name.ToLowerInvariant(), "get_by_id");
-
         var keyValues = new object[] { id };
         return await _dbContext.Set<T>().FindAsync(keyValues, ctx);
     }
 
     public Task UpdateAsync(T entity, CancellationToken ctx)
     {
-        using var _ = QueryMetrics.TimeQuery(typeof(T).Name.ToLowerInvariant(), "update");
-
         _dbContext.Entry(entity).CurrentValues.SetValues(entity);
         return _dbContext.SaveChangesAsync(ctx);
     }
 
     public async Task UpdateManyAsync(IEnumerable<T> entities, CancellationToken ctx)
     {
-        using var _ = QueryMetrics.TimeQuery(typeof(T).Name.ToLowerInvariant(), "batch_update");
         using var transaction = await _dbContext.Database.BeginTransactionAsync(ctx);
 
         try
@@ -93,7 +84,6 @@ internal class Repository<T> : IJobExecutionRepository, IRepository<T> where T :
 
     public async Task<int> RecoverAsync(CancellationToken ctx)
     {
-        using var _ = QueryMetrics.TimeQuery(nameof(JobExecution).ToLowerInvariant(), "recover_executions");
         await using var transaction = await _dbContext.Database.BeginTransactionAsync(ctx);
 
         try
@@ -120,7 +110,6 @@ internal class Repository<T> : IJobExecutionRepository, IRepository<T> where T :
 
     public async Task<IEnumerable<JobExecution>> GetAndMarkPending(int max, DateTime until, CancellationToken ctx)
     {
-        using var _ = QueryMetrics.TimeQuery(nameof(JobExecution).ToLowerInvariant(), "mark_and_get_pending");
         await using var transaction = await _dbContext.Database.BeginTransactionAsync(ctx);
 
         try
@@ -150,7 +139,6 @@ internal class Repository<T> : IJobExecutionRepository, IRepository<T> where T :
 
     public async Task CompactAsync(DateTime before, CancellationToken ctx)
     {
-        using var _ = QueryMetrics.TimeQuery(nameof(JobExecution).ToLowerInvariant(), "compact_executions");
         await using var transaction = await _dbContext.Database.BeginTransactionAsync(ctx);
 
         try

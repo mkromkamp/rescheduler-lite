@@ -1,5 +1,3 @@
-using System.Reflection;
-using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Rescheduler.Core.Handlers;
 
@@ -14,7 +12,6 @@ public static class ServiceCollectionExtensions
             cfg.Lifetime = ServiceLifetime.Scoped;
             cfg.RegisterServicesFromAssemblyContaining<CreateJobHandler>();
         });
-        
         return services;
     }
 }

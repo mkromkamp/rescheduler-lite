@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Net;
 using Amazon.SimpleNotificationService;
 using Amazon.SimpleNotificationService.Model;
@@ -12,14 +13,16 @@ namespace Rescheduler.Infra.Messaging;
 internal class SnsPublisher : IJobPublisher
 {
     private readonly ILogger _logger;
+    private readonly IMessagingMetrics _metrics;
     private readonly IAmazonSimpleNotificationService _sns;
         
     private SnsOptions _options;
 
-    public SnsPublisher(ILogger<SnsPublisher> logger, IAmazonSimpleNotificationService sns, IOptionsMonitor<MessagingOptions> optionsMonitor)
+    public SnsPublisher(ILogger<SnsPublisher> logger, IAmazonSimpleNotificationService sns, IOptionsMonitor<MessagingOptions> optionsMonitor, IMessagingMetrics metrics)
     {
         _logger = logger;
         _sns = sns;
+        _metrics = metrics;
         _options = optionsMonitor.CurrentValue.Sns;
             
         optionsMonitor.OnChange(newOptions =>
@@ -32,14 +35,18 @@ internal class SnsPublisher : IJobPublisher
 
     public async Task<bool> PublishAsync(JobExecution jobExecution, CancellationToken ctx)
     {
-        using var _ = MessagingMetrics.TimePublishDuration();
+        var t = Stopwatch.StartNew();
             
-        return await PublishJobExecutionAsync(jobExecution, ctx);
+        var res = await PublishJobExecutionAsync(jobExecution, ctx);
+        
+        _metrics.TimePublishDuration(t.Elapsed);
+
+        return res;
     }
 
     public async Task<bool> PublishManyAsync(IEnumerable<JobExecution> jobExecutions, CancellationToken ctx)
     {
-        using var _ = MessagingMetrics.TimeBatchPublishDuration();
+        var t = Stopwatch.StartNew();
 
         var jobExecutionsList = jobExecutions.ToList();
         try
@@ -54,6 +61,10 @@ internal class SnsPublisher : IJobPublisher
         {
             _logger.LogError(e, "Failed to batch publish {JobIds} to Sns", jobExecutionsList.Select(j => j.Job.Id));
             return false;
+        }
+        finally
+        {
+            _metrics.TimePublishBatchDuration(t.Elapsed);
         }
     }
         
