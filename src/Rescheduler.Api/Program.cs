@@ -6,6 +6,8 @@ namespace Rescheduler.Api;
 #pragma warning disable CS1591
 public class Program
 {
+    internal static readonly Uri DefaultOtlpEndpoint = new("http://localhost:4317");
+    
     public static void Main(string[] args)
     {
         try
@@ -35,7 +37,7 @@ public class Program
                 {
                     if (!Uri.TryCreate(ctx.Configuration.GetSection("Telemetry:Logs:Otlp").GetValue<string>("Endpoint"), UriKind.Absolute, out var uri))
                     {
-                        uri = new Uri("http://localhost:4317");
+                        uri = DefaultOtlpEndpoint;
                     }
 
                     if (!Enum.TryParse(ctx.Configuration.GetSection("Telemetry:Logs:Otlp").GetValue<string>("Protocol"), true, out OtlpExportProtocol protocol))

@@ -38,7 +38,7 @@ public class Startup
         {
             if (!Uri.TryCreate(_configuration.GetSection("Telemetry:Metrics:Otlp").GetValue<string>("Endpoint"), UriKind.Absolute, out var uri))
             {
-                uri = new Uri("http://localhost:4317");
+                uri = Program.DefaultOtlpEndpoint;
             }
 
             if (!Enum.TryParse(_configuration.GetSection("Telemetry:Metrics:Otlp").GetValue<string>("Protocol"), true, out OtlpExportProtocol protocol))
