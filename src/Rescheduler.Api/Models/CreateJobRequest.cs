@@ -33,6 +33,7 @@ public record CreateJobRequest
     /// <summary>
     /// Optionally, the cron schedule for this job 
     /// </summary>
+    [ValidateCron]
     public string? Cron { get; init; }
 
     public Job ToJob()
