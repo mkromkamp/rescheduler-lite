@@ -1,5 +1,4 @@
 using Amazon.SimpleNotificationService;
-using Azure.Messaging.ServiceBus;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -39,7 +38,6 @@ public static class ServiceCollectionExtensions
         var options = services.BuildServiceProvider().GetRequiredService<IOptions<MessagingOptions>>();
 
         if(!options.Value.RabbitMq.Enabled 
-           && !options.Value.ServiceBus.Enabled 
            && !options.Value.Sns.Enabled) 
             throw new ArgumentException("No message bus is configured");
             
@@ -52,12 +50,6 @@ public static class ServiceCollectionExtensions
                 AutomaticRecoveryEnabled = true,
                 TopologyRecoveryEnabled = true,
             });
-        }
-
-        if (options.Value.ServiceBus.Enabled)
-        {
-            services.AddSingleton<IJobPublisher, ServiceBusPublisher>();
-            services.AddSingleton(_ => new ServiceBusClient(options.Value.ServiceBus.ConnectionString));
         }
 
         if (options.Value.Sns.Enabled)

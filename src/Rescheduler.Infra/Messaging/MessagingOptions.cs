@@ -8,11 +8,6 @@ internal class MessagingOptions
     public RabbitMqOptions RabbitMq { get; init; } = new();
 
     /// <summary>
-    /// Azure Service Bus options
-    /// </summary>
-    public ServiceBusOptions ServiceBus { get; init; } = new();
-
-    /// <summary>
     /// Aws Sns options
     /// </summary>
     public SnsOptions Sns { get; init; } = new();
@@ -35,38 +30,18 @@ internal class RabbitMqOptions
     /// </summary>
     public string ConnectionString { get; init; } = string.Empty;
 }
-
-internal class ServiceBusOptions
-{
-    /// <summary>
-    /// Toggle the usage of Azure Service Bus
-    /// </summary>
-    public bool Enabled { get; init; }
-
-    /// <summary>
-    /// Toggle the usage of partitioned queues
-    /// </summary>
-    public bool PartitionedQueue { get; init; }
-
-    /// <summary>
-    /// The Service bus queue that jobs are published to
-    /// </summary>
-    public string JobsQueue { get; init; } = "jobs";
-
-    public string ConnectionString { get; init; } = string.Empty;
-}
     
 internal class SnsOptions
 {
     /// <summary>
-    /// Toggle the usage of Azure Service Bus
+    /// Toggle the usage of AWS SNS
     /// </summary>
-    public bool Enabled { get; init; } = false;
+    public bool Enabled { get; init; }
         
     /// <summary>
     /// Toggle the usage of fifo topic
     /// </summary>
-    public bool FifoTopic { get; init; } = false;
+    public bool FifoTopic { get; init; }
         
     /// <summary>
     /// The ARN of the Sns topic
