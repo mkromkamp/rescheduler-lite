@@ -5,7 +5,7 @@ namespace Rescheduler.Api.Models;
 
 public class ValidateCronAttribute : ValidationAttribute
 {
-    private string GetErrorMessage(string? cron) =>
+    private static string GetErrorMessage(string? cron) =>
         $"Invalid cron expression {cron}";
 
     protected override ValidationResult? IsValid(
