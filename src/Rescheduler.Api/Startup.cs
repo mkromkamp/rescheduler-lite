@@ -49,20 +49,21 @@ public class Startup
             services.AddOpenTelemetry()
                 .ConfigureResource(resource =>
                 {
-                    resource.Clear();
+                    // resource.Clear();
                     resource.AddService("Rescheduler");
                     resource.AddEnvironmentVariableDetector();
                 })
                 .WithMetrics(metrics => metrics
-                    .AddAspNetCoreInstrumentation()
                     .AddRuntimeInstrumentation()
                     .AddProcessInstrumentation()
+                    .AddMeter("Microsoft.AspNetCore.Hosting")
+                    .AddMeter("Microsoft.AspNetCore.Routing")
                     .AddMeter("Rescheduler")
-                    .AddEventCountersInstrumentation(ec =>
-                    {
-                        ec.AddEventSources("Microsoft.EntityFrameworkCore");
-                        ec.AddEventSources("Microsoft.Data.SqlClient.EventSource");
-                    })
+                    .AddView("messages.publish.duration", 
+                        new ExplicitBucketHistogramConfiguration()
+                        {
+                            Boundaries = [0.005, 0.01, 0.3, 0.5, 1, 2, 5, 30]
+                        })
                     .AddOtlpExporter(otlp =>
                     {
                         otlp.Protocol = protocol;
