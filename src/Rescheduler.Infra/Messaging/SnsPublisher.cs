@@ -27,7 +27,7 @@ internal class SnsPublisher : IJobPublisher
             
         optionsMonitor.OnChange(newOptions =>
         {
-            if (newOptions?.ServiceBus is null) return;
+            if (newOptions?.Sns is null) return;
 
             _options = newOptions.Sns;
         });

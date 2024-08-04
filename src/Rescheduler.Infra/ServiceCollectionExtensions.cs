@@ -38,7 +38,6 @@ public static class ServiceCollectionExtensions
         var options = services.BuildServiceProvider().GetRequiredService<IOptions<MessagingOptions>>();
 
         if(!options.Value.RabbitMq.Enabled 
-           && !options.Value.ServiceBus.Enabled 
            && !options.Value.Sns.Enabled) 
             throw new ArgumentException("No message bus is configured");
             
