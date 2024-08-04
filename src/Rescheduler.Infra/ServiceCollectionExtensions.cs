@@ -1,5 +1,4 @@
 using Amazon.SimpleNotificationService;
-using Azure.Messaging.ServiceBus;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -52,12 +51,6 @@ public static class ServiceCollectionExtensions
                 AutomaticRecoveryEnabled = true,
                 TopologyRecoveryEnabled = true,
             });
-        }
-
-        if (options.Value.ServiceBus.Enabled)
-        {
-            services.AddSingleton<IJobPublisher, ServiceBusPublisher>();
-            services.AddSingleton(_ => new ServiceBusClient(options.Value.ServiceBus.ConnectionString));
         }
 
         if (options.Value.Sns.Enabled)

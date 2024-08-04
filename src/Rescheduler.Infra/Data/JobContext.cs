@@ -24,7 +24,7 @@ public class JobContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetAssembly(typeof(JobContext)));
+        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetAssembly(typeof(JobContext))!);
 
         modelBuilder.Entity<Job>()
             .HasMany<JobExecution>()
