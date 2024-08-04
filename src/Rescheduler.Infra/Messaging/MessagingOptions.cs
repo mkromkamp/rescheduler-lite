@@ -34,7 +34,7 @@ internal class RabbitMqOptions
 internal class SnsOptions
 {
     /// <summary>
-    /// Toggle the usage of Azure Service Bus
+    /// Toggle the usage of AWS SNS
     /// </summary>
     public bool Enabled { get; init; }
         
