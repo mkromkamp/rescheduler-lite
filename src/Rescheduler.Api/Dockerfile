@@ -16,4 +16,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine-amd64
 WORKDIR /app
 COPY --from=build /app ./
 
+# Non-root user
+USER $APP_UID 
+
 ENTRYPOINT ["./Rescheduler.Api"]
