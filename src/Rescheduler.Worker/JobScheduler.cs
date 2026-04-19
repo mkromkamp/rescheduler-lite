@@ -18,9 +18,9 @@ public class JobScheduler : BackgroundService
         _scopeFactory = scopeFactory;
     }
 
-    protected override Task ExecuteAsync(CancellationToken cancellationToken)
+    protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        return Task.Run(() => RunAsync(cancellationToken), cancellationToken);
+        await RunAsync(cancellationToken);
     }
 
     private async Task RunAsync(CancellationToken ctx)

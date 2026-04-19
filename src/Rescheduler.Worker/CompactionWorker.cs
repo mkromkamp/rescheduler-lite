@@ -19,14 +19,10 @@ public class CompactionWorker : BackgroundService
         _scopeFactory = scopeFactory;
     }
 
-    protected override Task ExecuteAsync(CancellationToken cancellationToken)
+    protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        return Task.Run(() =>
-        {
-            // Wait for the service to start and apply pending db migrations
-            Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
-            return RunCompaction(cancellationToken);
-        }, cancellationToken);
+        await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
+        await RunCompaction(cancellationToken);
     }
 
     internal async Task RunCompaction(CancellationToken ctx)
