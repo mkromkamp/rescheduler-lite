@@ -19,10 +19,10 @@ public class CompactionWorker : BackgroundService
         _scopeFactory = scopeFactory;
     }
 
-    protected override async Task ExecuteAsync(CancellationToken cancellationToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
-        await RunCompaction(cancellationToken);
+        await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
+        await RunCompaction(stoppingToken);
     }
 
     internal async Task RunCompaction(CancellationToken ctx)
