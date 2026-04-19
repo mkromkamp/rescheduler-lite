@@ -58,7 +58,7 @@ public class Program
                     });
                 }
             })
-            .ConfigureWebHostDefaults(webBuilder =>
+            .ConfigureWebHost(webBuilder =>
             {
                 webBuilder.UseStartup<Startup>();
             });
