@@ -29,16 +29,15 @@ internal class Repository<T> : IJobExecutionRepository, IRepository<T> where T :
         try
         {
             await _dbContext.Set<T>().AddRangeAsync(entities, ctx);
+            await _dbContext.SaveChangesAsync(ctx);
+            
+            await transaction.CommitAsync(CancellationToken.None);
         }
         catch (Exception ex)
         {
             await transaction.RollbackAsync(CancellationToken.None);
 
             _logger.LogError(ex, "Failed batch insert transaction");
-        }
-        finally
-        {
-            await transaction.CommitAsync(CancellationToken.None);
         }
     }
 
@@ -61,16 +60,15 @@ internal class Repository<T> : IJobExecutionRepository, IRepository<T> where T :
         try
         {
             entities.ToList().ForEach(e => _dbContext.Entry(e).CurrentValues.SetValues(entities));
+            await _dbContext.SaveChangesAsync(ctx);
+            
+            await transaction.CommitAsync(CancellationToken.None);
         }
         catch (Exception ex)
         {
             await transaction.RollbackAsync(CancellationToken.None);
 
             _logger.LogError(ex, "Failed batch update transaction");
-        }
-        finally
-        {
-            await transaction.CommitAsync(CancellationToken.None);
         }
     }
 
