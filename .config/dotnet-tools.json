@@ -3,14 +3,14 @@
   "isRoot": true,
   "tools": {
     "dotnet-sonarscanner": {
-      "version": "7.0.0",
+      "version": "11.2.1",
       "commands": [
         "dotnet-sonarscanner"
       ],
       "rollForward": false
     },
     "dotnet-ef": {
-      "version": "10.0.0",
+      "version": "10.0.7",
       "commands": [
         "dotnet-ef"
       ],
