@@ -51,7 +51,7 @@ jobs:
         run: dotnet test --collect:"XPlat Code Coverage" --settings .github/coverlet.xml
 
       - name: Codecov
-        uses: codecov/codecov-action@v6
+        uses: codecov/codecov-action@v7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: "**/coverage.opencover.xml"
