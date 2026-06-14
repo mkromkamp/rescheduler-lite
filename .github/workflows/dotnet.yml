@@ -81,7 +81,9 @@ jobs:
       run: dotnet tool restore
         
     - name: Begin collect
-      run: dotnet sonarscanner begin /k:"mkromkamp_rescheduler-lite" /o:"mkromkamp" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.token=${{ secrets.SONAR_TOKEN }} /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      run: dotnet sonarscanner begin /k:"mkromkamp_rescheduler-lite" /o:"mkromkamp" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
         
     - name: Test
       run: |
@@ -89,5 +91,7 @@ jobs:
         dotnet coverage collect 'dotnet test' -f xml  -o 'coverage.xml'
 
     - name: End collect
-      run: dotnet sonarscanner end /d:sonar.login=${{ secrets.SONAR_TOKEN }}
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      run: dotnet sonarscanner end
 
